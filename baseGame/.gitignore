@@ -4,6 +4,7 @@
 /Logs/
 /Temp/
 /obj/
+/Assets/AddressableAssetsData/
 /.vsconfig
 /Assembly-CSharp-Editor-firstpass.csproj
 /Assembly-CSharp-Editor.csproj
