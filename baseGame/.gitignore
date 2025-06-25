@@ -1,0 +1,18 @@
+/.vs/
+/.vscode/
+/Library/
+/Logs/
+/Temp/
+/obj/
+/.vsconfig
+/Assembly-CSharp-Editor-firstpass.csproj
+/Assembly-CSharp-Editor.csproj
+/Assembly-CSharp-firstpass.csproj
+/Assembly-CSharp.csproj
+/AstarPathfindingProject.csproj
+/AstarPathfindingProjectEditor.csproj
+/PackageToolsEditor.csproj
+/Unity Timer.csproj
+/ZFramework.Editor.csproj
+/ZFramework.csproj
+/baseGame.sln
