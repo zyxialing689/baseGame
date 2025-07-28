@@ -58,6 +58,7 @@ public class AttackInstance : MonoBehaviour
         this.agentSkill = agentSkill;
         virtualBody = transform.GetChild(0);
         aiCollider = GetComponent<AICollider>();
+        aiCollider.Init();
         if (agentSkill.focus_friend)
         {
             aiCollider.playerCamp = PlayerCamp.PlayerCampA == aiCollider.playerCamp ? PlayerCamp.PlayerCampA : PlayerCamp.PlayerCampB;
@@ -69,7 +70,7 @@ public class AttackInstance : MonoBehaviour
         }
         aiCollider.attackSort = attackSort;
         aiCollider.ClearHurtCDMap();
-        aiCollider.isFinished = true;
+        
         this.isFlyPorp = agentSkill.isFlyPorp;
 
         Init();
