@@ -77,17 +77,6 @@ namespace Table {
         }
 
         /// <summary>
-        /// 攻击长度
-        /// </summary>
-        [XmlIgnore]
-        public float attack_line;
-        [XmlAttribute("attack_line")]
-        public string _attack_line {
-            get { return attack_line.ToString(); }
-            set { if (string.IsNullOrEmpty(value)) attack_line = 0; else attack_line = float.Parse(value); }
-        }
-
-        /// <summary>
         /// 攻击id
         /// </summary>
         [XmlIgnore]
@@ -228,6 +217,17 @@ namespace Table {
         public string _ui_hp_size {
             get { return ui_hp_size.ToString(); }
             set { if (string.IsNullOrEmpty(value)) ui_hp_size = new SerV2(); else ui_hp_size = ZStringUtil.StringToSerV2(value); }
+        }
+
+        /// <summary>
+        /// 攻击长度
+        /// </summary>
+        [XmlIgnore]
+        public float attack_line;
+        [XmlAttribute("attack_line")]
+        public string _attack_line {
+            get { return attack_line.ToString(); }
+            set { if (string.IsNullOrEmpty(value)) attack_line = 0; else attack_line = float.Parse(value); }
         }
 
         /// <summary>

@@ -30,5 +30,8 @@ public class ExcelConfig : Singleton<ExcelConfig>
     public static excel_roledata Get_excel_roledata(int id)    {
       return  Instance.GetExcelData().excel_roledataMap[id];
     }
+    public static excel_roleskill Get_excel_roleskill(int id)    {
+      return  Instance.GetExcelData().excel_roleskillMap[id];
+    }
     #endregion
 }

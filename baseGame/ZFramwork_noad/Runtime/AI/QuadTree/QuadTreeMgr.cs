@@ -7,6 +7,7 @@ using UnityEditor;
 
 public class QuadTreeMgr : MonoBehaviour
 {
+    public int count = 1;
     public static QuadTreeMgr _instance;
     //#region ≈‰÷√
     //public static int maxDepth = 4;
@@ -62,6 +63,7 @@ public class QuadTreeMgr : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+
         if (!ZDefine._ShowTuadTreeGizmos) return;
 
         Gizmos.color = Color.black;
@@ -81,19 +83,19 @@ public class QuadTreeMgr : MonoBehaviour
             }
 #endif
 
-            if (selectItem != null&&selectItem.isFinished)
+            if (selectItem != null && selectItem.isFinished)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireCube(selectItem.qtnodeItem.bounds.center, selectItem.qtnodeItem.bounds.size);
 
                 var items = quadTree.GetInsideNode(selectItem.qtnodeItem.bounds);
-
+                this.count = items.Count;
                 foreach (var item in items)
                 {
                     Gizmos.DrawWireSphere(item.bounds.center, 0.5f);
                 }
             }
-  
+
 
             var qtnodes = quadTree.GetAllQTNodeItems();
 

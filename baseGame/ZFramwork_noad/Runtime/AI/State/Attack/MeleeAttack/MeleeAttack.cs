@@ -60,8 +60,8 @@ public class MeleeAttack : AIState
             agent.agentTempData.isAttacking = false;
             return;
         }
-        //agentSkill = new AgentSkill(agent.agentData.skill_ids[stateData.meleeAttackID], agent);
-        agentSkill = new AgentSkill(agent);
+        agentSkill = new AgentSkill(agent.agentData.skill_ids[stateData.meleeAttackID], agent);
+    
 
         AIAttackMgr.CreateAttackCollider(agentSkill,
             AttackComplete, stateData.attackKeepTime

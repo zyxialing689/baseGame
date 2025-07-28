@@ -38,7 +38,11 @@ public class PathFindMgr : MonoBehaviour
         minY = -(maxHeight * 0.5f);
         maxX = -minX;
         maxY = -minY;
-        QuadTreeMgr.Init(4, 10, new Rect(minX, minY, maxWidth, maxHeight));
+        minX = minX + astarPath.data.gridGraph.center.x;
+        maxX = maxX + astarPath.data.gridGraph.center.x;
+        minY = minY + astarPath.data.gridGraph.center.y;
+        maxY = maxY + astarPath.data.gridGraph.center.y;
+        QuadTreeMgr.Init(2, 3, new Rect(minX, minY, maxWidth, maxHeight));
     }
 
     public GraphNode GetCloserPoint(Vector3 pos)

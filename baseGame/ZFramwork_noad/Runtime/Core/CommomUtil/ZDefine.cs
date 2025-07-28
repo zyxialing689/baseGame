@@ -14,9 +14,9 @@ public class ZDefine
     public const bool ZLogNormal= true;
     public const bool ZLogWarning= true;
     public const bool ZLogError= true;
-    public const bool _ShowPathGizmos = true;
-    public const bool _ShowTuadTreeGizmos = true;
-    public const bool _ShowColliderGizmos = true;
+    public const bool _ShowPathGizmos = false;
+    public const bool _ShowTuadTreeGizmos = false;
+    public const bool _ShowColliderGizmos = false;
     #endregion
     /// <summary>
     /// true表示竖屏,false表示横屏
@@ -25,6 +25,6 @@ public class ZDefine
     public static Vector2 StandardScreen = new Vector2(1920, 1080);
 
 
-    public const float sceneCameraSize = 4.5f;
+    public const float sceneCameraSize = 7f;
 
 }

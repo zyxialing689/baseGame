@@ -9,8 +9,10 @@ public class AITestRoot : MonoBehaviour
     {
         Singleton<BaseServiceBinder>.SetInstance(Singleton<ServiceBinder>.Instance);//±ØÒª´úÂë
         UIManager.Instance.SetUISceneCameraType(false);
+        ExcelConfig.Instance.LoadAllExcel();
         PathFindMgr.Init();
         UpdateMgr.Init();
+        JumpManager.JumpPanel<GamePanel>(PanelLayer.Panel);
     }
 
     // Update is called once per frame

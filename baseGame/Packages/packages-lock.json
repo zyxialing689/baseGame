@@ -278,7 +278,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.zyxialing.zframework": {
-      "version": "file:D:/workplace/GoogleGame/ZFramwork_noad",
+      "version": "file:../ZFramwork_noad",
       "depth": 0,
       "source": "local",
       "dependencies": {

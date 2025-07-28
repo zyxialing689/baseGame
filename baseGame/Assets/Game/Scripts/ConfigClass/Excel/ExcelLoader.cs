@@ -7,5 +7,6 @@ public class ExcelLoader : MonoBehaviour
     public void LoadExcel()
     {
         ExcelConfig.Instance.InitExcelData(Config<excel_roledata>.InitConfig());
+        ExcelConfig.Instance.InitExcelData(Config<excel_roleskill>.InitConfig());
     }
 }

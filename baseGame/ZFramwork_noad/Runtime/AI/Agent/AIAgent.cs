@@ -71,10 +71,9 @@ public class AIAgent : PathAgent
         readyClear = new Dictionary<BuffType, bool>();
         ImmunityBuffMap = new Dictionary<BuffType, BuffData>();
         effectKeepMap = new Dictionary<string, EffectData>();
-        InitAgentData(testID);
     }
 
-    public void InitAgentData(int roleId)
+    public virtual void InitAgentData(int roleId,PlayerCamp playerCamp)
     {
         #region 角色表数据
         agentData = new AgentData(roleId);
@@ -95,34 +94,41 @@ public class AIAgent : PathAgent
         animationClipMap.Clear();
     }
 
-    private void Start()
+    protected void Init()
     {
         unmatched = false;
-           isDizz = false;
+        isDizz = false;
         isFrozen = false;
         trueDeath = false;
         Random.InitState(Mathf.RoundToInt(Time.realtimeSinceStartup));
         #region 初始化预制体
-        virtualBodyTransform = transform.GetChild(0).transform;
-        emojiTf = virtualBodyTransform.Find("renderPos").Find("emojiPos");
-        effectTf = virtualBodyTransform.Find("renderPos").Find("effectPos");
-        effectBackTf = virtualBodyTransform.Find("renderPos").Find("effectBackPos");
-        buffRenderMgr = virtualBodyTransform.Find("renderPos").Find("buffs").GetComponent<BuffRenderMgr>();
-        buffRenderMgr.Init();
+        if (virtualBodyTransform == null)
+        {
+            virtualBodyTransform = transform.GetChild(0).transform;
+            emojiTf = virtualBodyTransform.Find("renderPos").Find("emojiPos");
+            effectTf = virtualBodyTransform.Find("renderPos").Find("effectPos");
+            effectBackTf = virtualBodyTransform.Find("renderPos").Find("effectBackPos");
+            buffRenderMgr = virtualBodyTransform.Find("renderPos").Find("buffs").GetComponent<BuffRenderMgr>();
+            buffRenderMgr.Init();
+        }
+
         if (!agentData.is_far_hero)
         {
-            rovMovement = gameObject.AddComponent<RovMovement>();
+            if (rovMovement == null)
+            {
+                rovMovement = gameObject.AddComponent<RovMovement>();
+            }
             rovMovement.radis = 0.5f;
         }
-        animator = virtualBodyTransform.GetComponent<Animator>();
         if (animator == null)
         {
             animator = virtualBodyTransform.Find("renderPos").Find("render").GetComponent<Animator>();
             buffRender = buffRenderMgr.transform.Find("buffRender").GetComponent<SpriteRenderer>();
             render = animator.GetComponent<SpriteRenderer>();
             animatorEventMono = animator.GetComponent<AnimatorEventMono>();
+            UpdateAnimator();
         }
-        UpdateAnimator();
+
         #endregion
 
         InitData();
@@ -156,7 +162,6 @@ public class AIAgent : PathAgent
         animatorEventMono.Init(this);
     }
 
-    static float testn = 1;
 
     private void InitData()
     {
@@ -591,7 +596,7 @@ public class AIAgent : PathAgent
                 aIState = new MeleeAttack().Init(this, value);
                 break;
             case AIStateType.common_remoteAttack:
-                aIState = new RemoteAttack().Init(this, value);
+                aIState = CreateRemoteAttackState(value);
                 break;
             case AIStateType.Finding_Patrol:
                 aIState = new PatrolState().Init(this, value);
@@ -644,6 +649,16 @@ public class AIAgent : PathAgent
         }
         return aIState;
     }
+
+    #region ai状态
+     protected virtual AIState CreateRemoteAttackState(AIStateData value)
+    {
+       return  new RemoteAttack().Init(this, value);
+
+    }
+    #endregion
+
+
     public AnimationClip GetAnimation(string name)
     {
         ZLogUtil.Log(name);

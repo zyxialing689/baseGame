@@ -2,17 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIAgentNew : MonoBehaviour
+public class AIAgentNew : AIAgent
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public override void InitAgentData(int roleId, PlayerCamp playerCamp)
     {
-        
+        agentData = new AgentDataNew(roleId);
+        agentData.playerCamp = playerCamp;
+        Init();
+        GetComponent<AICollider>().Init();
+        gameObject.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+
+    protected override AIState CreateRemoteAttackState(AIStateData value)
     {
-        
+        AIState aIState =  new RemoteAttackNew().Init(this, value);
+        return aIState;
     }
+
 }

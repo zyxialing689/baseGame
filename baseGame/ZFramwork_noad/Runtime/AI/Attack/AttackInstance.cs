@@ -36,10 +36,10 @@ public class AttackInstance : MonoBehaviour
     protected bool isFlyPorp = false;
     [HideInInspector]
     public bool triggerOnce = false;
-    [Header("出生后检测一次碰撞，勾选后，性能大幅度提升（持续性技能请关闭）")]
-    public bool onceCheck = true;
-    [Header("出生后检测到碰撞后就不在检测，（持续性技能关闭，其他必选）")]
-    public bool onceColliderCheck = false;
+    [Header("出生后检测一次碰撞,勾选后,性能大幅度提升\n(持续性技能请关闭,适合触发就需要检测的技能，如砍，咬，爆炸)")]
+    public bool onceCheck = false;
+    [Header("出生后检测到碰撞后就不在检测\n(持续性技能关闭，其他必选，适合远程射击类型)")]
+    public bool onceColliderCheck = true;
     [HideInInspector]
     public bool _onceCheck = true;
     [HideInInspector]
@@ -69,6 +69,7 @@ public class AttackInstance : MonoBehaviour
         }
         aiCollider.attackSort = attackSort;
         aiCollider.ClearHurtCDMap();
+        aiCollider.isFinished = true;
         this.isFlyPorp = agentSkill.isFlyPorp;
 
         Init();

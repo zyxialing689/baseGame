@@ -286,15 +286,15 @@ public class AIAttackMgr
             }
             flyCollider.playerCamp = agent.playerCamp;
             AIBox skyBox = new AIBox(flyObj.transform, agent.playerCamp,
-                agent.aICollider.skyBox.size, agent.aICollider.skyBox.offset,
+                flyCollider.skySize, flyCollider.skyOffset,
                 flyObj.transform.position, 0, agentSkill.ignore_sky_check);
             AIBox groundBox = new AIBox(flyObj.transform, agent.playerCamp,
-                agentSkill.ground_check_size, agentSkill.ground_check_offset,
+                flyCollider.groundSize, flyCollider.groundOffset,
                 flyObj.transform.position, 0, agentSkill.ignore_ground_check);
             float skillTime = agentSkill.hurt_cd;
 
             AIBox attackBox = new AIBox(flyObj.transform, agent.playerCamp,
-            agentSkill.collider_size, agentSkill.start_point,
+            flyCollider.bodySize, flyCollider.bodyOffset,
             flyObj.transform.position, skillTime);
             flyCollider.FlyPropInit(skyBox, groundBox, attackBox);
             flyCollider.SetAttackInstance(attackInst);

@@ -101,49 +101,49 @@ public class AICollider:MonoBehaviour
         virtualBodyTransform.localEulerAngles = new Vector3(0,0, quaternion);
     }
 
-    private void Start()
+    public void Init()
     {
-        agent = GetComponent<AIAgent>();
-        _enemyColliderMap = new Dictionary<AICollider, bool>();
-        virtualBodyTransform = transform.GetChild(0);
-        shadowTf = transform.GetChild(1);
-        Transform shadowObj = virtualBodyTransform.Find("Shadow");
-        shadowObj.gameObject.AddComponent<SortingGroup>().sortingOrder = 5;
-        shadowObj.SetParent(shadowTf);
-        shadowObj.transform.localRotation = Quaternion.identity;
-        isEditor = false;
-        virtualBodyGroup = virtualBodyTransform.GetComponent<SortingGroup>();
-        if (virtualBodyTransform.childCount>0)
+        if (agent == null)
         {
-            var tempTf = virtualBodyTransform.GetChild(0);
-            if (tempTf.childCount > 0)
+            agent = GetComponent<AIAgent>();
+            _enemyColliderMap = new Dictionary<AICollider, bool>();
+            virtualBodyTransform = transform.GetChild(0);
+            shadowTf = transform.GetChild(1);
+            Transform shadowObj = virtualBodyTransform.Find("Shadow");
+            shadowObj.gameObject.AddComponent<SortingGroup>().sortingOrder = 5;
+            shadowObj.SetParent(shadowTf);
+            shadowObj.transform.localRotation = Quaternion.identity;
+            isEditor = false;
+            virtualBodyGroup = virtualBodyTransform.GetComponent<SortingGroup>();
+            if (virtualBodyTransform.childCount > 0)
             {
-                render = tempTf.GetChild(0).GetComponent<SpriteRenderer>();
-            }
-   
-            if (tempTf.childCount > 1)
-            {
-                buffGroup = tempTf.GetChild(1).GetComponent<SortingGroup>();
+                var tempTf = virtualBodyTransform.GetChild(0);
+                if (tempTf.childCount > 0)
+                {
+                    render = tempTf.GetChild(0).GetComponent<SpriteRenderer>();
+                }
+
+                if (tempTf.childCount > 1)
+                {
+                    buffGroup = tempTf.GetChild(1).GetComponent<SortingGroup>();
+                }
+
             }
 
+            shadowGroup = shadowObj.GetComponent<SortingGroup>();
+            if (!isAttack)
+            {
+                emojiTf = virtualBodyTransform.GetChild(0).Find("emojiPos");
+                effectTf = virtualBodyTransform.GetChild(0).Find("effectPos");
+                effectBackTf = virtualBodyTransform.GetChild(0).Find("effectBackPos");
+                emojiGroup = emojiTf.GetComponent<SortingGroup>();
+                effectGroup = effectTf.GetComponent<SortingGroup>();
+                effectBackGroup = effectBackTf.GetComponent<SortingGroup>();
+                UpdateColliderData();
+                _OnStart();
+            }
         }
-
-        shadowGroup = shadowObj.GetComponent<SortingGroup>();
-        if (agent != null)
-        {
-            playerCamp = agent.agentData.playerCamp;
-        }
-        if (!isAttack)
-        {
-            emojiTf = virtualBodyTransform.GetChild(0).Find("emojiPos");
-            effectTf = virtualBodyTransform.GetChild(0).Find("effectPos");
-            effectBackTf = virtualBodyTransform.GetChild(0).Find("effectBackPos");
-            emojiGroup = emojiTf.GetComponent<SortingGroup>();
-            effectGroup = effectTf.GetComponent<SortingGroup>();
-            effectBackGroup = effectBackTf.GetComponent<SortingGroup>();
-            UpdateColliderData();
-            _OnStart();
-        }
+        playerCamp = agent.agentData.playerCamp;
         isFinished = true;
     }
     public void UpdateColliderData()

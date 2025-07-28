@@ -27,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2306045854513200512}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 2.77, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: -0.1, y: 1.108, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7125542854176569564}
@@ -44,7 +44,7 @@ Animator:
   m_GameObject: {fileID: 2306045854513200512}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3fd4e7e0fb3fcb8429c1099c367b9abf, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 1
   m_ApplyRootMotion: 0
@@ -251,8 +251,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5392595025115560743}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.134, y: 1.37, z: 0}
-  m_LocalScale: {x: 1.4, y: 1.4, z: 1}
+  m_LocalPosition: {x: -0.1, y: 1.108, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6370388376893193921}
@@ -368,7 +368,7 @@ Transform:
   m_GameObject: {fileID: 5864754879032531153}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.13282096, y: 0.023451783, z: 0.92313206}
+  m_LocalScale: {x: 0.2, y: 0.04, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2953065630631171036}
@@ -451,7 +451,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5961522062941814035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5, z: 0}
+  m_LocalPosition: {x: 0, y: 2.081, z: 0}
   m_LocalScale: {x: 0.69948, y: 0.69948, z: 0.69948}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -616,7 +616,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5164199850606062013}
   - component: {fileID: 5251174701036974227}
-  - component: {fileID: 8346490432675611545}
+  - component: {fileID: 1619966571}
   m_Layer: 6
   m_Name: dragon
   m_TagString: Untagged
@@ -657,16 +657,16 @@ MonoBehaviour:
   isEditor: 1
   isAttack: 0
   openInAreaCheck: 0
-  attackLine: 0
+  attackLine: 0.08
   playerCamp: 0
   isDead: 0
   attackSort: 0
   skyOffset: {x: 0, y: 0}
-  skySize: {x: 0, y: 0}
-  bodyOffset: {x: 0, y: 0}
-  bodySize: {x: 0, y: 0}
+  skySize: {x: 0.72, y: 0.2}
+  bodyOffset: {x: 0, y: 0.8}
+  bodySize: {x: 0.72, y: 1.6}
   groundOffset: {x: 0, y: 0}
-  groundSize: {x: 0, y: 0}
+  groundSize: {x: 5, y: 0.18}
   isFinished: 0
   agent: {fileID: 0}
   _attackInstance: {fileID: 0}
@@ -674,7 +674,7 @@ MonoBehaviour:
   tempX: 0
   tempY: 0
   tempZ: 0
---- !u!114 &8346490432675611545
+--- !u!114 &1619966571
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -683,12 +683,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 9042843071103691820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdbb203942cce3e4f83f11aa453b89d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b7d5975d00c26a448aeaeca614ef154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   curTime: 0
   aICollider: {fileID: 0}
-  testID: -1
+  testID: 4
   offsetAttackID: 0
   attackSpeed: 1
   moveSpeed: 1

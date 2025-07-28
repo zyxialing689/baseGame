@@ -37,8 +37,7 @@ public class RemoteAttack : AIState
             agent.agentTempData.isAttacking = false;
             return;
         }
-        //agentSkill = new AgentSkill(agent.agentData.skill_ids[stateData.remoteAttackID], agent);
-        agentSkill = new AgentSkill(agent);
+        agentSkill = new AgentSkill(agent.agentData.skill_ids[stateData.remoteAttackID], agent);
         AIAttackMgr.CreateAttackCollider(agentSkill,
             AttackComplete, stateData.attackKeepTime
             );
