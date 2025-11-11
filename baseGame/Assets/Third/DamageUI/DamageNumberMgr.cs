@@ -6,9 +6,10 @@ public class DamageNumberMgr : MonoBehaviour
     //public List<DamageNumber> damageNumbers;
     public static DamageNumberMgr _instance;
     private Transform uiParent;
-    void Awake()
+    public static void Init()
     {
-        _instance = this;
+        GameObject obj = new GameObject("DamageNumberMgr");
+        _instance = obj.AddComponent<DamageNumberMgr>();
     }
 
     public void SetUIParent(Transform tf)
@@ -16,13 +17,14 @@ public class DamageNumberMgr : MonoBehaviour
         uiParent = tf;
     }
     string path = "__hp/hurtHp";
-    public void Init()
+    public void InitPool()
     {
         ZGameObjectPool.Init(path, () =>
         {
             var obj = PrefabUtils.Instance(path);
             obj.transform.SetParent(uiParent);
-            obj.transform.position = new Vector3(-100, 0, 0);
+            obj.transform.localScale = Vector3.one;
+            obj.transform.position = new Vector3(0, 0, 0);
             obj.GetComponent<TextMeshProUGUI>().text = "";
             obj.GetComponent<DamageNumber>().InitAnim();
             obj.SetActive(false);
