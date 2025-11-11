@@ -15,13 +15,7 @@ public partial class GamePanel : BasePanel
     public override void OnShowing()
     {
         
-        this.boxgreen.onClick.AddListener(() => {
-            RoleFactory.GenerateRoleA(4);
-        });
 
-        this.boxred.onClick.AddListener(() => {
-            RoleFactory.GenerateRoleB(4);
-        });
     }
 
     public override void OnOpen()
