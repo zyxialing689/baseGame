@@ -19,8 +19,21 @@ public enum PlayerCamp
     PlayerCampA,
     PlayerCampB
 }
+public enum TargetType
+{
+    Enemy,
+    Friend,
+    All,
+    Self,
+    NotSelf
+}
 public enum TextAnimType
 {
     type1,
     type2,
+}
+public enum ColliderType
+{
+    Character,
+    Skill,
 }

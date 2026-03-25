@@ -14,9 +14,9 @@ public class AITestRoot : MonoBehaviour
         //gameObject.AddComponent<MapCreater>();
         //youxi bibei
         //UIManager.Instance.SetUISceneCameraType(false);
-        //PathFindMgr.Init();
-        //UpdateMgr.Init();
-        JumpManager.JumpPanel<GamePanel>(PanelLayer.Panel);
+        PathFindMgr.Init();
+        UpdateMgr.Init();
+        //JumpManager.JumpPanel<GamePanel>(PanelLayer.Panel);
     }
 
     // Update is called once per frame

@@ -50,6 +50,7 @@ public class UIManager : Singleton<UIManager>
         camera_scene.clearFlags = CameraClearFlags.SolidColor;
         camera_scene.cullingMask = (1 << 6) + (1 << 7) + (1 << 0);
         camera_scene.orthographic = true;
+        camera_scene.farClipPlane = 2000;
         camera_scene.orthographicSize = ZDefine.sceneCameraSize;
         camera_scene.depth = 0;
 
@@ -91,7 +92,7 @@ public class UIManager : Singleton<UIManager>
         var cameraRootObj = new GameObject("CameraRoot");
         GameObject.DontDestroyOnLoad(cameraRootObj);
         CreateCameras(cameraRootObj.transform);
-        cameraRootObj.transform.position = new Vector3(0, 0, -100);
+        cameraRootObj.transform.position = new Vector3(0, 0, -1000);
         InitUICanvas();
 
         layerDict = new Dictionary<PanelLayer, Transform>();
@@ -238,7 +239,29 @@ public class UIManager : Singleton<UIManager>
         var scaler = canvas.gameObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution =ZDefine.Portrait ? new Vector2(ZDefine.StandardScreen.y, ZDefine.StandardScreen.x) : ZDefine.StandardScreen; ;
-        scaler.matchWidthOrHeight = ZDefine.Portrait ? 0 : 1;
+        scaler.matchWidthOrHeight = ZDefine.Portrait ? 1 : 0;
+    }
+
+    public void SetMatchWidthOrHeight(float value)
+    {
+        var scaler = canvas.gameObject.GetComponent<CanvasScaler>();
+        scaler.matchWidthOrHeight = value;
+    }
+
+    public void AutoMatchWidthOrHeightByPortrait()
+    {
+        var scaler = canvas.gameObject.GetComponent<CanvasScaler>();
+        var hBili = ZDefine.StandardScreen.x / ZDefine.StandardScreen.y;
+        var curBili = Screen.height / Screen.width;
+        if (curBili >= hBili)
+        {
+            scaler.matchWidthOrHeight = 0;
+        }
+        else
+        {
+            scaler.matchWidthOrHeight = 1;
+        }
+        
     }
 
 }

@@ -63,6 +63,12 @@ public class UpdateMgr : MonoBehaviour
                     AttackMgr._allAttacks[i]._FixedUpdate();
                 }
 
+                var list = QuadTreeMgr._instance.GetAllItem();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    list[i].collider._FixedUpdate();
+                }
+
             }
 
             yield return new WaitForSeconds(Time.fixedDeltaTime);

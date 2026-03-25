@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityTimer;
+using ZFramework;
 using Random = UnityEngine.Random;
 
 public class AttackInstance : MonoBehaviour
@@ -46,7 +47,7 @@ public class AttackInstance : MonoBehaviour
     public bool _onceColliderCheck = true;
     public virtual void Init()
     {
-        aiCollider.SetVirtualAngle(0);
+        // aiCollider.SetVirtualAngle(0);
     }
     public void _OnStart(AgentSkill agentSkill)
     {
@@ -86,14 +87,14 @@ public class AttackInstance : MonoBehaviour
     {
         if (isFlyPorp)
         {
-            aiCollider.UpdateAIClollider(transform.position.x, transform.position.y, transform.position.z);
+   
         }
         else
         {
             if (fllowCollider != null)
             {
                 transform.localScale = fllowCollider.transform.localScale;
-                aiCollider.UpdateAIClollider(fllowCollider.tempX, fllowCollider.tempY, fllowCollider.tempZ);
+                transform.position = ZCommomUtil.MeragePosAndHeight(transform,fllowCollider.tempZ);
 
                 if (transform.localScale.x > 0)
                 {
@@ -105,7 +106,7 @@ public class AttackInstance : MonoBehaviour
                 }
             }
         }
-
+        DoColliderCheck();
     }
     // Update is called once per frame
     public virtual void _Update()
@@ -128,7 +129,68 @@ public class AttackInstance : MonoBehaviour
 
     }
 
+private void DoColliderCheck()
+{
+    if (aiCollider == null) return;
 
+    if (agentSkill.ignore_collier)
+        return;
+
+    if (onceCheck && !_onceCheck)
+        return;
+
+    if (onceColliderCheck && !_onceColliderCheck)
+        return;
+
+    AICollider[] enemys = null;
+
+    if (!agentSkill.is_aoe)
+    {
+        if (targetAgent == null || targetAgent.isDead)
+        {
+            if (agentSkill.IsOpenDeathAoe())
+                enemys = ColliderCheck.IsTriggerAllByCamp(aiCollider, !agentSkill.focus_friend);
+        }
+        else
+        {
+            enemys = ColliderCheck.IsTriggerAllByCamp(aiCollider, !agentSkill.focus_friend, targetAgent.aICollider);
+        }
+    }
+    else
+    {
+        enemys = ColliderCheck.IsTriggerAllByCamp(aiCollider, !agentSkill.focus_friend);
+    }
+
+    if (enemys != null && enemys.Length > 0)
+    {
+        if (triggerOnce)
+        {
+            TrigerOnceAll(enemys);
+            triggerOnce = false;
+        }
+
+        for (int i = 0; i < enemys.Length; i++)
+        {
+            aiCollider.AddBeAttack(enemys[i]);   // CD¿ØÖÆ
+            SetAttackEffect(enemys[i]);          // ÉËº¦´¥·¢
+        }
+
+        if (fllowCollider != null &&
+            !fllowCollider.agent.trueDeath &&
+            fllowCollider.agent.agentData.IsVampirism())
+        {
+            int hurt = -Mathf.RoundToInt(GetDamage() * enemys.Length * fllowCollider.agent.agentData.vampirism_value);
+            if (hurt > 0)
+            {
+                fllowCollider.agent.attrData.ChangeHp(hurt, null, fllowCollider.GetHurtPos());
+            }
+        }
+
+        _onceColliderCheck = false;
+    }
+
+    _onceCheck = false;
+}
 
     public virtual void ReadyDestroy()
     {

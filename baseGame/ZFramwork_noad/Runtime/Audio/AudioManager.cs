@@ -183,22 +183,59 @@ public class AudioManager : MonoBehaviour
 
     public void PlayBgmSound(string soundName)
     {
+
+        PlayBgmFade(soundName, 1);
+    }
+
+    public void PlayBgmFade(string soundName, float fadeTime = 1f)
+    {
+        StartCoroutine(PlayBgmFadeRoutine(soundName, fadeTime));
+    }
+
+    private IEnumerator PlayBgmFadeRoutine(string soundName, float fadeTime)
+    {
+        float originalVolume = _instance.bgmAudioSource.volume;
+        if (_instance.bgmAudioSource.clip != null)
+        {
+            // 如果正在播放，先淡出
+            if (_instance.bgmAudioSource.isPlaying) {
+                yield return StartCoroutine(FadeAudio(_instance.bgmAudioSource, _instance.bgmAudioSource.volume, 0f, fadeTime));
+            }
+        }
+
+        // 切换音轨
         _instance.bgmAudioSource.clip = AudioUtils.GetAudio(soundName);
         _instance.bgmAudioSource.Play();
+        _instance.bgmAudioSource.volume = 0;
+        // 淡入
+        yield return StartCoroutine(FadeAudio(_instance.bgmAudioSource, 0f, originalVolume, fadeTime));
     }
+
 
     public void ResumeBgmSound()
-    {
-        _instance.bgmAudioSource.Pause();
-    }
-
-    public void PauseBgmSound()
     {
         _instance.bgmAudioSource.UnPause();
     }
 
+    public void PauseBgmSound()
+    {
+        _instance.bgmAudioSource.Pause();
+    }
+
+    IEnumerator FadeAudio(AudioSource source, float from, float to, float duration)
+    {
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            source.volume = Mathf.Lerp(from, to, time / duration);
+            yield return null;
+        }
+
+        source.volume = to;
+    }
 
 
-   
+
 }
 

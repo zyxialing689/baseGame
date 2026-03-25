@@ -16,6 +16,9 @@ public partial class EnterPanel : BasePanel
     {
        enterBtn.onClick.AddListener(()=>{
          ZLogUtil.Log(testMgr.GetTestStr());
+           enterBtn.gameObject.SetActive(false);
+           this.Close();
+           JumpManager.JumpPanel<GamePanel>(PanelLayer.Panel);
        });
     }
 
@@ -37,6 +40,7 @@ public partial class EnterPanel : BasePanel
     private void RefreshPanel()
     {
         AudioManager.GetInstance().PlayBgmSound(GameConst.const_bgm1);
+        UIManager.Instance.SetMatchWidthOrHeight(1);
         ExcelConfig.Instance.LoadAllExcel();
         var data = ExcelConfig.Get_excel_roledata(1);
         ZLogUtil.Log(data.anim_path);

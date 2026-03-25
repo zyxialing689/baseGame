@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityTimer;
+using ZFramework;
 using Random = UnityEngine.Random;
 
 public class AIAgent : PathAgent
@@ -73,7 +74,7 @@ public class AIAgent : PathAgent
         effectKeepMap = new Dictionary<string, EffectData>();
     }
 
-    public virtual void InitAgentData(int roleId,PlayerCamp playerCamp)
+    public virtual void InitAgentData(int roleId, PlayerCamp playerCamp)
     {
         #region 角色表数据
         agentData = new AgentData(roleId);
@@ -191,7 +192,7 @@ public class AIAgent : PathAgent
     {
 
         agentTempData.aiTotalTime = curTime;
-        moveSpeed = agentData.move_speed*agentTempData.stateMoveSpeed*agentTempData.iceSpeed;
+        moveSpeed = agentData.move_speed * agentTempData.stateMoveSpeed * agentTempData.iceSpeed;
         emojiTf.localPosition = agentData.emoji_pos;
         effectTf.localPosition = agentData.effect_pos;
         effectBackTf.localPosition = agentData.effect_pos;
@@ -202,7 +203,7 @@ public class AIAgent : PathAgent
         _statesType = new Dictionary<int, AIStateData>();
         _stateList = new Dictionary<int, AIStateData>();
         TextAsset textAsset = TextAssetUtils.GetTextAsset(path);
-         aIDataJson = JsonUtility.FromJson<AIDataJson>(textAsset.text);
+        aIDataJson = JsonUtility.FromJson<AIDataJson>(textAsset.text);
         List<AIStateData> adjList = aIDataJson.GetHeadList();
         for (int i = 0; i < adjList.Count; i++)
         {
@@ -220,7 +221,7 @@ public class AIAgent : PathAgent
             stopTime = 1000;
             if (testY != agentData.sky_height)
             {
-                testY = testY+=0.05f;
+                testY = testY += 0.05f;
             }
             //if (renderTf.localPosition != agentData.render_pos)
             //{
@@ -377,7 +378,8 @@ public class AIAgent : PathAgent
         }
         buffRenderMgr._Update();
 
-        if (!isOpen|| isStake) {
+        if (!isOpen || isStake)
+        {
             return;
         }
 
@@ -393,7 +395,7 @@ public class AIAgent : PathAgent
         {
             return;
         }
-    
+
         UpdateSortState();
         if (_aiStates != null)
         {
@@ -418,7 +420,8 @@ public class AIAgent : PathAgent
     public void _FixedUpdate()
     {
         FllowEffectScale();
-        if (!isOpen|| isFrozen||isDizz) {
+        if (!isOpen || isFrozen || isDizz)
+        {
             UpdateDeathStrikeFly();
             return;
         }
@@ -432,11 +435,11 @@ public class AIAgent : PathAgent
         }
         else
         {
-            moveSpeed = agentData.move_speed*agentTempData.stateMoveSpeed* agentTempData.iceSpeed*testSpeed;
+            moveSpeed = agentData.move_speed * agentTempData.stateMoveSpeed * agentTempData.iceSpeed * testSpeed;
         }
-
-        aICollider.UpdateAIClollider(transform.position.x,transform.position.y, role_height, null);
         UpdateToSkyAnim();
+        transform.position = ZCommomUtil.MeragePosAndHeight(transform,role_height);
+
         if (_aiStates != null)
         {
             for (int i = 0; i < _aiStates.Count; i++)
@@ -453,7 +456,7 @@ public class AIAgent : PathAgent
         }
     }
 
-    public int TriggerBeHurt(int chp, AgentSkill agentSkill, HurtType hurtType,bool useBuff = true)
+    public int TriggerBeHurt(int chp, AgentSkill agentSkill, HurtType hurtType, bool useBuff = true)
     {
         int hp = chp;
         foreach (var item in buffMaps)
@@ -463,7 +466,7 @@ public class AIAgent : PathAgent
                 hp = item.Value.TriggerBeHurt(hp, agentSkill, hurtType);
             }
         }
-        if (hp != 0&&agentSkill!=null&& useBuff)
+        if (hp != 0 && agentSkill != null && useBuff)
         {
             SetBuffs(agentSkill.buffDatas);
         }
@@ -489,6 +492,7 @@ public class AIAgent : PathAgent
         {
             pos.y = PathFindMgr._instance.maxY;
         }
+        pos.z = role_height;
         transform.position = pos;
     }
 
@@ -513,14 +517,13 @@ public class AIAgent : PathAgent
         {
             transform.Translate(strikeFlyDir * Time.fixedDeltaTime);
             BoundPosition();
-            aICollider.UpdateAIClollider(transform.position.x, transform.position.y, role_height, null);
         }
         else
         {
             moveSpeed = agentData.move_speed * agentTempData.stateMoveSpeed * agentTempData.iceSpeed;
-            if (isFrozen|| isDizz)
+            if (isFrozen || isDizz)
             {
-                aICollider.UpdateAIClollider(transform.position.x, transform.position.y, role_height, null);
+                transform.position = ZCommomUtil.MeragePosAndHeight(transform,role_height);
             }
         }
     }
@@ -534,7 +537,7 @@ public class AIAgent : PathAgent
         foreach (var item in _statesType)
         {
             nextCondAIState = _aiStates[item.Key].TryNextCond();
-            if (nextCondAIState!=null)
+            if (nextCondAIState != null)
             {
                 nextIndexs.Add(item.Key, nextCondAIState);
 
@@ -543,7 +546,7 @@ public class AIAgent : PathAgent
             {
                 AIStateData index = _statesType[item.Key].firstAIState;
                 if (index != null) { nextIndexs.Add(item.Key, index); }
-    
+
             }
         }
         foreach (var item in nextIndexs)
@@ -566,7 +569,7 @@ public class AIAgent : PathAgent
         //{
         //    UpdateSortState();
         //}
-       
+
     }
 
     private AIState GetAICode(AIStateData value)
@@ -651,9 +654,9 @@ public class AIAgent : PathAgent
     }
 
     #region ai状态
-     protected virtual AIState CreateRemoteAttackState(AIStateData value)
+    protected virtual AIState CreateRemoteAttackState(AIStateData value)
     {
-       return  new RemoteAttack().Init(this, value);
+        return new RemoteAttack().Init(this, value);
 
     }
     #endregion
@@ -720,32 +723,32 @@ public class AIAgent : PathAgent
     //该对象可以被击飞
     public bool CanBeGroundStrikeFly()
     {
-        return base_role_height<=0;
+        return base_role_height <= 0;
     }
 
     public Vector2 strikeFlyDir;
     //击飞
-    internal void StrikeFly(Vector2 dir,float flyHor,float flyUp)
+    internal void StrikeFly(Vector2 dir, float flyHor, float flyUp)
     {
-            //if (IsInStrikeFly())
-            //{
-            //    return;
-            //}
-           
-           if (jump_time >10)
+        //if (IsInStrikeFly())
+        //{
+        //    return;
+        //}
+
+        if (jump_time > 10)
+        {
+            jump_time = 0;
+        }
+        else
+        {
+            if (jump_time > maxHeight * 0.1f * 0.5f)
             {
-                jump_time = 0;
+                jump_time = maxHeight * 0.1f - jump_time;
             }
-            else
-            {
-                if (jump_time > maxHeight * 0.1f * 0.5f)
-                {
-                    jump_time = maxHeight * 0.1f - jump_time;
-                }
-            }
-           strikeFlyDir = dir * flyHor;
-           maxHeight = flyUp;
-           moveSpeed = 0;
+        }
+        strikeFlyDir = dir * flyHor;
+        maxHeight = flyUp;
+        moveSpeed = 0;
     }
 
     #region
@@ -760,9 +763,9 @@ public class AIAgent : PathAgent
 
     public void SetBuff(int id)
     {
-       SetBuff(new BuffData());
+        SetBuff(new BuffData());
     }
-    public void SetBuff(int id,float time,bool isOverly)
+    public void SetBuff(int id, float time, bool isOverly)
     {
         var skill = new BuffData();
         skill.duration = time;
@@ -845,7 +848,7 @@ public class AIAgent : PathAgent
         BuffType removeType = BuffType.None;
         foreach (var item in ImmunityBuffMap)
         {
-            if(buffType == item.Key)
+            if (buffType == item.Key)
             {
                 removeType = item.Key;
             }
@@ -862,19 +865,16 @@ public class AIAgent : PathAgent
     {
         transform.position = pos;
         BoundPosition();
-        aICollider.UpdateAIClollider(transform.position.x, transform.position.y, role_height, null);
-    }  
+    }
     public void SetCenterPosition(Vector3 pos)
     {
         transform.position = pos - aICollider.bodyBox.GetOffset3();
         BoundPosition();
-        aICollider.UpdateAIClollider(transform.position.x, transform.position.y, role_height, null);
     }
     public void Translate(Vector3 dir, float speed)
     {
         transform.Translate(dir * speed);
         BoundPosition();
-        aICollider.UpdateAIClollider(transform.position.x, transform.position.y, role_height, null);
     }
     public void SetAnimator(bool hide)
     {
@@ -889,7 +889,6 @@ public class AIAgent : PathAgent
             effectTf.gameObject.SetActive(hide);
             effectBackTf.gameObject.SetActive(hide);
             uiTransform.gameObject.SetActive(hide);
-            aICollider.shadowTf.gameObject.SetActive(hide);
             aICollider.SetDead(!hide);
             isDead = !hide;
             isOpen = hide;
@@ -907,7 +906,7 @@ public class AIAgent : PathAgent
     #region
     private float ghostTime = 0;
     private float ghostInterTime = 0.02f;
-    private Color alphaColor = new Color(1,1,1,0);
+    private Color alphaColor = new Color(1, 1, 1, 0);
     private void Ghost()
     {
         if (ghost)
@@ -930,7 +929,7 @@ public class AIAgent : PathAgent
                 //spriteRenderer.DOColor(alphaColor, 0.5f).SetUpdate(UpdateType.Manual).OnComplete(()=> {
                 //    ZGameObjectPool.Push(AIConst.constGhost, obj);
                 //});
-  
+
             }
             SetPosition(Vector3.MoveTowards(transform.position, ghostPos, Time.fixedDeltaTime * ghostSpeed));
             if (transform.position == ghostPos)
@@ -949,7 +948,7 @@ public class AIAgent : PathAgent
     private float ghostSpeed = 40f;
     private Vector3 ghostPos;
     private Action ghostCallBack;
-    public void OpenGhost(Vector3 targetPos,Action callBack,float speed = 40)
+    public void OpenGhost(Vector3 targetPos, Action callBack, float speed = 40)
     {
         ghostSpeed = speed;
         ghostCallBack = callBack;
@@ -980,14 +979,15 @@ public class AIAgent : PathAgent
         return ghost;
     }
 
-   
+
     #endregion
     #region 跟随特效
     public void ShowEffect(EffectData effectData)
     {
         if (!effectKeepMap.ContainsKey(effectData.path))
         {
-            var obj = ZGameObjectPool.Pop(effectData.path, () => {
+            var obj = ZGameObjectPool.Pop(effectData.path, () =>
+            {
                 return PrefabUtils.Instance(effectData.path);
             });
             effectData.effectObj = obj;
@@ -1093,11 +1093,12 @@ public class AgentTempData
 
 }
 
-public class GlobalCD{
+public class GlobalCD
+{
     public float time;
     public float cd;
 
-    public GlobalCD(float time,float cd)
+    public GlobalCD(float time, float cd)
     {
         this.time = time;
         this.cd = cd;

@@ -11,6 +11,8 @@ public partial class GamePanel : BasePanel
         base.Init(args);
         panelLayer = PanelLayer.Panel;
         adressPath = "Panel/GamePanel";
+        AudioManager.GetInstance().PlayBgmSound(GameConst.const_bgm2);
+        UIManager.Instance.AutoMatchWidthOrHeightByPortrait();
     }
     public override void OnShowing()
     {
@@ -35,7 +37,7 @@ public partial class GamePanel : BasePanel
 
     private void RefreshPanel()
     {
-
+       
     }
 
 
