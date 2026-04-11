@@ -15,7 +15,7 @@ public class ZDefine
     public const bool ZLogWarning= true;
     public const bool ZLogError= true;
     public const bool _ShowPathGizmos = true;
-    public const bool _ShowTuadTreeGizmos = true;
+    public static bool _ShowTuadTreeGizmos = true;
     public const bool _ShowColliderGizmos = false;
     #endregion
     /// <summary>
