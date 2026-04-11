@@ -1,41 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-public enum AIStateType
-{
-    Root = 0,
-    /// /////////////////////////////
-    RandomCompose = 1000,
-    OrderCompose = 1001,
-    //ParallelCompose = 1002,
-    /// /////////////////////////////
-    Idle = 2000,//空闲
-    Debug = 2001,
-    /// /////////////////////////////
-    Finding_Fllow = 3000,//跟随目标移动
-    Finding_Patrol = 3001,//按路径点巡逻移动
-    Finding_Fllow_Far = 3002,//跟随目标但保持距离
-    Finding_Fllow_Leader = 3003,//跟随Leader
-    Finding_Fixed_Point = 3004,//固定点移动
-    Finding_NormalPatrol = 3005,//普通巡逻移动
-    /// /////////////////////////////
-    common_meleeAttack = 4000,//近战攻击
-    common_remoteAttack = 4001,//远程攻击
 
-
-    Condition = 5000,
-    CD=5001,
-    GlobalCD=5002,
-    ShareCD=5003,
-    ResetLocalCD=5004,
-    ResetGlobalCD=5005,
-
-    ResetRoot = 6000,
-    ChangeAI =7000,
-
-    SearchEnemy = 8000,
-    SearchFriend = 8001,
-}
 public enum ConnectionPointType { In, Out }
 
 public enum FixedPointType

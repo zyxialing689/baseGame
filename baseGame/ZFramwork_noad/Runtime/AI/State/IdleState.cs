@@ -1,29 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class IdleState : AIState
 {
-    public override void Awake()
+    public override void OnUpdate()
     {
-        agent.animator.SetInteger("type", 0);
-        agent.animator.SetFloat("speed", 0);
-    }
+        var perception = agent.Get<IAIPerception>();
 
-    public override void FixedUpdateExecute()
-    {
-        //ZLogUtil.Log("IdleState");
-
-    }
-
-    public override void UpdateExecute()
-    {
-        
-    }
-
-
-    public override bool TryRestCond()
-    {
-        return ISOverTime();
+        if (perception != null && perception.HasTarget())
+        {
+            agent.SetState(new MoveState());
+        }
     }
 }

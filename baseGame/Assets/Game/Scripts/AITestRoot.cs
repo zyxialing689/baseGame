@@ -14,8 +14,8 @@ public class AITestRoot : MonoBehaviour
         //gameObject.AddComponent<MapCreater>();
         //youxi bibei
         //UIManager.Instance.SetUISceneCameraType(false);
-        PathFindMgr.Init();
-        UpdateMgr.Init();
+        // PathFindMgr.Init();
+        // UpdateMgr.Init();
         //JumpManager.JumpPanel<GamePanel>(PanelLayer.Panel);
     }
 
