@@ -5,8 +5,8 @@ public class BuildSystem : MonoBehaviour
 {
     public static BuildSystem Instance;
 
-    [Header("相机")]
-    public Camera cam;
+  
+    private Camera cam;
 
     // ⭐ 所有系统
     private GridSystem grid;
