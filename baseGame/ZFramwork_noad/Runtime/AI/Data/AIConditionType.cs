@@ -1,7 +1,10 @@
 public enum AIConditionType
 {
-    True = 0,
-    WaitTime = 1,
-    Distance = 3,
+    And=0,   // ⭐ 新增
+    Or=1,
+    Not=2,
+    True = 100,
+    WaitTime = 101,
+    Distance = 102,
 
 }

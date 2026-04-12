@@ -20,7 +20,10 @@ public class AIConnectionView
         if (from == null || to == null) return;
 
         Color lineColor = isActive ? Color.green : new Color(1f, 1f, 1f, 0.6f);
-
+        if (isSelected)
+        {
+            lineColor = Color.yellow;
+        }
         Handles.DrawBezier(
             from.outPoint.center,
             to.inPoint.center,
@@ -28,7 +31,7 @@ public class AIConnectionView
             to.inPoint.center + Vector2.left * 80,
             lineColor,
             null,
-            isActive ? 6f : 3f
+            isSelected ? 4f : 3f
         );
 
         // 中点
@@ -38,17 +41,27 @@ public class AIConnectionView
         mid.y -= 10;
 
         // 主区域
-        Rect rect = new Rect(mid.x - 55, mid.y - 10, 110, 20);
-
-        // 背景
-        EditorGUI.DrawRect(rect, new Color(0f, 0f, 0f, 0.4f));
-
         // 样式
         GUIStyle style = new GUIStyle(EditorStyles.popup);
         style.alignment = TextAnchor.MiddleCenter;
         style.fontSize = 10;
 
-        // Condition选择
+        // ⭐ 获取显示文本
+        string text = conditionType.ToString();
+
+        // ⭐ 计算宽度
+        Vector2 size = style.CalcSize(new GUIContent(text));
+
+        // ⭐ 加一点padding（不然太挤）
+        float width = Mathf.Max(60, size.x + 20);
+
+        // ⭐ 居中
+        Rect rect = new Rect(mid.x - width / 2, mid.y - 10, width, 20);
+
+        // 背景
+        EditorGUI.DrawRect(rect, new Color(0f, 0f, 0f, 0.4f));
+
+        // 绘制
         conditionType = (AIConditionType)EditorGUI.EnumPopup(rect, conditionType, style);
         // ⭐ 参数区域（只在需要时显示）
         if (AIConditionDrawer.HasParam(conditionType))

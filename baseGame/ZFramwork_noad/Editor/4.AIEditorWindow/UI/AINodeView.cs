@@ -18,7 +18,7 @@ public class AINodeView
     public AINodeView(int id, Vector2 position)
     {
         this.id = id;
-        rect = new Rect(position.x, position.y, 180, 80);
+        rect = new Rect(position.x, position.y, 100, 50);
 
         stateType = AIStateType.Idle;
     }
