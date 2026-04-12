@@ -4,11 +4,16 @@ public class TestPerception : IAIPerception
 {
     public bool HasTarget()
     {
-        return true; // 永远有目标（测试用）
+        return true; // 永远成立（方便测试）
+    }
+
+    public float GetDistanceToTarget()
+    {
+        return 1f;
     }
 
     public Vector3 GetTargetPosition()
     {
-        return new Vector3(5, 0, 0);
+        return Vector3.zero;
     }
 }

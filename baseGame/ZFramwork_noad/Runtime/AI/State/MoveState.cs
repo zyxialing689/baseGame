@@ -2,20 +2,16 @@ using UnityEngine;
 
 public class MoveState : AIState
 {
+    public override void OnEnter()
+    {
+        Debug.Log("进入 Move");
+    }
+    public override void OnExit()
+    {
+        Debug.Log("离开 Move");
+    }
     public override void OnUpdate()
     {
-        var perception = agent.Get<IAIPerception>();
-        var move = agent.Get<IAIMove>();
 
-        if (perception == null || move == null)
-            return;
-
-        if (!perception.HasTarget())
-        {
-            agent.SetState(new IdleState());
-            return;
-        }
-
-        move.MoveTo(perception.GetTargetPosition());
     }
 }

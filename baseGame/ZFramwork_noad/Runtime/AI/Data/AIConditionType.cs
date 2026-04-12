@@ -1,5 +1,7 @@
 public enum AIConditionType
 {
     True = 0,
-    HasTarget = 1,
+    WaitTime = 1,
+    Distance = 3,
+
 }

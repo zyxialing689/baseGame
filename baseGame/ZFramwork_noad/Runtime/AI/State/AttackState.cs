@@ -1,18 +1,19 @@
 using UnityEngine;
 
-public class IdleState : AIState
+public class AttackState : AIState
 {
     private float timer;
-    private float duration = 1.0f; // 停留1秒
+    private float duration = 0.5f;
     public override void OnEnter()
     {
-        Debug.Log("进入 Idle");
+        Debug.Log("进入 Attack");
         timer = 0f;
     }
     public override void OnExit()
     {
-        Debug.Log("离开 Idle");
+        Debug.Log("离开 Attack");
     }
+
     public override void OnUpdate()
     {
         timer += Time.deltaTime;
@@ -21,5 +22,4 @@ public class IdleState : AIState
     {
         return timer >= duration;
     }
-
 }

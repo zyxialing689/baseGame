@@ -1,14 +1,16 @@
 public static class AIStateFactory
 {
-    public static AIState Create(string type)
+    public static AIState Create(AIStateType type)
     {
         switch (type)
         {
-            case "Idle":
+            case AIStateType.Idle:
                 return new IdleState();
 
-            case "Move":
+            case AIStateType.Move:
                 return new MoveState();
+            case AIStateType.Attack:
+                return new AttackState();
 
             default:
                 return null;

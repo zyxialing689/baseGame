@@ -14,7 +14,7 @@ public static class AIEditorToRuntimeConverter
             var cfg = new AIStateConfig
             {
                 id = node.id,
-                stateType = ConvertType(node.stateType)
+                stateType = node.stateType
             };
 
             map[node.id] = cfg;
@@ -29,7 +29,8 @@ public static class AIEditorToRuntimeConverter
                 from.transitions.Add(new AITransition
                 {
                     targetStateId = conn.toNodeId,
-                    conditionType = (AIConditionType)conn.conditionType
+                    conditionType = (AIConditionType)conn.conditionType,
+                    param = conn.param // ⭐
                 });
             }
         }
@@ -37,12 +38,13 @@ public static class AIEditorToRuntimeConverter
         return result;
     }
 
-    private static string ConvertType(int type)
+    private static string ConvertType(AIStateType type)
     {
         switch (type)
         {
-            case 2000: return "Idle";
-            case 3000: return "Move";
+            case AIStateType.Idle: return "Idle";
+            case AIStateType.Move: return "Move";
+            case AIStateType.Attack: return "Attack";
             default: return "Idle";
         }
     }

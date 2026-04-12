@@ -1,39 +1,39 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class AITestRunner : MonoBehaviour
+public class AITestRunner : MonoBehaviour, IAIProvider
 {
+    public TextAsset text; // ⭐ 拖JSON进来
+
     private AIAgent agent;
 
+    public TextAsset GetAIAsset()
+    {
+        return text;
+    }
+    public AIAgent GetAgent()
+    {
+        return agent;
+    }
     void Start()
     {
         agent = new AIAgent();
 
-        agent.AddModule<IAIMove>(new TestMove());
         agent.AddModule<IAIPerception>(new TestPerception());
 
-        // 构造数据（模拟编辑器）
-        // var configs = new List<AIStateConfig>()
-        // {
-        //     new AIStateConfig
-        //     {
-        //         id = 1,
-        //         stateType = "Idle",
-        //         nextStates = new List<int>{2}
-        //     },
-        //     new AIStateConfig
-        //     {
-        //         id = 2,
-        //         stateType = "Move",
-        //         nextStates = new List<int>{1}
-        //     }
-        // };
+        // ⭐ 解析编辑器数据
+        AIEditorData data = JsonUtility.FromJson<AIEditorData>(text.text);
 
-        // agent.Init(configs);
+        // ⭐ 转运行时
+        var configs = AIEditorToRuntimeConverter.Convert(data);
+
+        agent.Init(configs);
     }
 
     void Update()
     {
         agent.Update();
     }
+
+
 }

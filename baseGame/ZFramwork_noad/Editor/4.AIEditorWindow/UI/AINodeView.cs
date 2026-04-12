@@ -14,6 +14,7 @@ public class AINodeView
     private bool isSelected;
     public bool hasInConnection;
     public bool hasOutConnection;
+    public bool isActive;
     public AINodeView(int id, Vector2 position)
     {
         this.id = id;
@@ -52,11 +53,15 @@ public class AINodeView
 
     private void DrawHeader()
     {
-        // 顶部颜色条
         Rect header = new Rect(rect.x, rect.y, rect.width, 22);
-        EditorGUI.DrawRect(header, GetColorByState());
 
-        // 标题
+        // ⭐ 只看运行状态
+        Color color = isActive
+            ? new Color(0.2f, 0.8f, 0.2f)   // 绿色
+            : new Color(0.3f, 0.3f, 0.3f);  // 灰色
+
+        EditorGUI.DrawRect(header, color);
+
         GUI.Label(
             new Rect(rect.x + 6, rect.y + 2, rect.width, 20),
             $"State {id}",
@@ -113,23 +118,6 @@ public class AINodeView
 
     #region 状态颜色
 
-    private Color GetColorByState()
-    {
-        switch (stateType)
-        {
-            case AIStateType.Idle:
-                return new Color(0.3f, 0.5f, 1f); // 蓝
-
-            case AIStateType.Move:
-                return new Color(0.3f, 0.8f, 0.3f); // 绿
-
-            case AIStateType.Attack:
-                return new Color(1f, 0.4f, 0.4f); // 红
-
-            default:
-                return new Color(0.4f, 0.4f, 0.4f);
-        }
-    }
 
     #endregion
 
@@ -180,6 +168,9 @@ public class AINodeView
 
         return false;
     }
-
+    public bool IsSelected()
+    {
+        return isSelected;
+    }
     #endregion
 }

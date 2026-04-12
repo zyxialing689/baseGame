@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AICondition
+public class AIColliderCondition
 {
     public static bool IsCanAttack(AICollider collider1,AICollider collider2)
     {

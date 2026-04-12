@@ -4,7 +4,7 @@ using System;
 public class AIEditorNode
 {
     public int id;
-    public int stateType;
+    public AIStateType stateType;
 
     public float x;
     public float y;

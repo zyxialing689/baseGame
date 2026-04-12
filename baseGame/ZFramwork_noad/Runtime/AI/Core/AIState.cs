@@ -11,4 +11,8 @@ public abstract class AIState
     public virtual void OnEnter() { }
     public virtual void OnUpdate() { }
     public virtual void OnExit() { }
+    public virtual bool CanExit()
+    {
+        return true;
+    }
 }

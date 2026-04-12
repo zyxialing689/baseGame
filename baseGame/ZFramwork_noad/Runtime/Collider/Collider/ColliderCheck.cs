@@ -64,7 +64,7 @@ public class ColliderCheck
                     continue;
 
                 // ? 5. 业务条件
-                if (!AICondition.IsBeHurtTrigger(selfCollider, other))
+                if (!AIColliderCondition.IsBeHurtTrigger(selfCollider, other))
                     continue;
 
                 aIColliders.Add(other);
@@ -74,7 +74,7 @@ public class ColliderCheck
         {
             if (enemy.IsSkill() &&
                 enemy.playerCamp != selfCollider.playerCamp &&
-                AICondition.IsBeHurtTrigger(selfCollider, enemy))
+                AIColliderCondition.IsBeHurtTrigger(selfCollider, enemy))
             {
                 aIColliders.Add(enemy);
             }
@@ -127,7 +127,7 @@ public class ColliderCheck
             if (!self.qtnodeItem.bounds.Overlaps(other.qtnodeItem.bounds))
                 continue;
 
-            if (!AICondition.IsBeHurtTrigger(self, other))
+            if (!AIColliderCondition.IsBeHurtTrigger(self, other))
                 continue;
 
             aIColliders.Add(other);

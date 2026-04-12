@@ -4,10 +4,12 @@ public static class AIConditionFactory
     {
         switch (type)
         {
-            case AIConditionType.HasTarget:
-                return new HasTargetCondition();
+            case AIConditionType.WaitTime:
+                return new TimeCondition();
 
-            case AIConditionType.True:
+            case AIConditionType.Distance:
+                return new DistanceCondition();
+
             default:
                 return new TrueCondition();
         }
