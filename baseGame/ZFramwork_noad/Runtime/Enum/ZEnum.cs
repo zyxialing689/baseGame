@@ -3,7 +3,7 @@ public enum ConnectionPointType { In, Out }
 
 public enum FixedPointType
 {
-    self_far_point=0,
+    self_far_point = 0,
     enemy_far_point,
     enemy_point
 }
@@ -63,18 +63,18 @@ public enum CondType//条件类型枚举
 }
 public enum MapPointType
 {
-  city=0,
-  battle
+    city = 0,
+    battle
 }
 public enum BuffType
 {
     None = 0,
-    Frozen =1,//冰冻效果
-    Bleeding =2,//流血
-    Burning=3,//燃烧
-    Light=4,//光耀
+    Frozen = 1,//冰冻效果
+    Bleeding = 2,//流血
+    Burning = 3,//燃烧
+    Light = 4,//光耀
     PoorLess = 5,//虚弱
-    Toxin =6,//中毒
+    Toxin = 6,//中毒
     Shadow = 7,//暗影
 
 
@@ -127,16 +127,16 @@ public enum QualityType
 
 public enum JobType
 {
-     None = 0,
-     Framer,
-     Job1,
-     Job2,
-     Job3,
-     Job4,
-     Job5,
-     Job6,
-     Job7,
-     Monster
+    None = 0,
+    Framer,
+    Job1,
+    Job2,
+    Job3,
+    Job4,
+    Job5,
+    Job6,
+    Job7,
+    Monster
 }
 
 public enum Emoji
@@ -300,7 +300,7 @@ public enum PropType
 }
 public enum EquipType
 {
-    Weapon=0,
+    Weapon = 0,
     Clothing,
     Pants,
     Shoe
@@ -316,4 +316,10 @@ public enum BattleEndType
 {
     None,
     KillAll
+}
+public enum DistributionType
+{
+    Scatter,
+    PoissonFast,
+    Cluster
 }

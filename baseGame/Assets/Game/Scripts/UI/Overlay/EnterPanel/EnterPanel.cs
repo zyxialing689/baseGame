@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public partial class EnterPanel : BasePanel
 {
-    [Inject] public ITestMgr testMgr;
+    [Inject] public IGPMgr testMgr;
     public override void Init(params object[] args)
     {
         base.Init(args);

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10888723b49168c488a1a4fceddb0bec, type: 3}
+  m_Name: GrassAtlasData
+  m_EditorClassIdentifier: 
+  uvs:
+  - {x: 0, y: 0, z: 0.078125, w: 0.125}
+  - {x: 0.09375, y: 0, z: 0.0546875, w: 0.125}
+  - {x: 0.1640625, y: 0, z: 0.1640625, w: 0.21875}
+  - {x: 0.34375, y: 0, z: 0.1328125, w: 0.25}
+  - {x: 0.4921875, y: 0, z: 0.046875, w: 0.1875}
+  - {x: 0.5546875, y: 0, z: 0.0703125, w: 0.15625}
+  - {x: 0.640625, y: 0, z: 0.1328125, w: 0.375}
+  - {x: 0.7890625, y: 0, z: 0.109375, w: 0.1875}
+  - {x: 0, y: 0.4375, z: 0.1953125, w: 0.3125}
+  - {x: 0.2109375, y: 0.4375, z: 0.21875, w: 0.34375}
+  sizes:
+  - {x: 10, y: 4}
+  - {x: 7, y: 4}
+  - {x: 21, y: 7}
+  - {x: 17, y: 8}
+  - {x: 6, y: 6}
+  - {x: 9, y: 5}
+  - {x: 17, y: 12}
+  - {x: 14, y: 6}
+  - {x: 25, y: 10}
+  - {x: 28, y: 11}

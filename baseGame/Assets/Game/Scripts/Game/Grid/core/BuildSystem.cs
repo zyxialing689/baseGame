@@ -1,16 +1,25 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildSystem : MonoBehaviour
 {
     public static BuildSystem Instance;
 
-  
+    public bool useGrassSystem = true;
+    public Material material;
+    public GrassAtlasData atlasData;
+    public DistributionType distribution = DistributionType.Cluster;
+    public int mapSeed;
+    public int targetCount = 20000;
+    public float density = 1.0f;
+    [HideInInspector]
+    public GrassIndirectRenderer grass;
     private Camera cam;
 
     // ⭐ 所有系统
     private GridSystem grid;
-    private PlacementPreview preview;
     private GridMeshVisualizer visualizer;
     private BuildAreaVisualizer areaVisualizer;
     private BuildSaveSystem saveSystem;
@@ -29,9 +38,6 @@ public class BuildSystem : MonoBehaviour
         grid = new GridSystem();
         grid.Init(200, 200, 1f);
 
-        preview = new PlacementPreview();
-        preview.Init(grid, cam);
-
         visualizer = new GridMeshVisualizer();
         visualizer.Init(grid, cam);
         visualizer.SetActive(false);
@@ -42,19 +48,35 @@ public class BuildSystem : MonoBehaviour
 
         saveSystem = new BuildSaveSystem();
         saveSystem.Load();
+
+        if (useGrassSystem)
+        {
+            grass = gameObject.AddComponent<GrassIndirectRenderer>();
+            grass.Init(distribution, mapSeed, material, atlasData, targetCount, density);
+        }
         LoadAll();
     }
 
     void Update()
     {
+
         if (isBuildMode)
         {
-            preview.Tick();
             visualizer.Tick();
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return; // 点在UI上，不处理相机
+            }
             areaVisualizer.Tick();
         }
         else if (isDeleteMode)
         {
+            visualizer.Tick();
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return; // 点在UI上，不处理相机
+            }
+
             HandleDelete();
         }
 
@@ -73,22 +95,17 @@ public class BuildSystem : MonoBehaviour
         }
         isContinuous = config.isContinuous;
         isBuildMode = true;
-
-        preview.SetActive(true);
-        preview.SetBuilding(prefab, config.width, config.height);
-
         visualizer.SetActive(true);
-
         areaVisualizer.SetActive(true);
-        areaVisualizer.SetSize(config.width, config.height);
+        areaVisualizer.SetBuilding(prefab,config.width, config.height);
 
+        // EventManager.Instance.Dispatch()
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = false;
     }
 
     public void StopBuild()
     {
         isBuildMode = false;
-        preview.SetActive(false);
         visualizer.SetActive(false);
         areaVisualizer.SetActive(false);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = true;
@@ -98,15 +115,25 @@ public class BuildSystem : MonoBehaviour
     {
         isDeleteMode = true;
         deleteContinuous = continuous;
-
         StopBuild(); // ⭐ 进入删除时退出建造
+        visualizer.SetActive(true);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = false;
     }
 
     public void StopDelete()
     {
         isDeleteMode = false;
+        visualizer.SetActive(false);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = true;
+    }
+
+    IEnumerator EnableCameraNextFrame()
+    {
+        yield return null; // 等一帧（关键）
+
+        UIManager.Instance.camera_scene
+            .GetComponent<CameraController2D>()
+            .enabled = true;
     }
     public void OnPlaceSuccess()
     {
@@ -139,6 +166,19 @@ public class BuildSystem : MonoBehaviour
             Vector3 world = grid.GridToWorld(data.x, data.y);
             world.x += (data.width - 1) * grid.cellSize * 0.5f;
             world.y += (data.height - 1) * grid.cellSize * 0.5f;
+
+            // ⭐ 压草（核心）
+            if (grass != null)
+            {
+                Vector2 center = new Vector2(world.x, world.y);
+
+                Vector2 size = new Vector2(
+                    data.width * grid.cellSize,
+                    data.height * grid.cellSize
+                );
+
+                grass.AddBlock(center, size);
+            }
 
             // ⭐ 创建
             GameObject go = Instantiate(prefab);
@@ -277,4 +317,6 @@ public class BuildSystem : MonoBehaviour
 
         Debug.Log($"删除建筑成功：{instanceId}");
     }
+
+    
 }

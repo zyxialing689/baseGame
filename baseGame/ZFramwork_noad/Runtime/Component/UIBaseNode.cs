@@ -17,4 +17,7 @@ public class UINodeInfo
     public Transform transform;
     public string tag = "Node Name";
     public string type = string.Empty;
+    public bool useMultiTypes = false;
+    public bool foldout = false;
+    public List<string> types = new List<string>();
 }

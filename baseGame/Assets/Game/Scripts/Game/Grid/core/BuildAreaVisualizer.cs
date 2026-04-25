@@ -1,3 +1,4 @@
+using Pathfinding;
 using UnityEngine;
 
 public class BuildAreaVisualizer
@@ -9,10 +10,10 @@ public class BuildAreaVisualizer
     private MeshFilter meshFilter;
 
     private bool isActive = false;
-
+    private GameObject buildingPrefab;
+    private int buildingWidth;
+    private int buildingHeight;
     // 当前建筑参数
-    private int width;
-    private int height;
 
     public void Init(GridSystem grid, Camera cam)
     {
@@ -31,14 +32,16 @@ public class BuildAreaVisualizer
 
     public void SetActive(bool value)
     {
+        canPlace = false;
         isActive = value;
         meshFilter.gameObject.SetActive(value);
     }
 
-    public void SetSize(int w, int h)
+    public void SetBuilding(GameObject prefab, int w, int h)
     {
-        width = w;
-        height = h;
+        buildingPrefab = prefab;
+        buildingWidth = w;
+        buildingHeight = h;
     }
 
     public void Tick()
@@ -47,20 +50,37 @@ public class BuildAreaVisualizer
 
         Draw();
     }
-
+    bool canPlace = false;
+    Vector2Int origin = Vector2Int.zero;
     void Draw()
     {
+        if (!Input.GetMouseButton(0))
+        {
+            if (Input.GetMouseButtonUp(0) && canPlace)
+            {
+                Place(origin);
+                var gpInfo = EventGP_palceInfo.AutoCreate();
+                gpInfo.origin = origin;
+                gpInfo.width = buildingWidth;
+                gpInfo.height = buildingHeight;
+                EventManager.Instance.Dispatch(gpInfo);
+                Debug.Log("可以放置该位置");
+            }
+            mesh.Clear();
+            return;
+        }
+
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.forward, Vector3.zero);
 
         if (!plane.Raycast(ray, out float enter)) return;
 
         Vector3 hit = ray.GetPoint(enter);
-        Vector2Int origin = grid.WorldToGrid(hit);
+        origin = grid.WorldToGrid(hit);
 
-        bool canPlace = grid.CanPlace(origin, width, height);
+        canPlace = grid.CanPlace(origin, buildingWidth, buildingHeight);
 
-        int count = width * height;
+        int count = buildingWidth * buildingHeight;
 
         Vector3[] vertices = new Vector3[count * 4];
         int[] triangles = new int[count * 6];
@@ -72,9 +92,9 @@ public class BuildAreaVisualizer
         float gap = 0.1f;
         float size = grid.cellSize * (0.5f - gap);
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < buildingWidth; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < buildingHeight; y++)
             {
                 int gx = origin.x + x;
                 int gy = origin.y + y;
@@ -117,5 +137,56 @@ public class BuildAreaVisualizer
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.colors = colors;
+    }
+
+    void Place(Vector2Int origin)
+    {
+        var config = buildingPrefab.GetComponent<BuildingConfig>();
+
+        BuildingData data = BuildSystem.Instance.SaveSystem.AddBuilding(
+            config.prefabId,
+            origin,
+            buildingWidth,
+            buildingHeight
+        );
+
+        int id = data.instanceId;
+
+        grid.SetOccupied(origin, buildingWidth, buildingHeight, true, id);
+
+        Vector3 world = grid.GridToWorld(origin.x, origin.y);
+        world.x += (buildingWidth - 1) * grid.cellSize * 0.5f;
+        world.y += (buildingHeight - 1) * grid.cellSize * 0.5f;
+
+        GameObject go = Object.Instantiate(buildingPrefab);
+        go.transform.position = world;
+        BuildSystem.Instance.RegisterBuilding(id, go);
+
+        // ⭐ 压草（核心）
+        var grass = BuildSystem.Instance.grass; // 推荐你在BuildSystem里挂引用
+
+        if (grass != null)
+        {
+            Vector2 center = new Vector2(world.x, world.y);
+
+            Vector2 size = new Vector2(
+                buildingWidth * grid.cellSize,
+                buildingHeight * grid.cellSize
+            );
+
+            grass.AddBlock(center, size);
+        }
+
+        // ⭐ 更新A*
+        Bounds bounds = new Bounds(
+            world,
+            new Vector3(buildingWidth * grid.cellSize, buildingHeight * grid.cellSize, 1)
+        );
+
+        var guo = new GraphUpdateObject(bounds);
+        guo.modifyWalkability = true;
+        guo.setWalkability = false;
+
+        AstarPath.active.UpdateGraphs(guo);
     }
 }

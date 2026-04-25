@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Camera))]
 public class CameraController2D : MonoBehaviour
@@ -11,7 +12,7 @@ public class CameraController2D : MonoBehaviour
     public float mapHeight = 200;
 
     [Header("缩放")]
-    public float minSize = 10f;
+    public float minSize = 7f;
     public float maxSize = 40f;
     public float zoomSpeed = 2f;
 
@@ -31,11 +32,12 @@ public class CameraController2D : MonoBehaviour
     private Vector2 mouseDownPos;
     private bool isClick = false;
     public float clickThreshold = 10f; // 像素阈值（可调）
+    private bool justExitPinch = false;
 
     void Awake()
     {
         cam = GetComponent<Camera>();
-        cam.orthographicSize = 20;
+        cam.orthographicSize = 12;
         transform.localPosition = new Vector3(100, 100);
     }
 
@@ -60,6 +62,10 @@ public class CameraController2D : MonoBehaviour
     // ================= PC操作 =================
     void HandleMouse()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return; // 点在UI上，不处理相机
+        }
         if (Input.GetMouseButtonDown(0))
         {
             mouseDownPos = Input.mousePosition;
@@ -110,12 +116,78 @@ public class CameraController2D : MonoBehaviour
         }
     }
 
+    // ⭐ 新增变量（放在类里）
+    private float pinchExitTimer = 0f;
+    private const float pinchDelay = 0.05f; // 50ms 防抖
+    private bool isPinching = false;
+
+
     // ================= 手机触摸 =================
     void HandleTouch()
     {
+        if (Input.touchCount > 0)
+        {
+            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            {
+                return; // 点在UI上
+            }
+        }
+        // ================= 双指缩放 =================
+        if (Input.touchCount >= 2)
+        {
+            isPinching = true;
+            pinchExitTimer = pinchDelay;
+            isClick = false;
+
+            Touch t1 = Input.GetTouch(0);
+            Touch t2 = Input.GetTouch(1);
+
+            // ⭐ 防止手指刚抬起的脏数据
+            if (t1.phase == TouchPhase.Ended || t2.phase == TouchPhase.Ended ||
+                t1.phase == TouchPhase.Canceled || t2.phase == TouchPhase.Canceled)
+            {
+                return;
+            }
+
+            Vector2 prev1 = t1.position - t1.deltaPosition;
+            Vector2 prev2 = t2.position - t2.deltaPosition;
+
+            float prevDist = (prev1 - prev2).magnitude;
+            float curDist = (t1.position - t2.position).magnitude;
+
+            float delta = curDist - prevDist;
+
+            Zoom(delta * 0.01f);
+
+            return; // ⭐ 非常重要：直接结束，不走下面逻辑
+        }
+
+        // ================= 防抖处理 =================
+        if (isPinching)
+        {
+            pinchExitTimer -= Time.deltaTime;
+
+            if (pinchExitTimer > 0)
+                return;
+
+            isPinching = false;
+            justExitPinch = true;
+
+            return; // ⭐ 非常重要（防止这一帧直接进入拖动）
+        }
+
+        // ================= 单指拖动 =================
         if (Input.touchCount == 1)
         {
             Touch t = Input.GetTouch(0);
+
+            // ⭐⭐⭐ 关键修复：重置拖动起点
+            if (justExitPinch)
+            {
+                lastTouchPos = cam.ScreenToWorldPoint(t.position);
+                justExitPinch = false;
+                return;
+            }
 
             if (t.phase == TouchPhase.Began)
             {
@@ -129,8 +201,6 @@ public class CameraController2D : MonoBehaviour
                 if (Vector2.Distance(mouseDownPos, t.position) > clickThreshold)
                 {
                     isClick = false;
-
-                    // ⭐ 拖动就取消跟随
                     target = null;
                 }
 
@@ -147,23 +217,6 @@ public class CameraController2D : MonoBehaviour
                     TrySelectTarget_NoCollider(t.position);
                 }
             }
-        }
-        else if (Input.touchCount == 2)
-        {
-            isClick = false; // 双指必定不是点击
-
-            Touch t1 = Input.GetTouch(0);
-            Touch t2 = Input.GetTouch(1);
-
-            Vector2 prev1 = t1.position - t1.deltaPosition;
-            Vector2 prev2 = t2.position - t2.deltaPosition;
-
-            float prevDist = (prev1 - prev2).magnitude;
-            float curDist = (t1.position - t2.position).magnitude;
-
-            float delta = curDist - prevDist;
-
-            Zoom(delta * 0.01f);
         }
     }
     // ================= 缩放 =================

@@ -14,7 +14,7 @@ public class ZMoveTo : Action
     public override void OnStart()
     {
         curPath = path.Value;
-
+        moveSpeed = RandomMgr.Range(1,10);
         if (curPath == null || curPath.Count == 0)
         {
             status = TaskStatus.Failure;

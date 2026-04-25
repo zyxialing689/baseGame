@@ -19,89 +19,11 @@ public class UINodePanelEditor : Editor
         SerializedProperty nodesProperty = serializedObject.FindProperty("nodes");
         basePanelProperty = serializedObject.FindProperty("basePanel");
         basePanelVOProperty = serializedObject.FindProperty("basePanelVO");
-        nodeList = new ReorderableList(_target.nodes, typeof(string));
-
+        nodeList = new ReorderableList(_target.nodes, typeof(UINodeInfo));
+        nodeList.elementHeightCallback = index => UINodeInfoEditorDrawer.GetElementHeight(_target.nodes[index], _target);
         nodeList.drawElementCallback = (Rect rect, int index, bool selected, bool focused) =>
         {
-            nodeList.elementHeight = 85;
-
-            rect.x += 5;
-            rect.y += 5;
-            rect.width -= 5;
-            rect.height = 75;
-
-            GUI.Box(rect, "", EditorStyles.helpBox);
-
-            rect.x += 5;
-            rect.y += 5;
-            rect.width -= 10;
-            rect.height = 18;
-
-            UINodeInfo node = _target.nodes[index];
-
-            string tag = EditorGUI.TextField(rect, "Node Tag", node.tag).Trim();
-            if (tag != node.tag)
-            {
-                node.tag = tag;
-                EditorUtility.SetDirty(_target);
-            }
-
-            rect.y += 22;
-            Transform transform = (Transform)EditorGUI.ObjectField(rect, "Transform", node.transform, typeof(Transform), true);
-            if (transform != node.transform)
-            {
-                node.transform = transform;
-                string tagName = node.tag;
-                if ((string.IsNullOrEmpty(tagName) || tagName.Equals("Node Name")) && transform != null)
-                {
-                    tagName = transform.gameObject.name;
-                    if (char.IsUpper(tagName[0]))
-                    {
-                        if (tagName.Length > 1)
-                            tagName = char.ToLower(tagName[0]) + tagName.Substring(1);
-                        else
-                            tagName = char.ToLower(tagName[0]).ToString();
-                    }
-                    node.tag = tagName;
-                }
-                EditorUtility.SetDirty(_target);
-            }
-
-            rect.y += 22;
-            if (node.transform)
-            {
-                Component[] cpns = node.transform.GetComponents<Component>();
-
-                List<string> names = new List<string>();
-
-                foreach (var cpn in cpns)
-                {
-                    var name = cpn.GetType().FullName;
-                    if (name != "UnityEngine.CanvasRenderer")
-                    {
-                        names.Add(name);
-                    }
-                }
-                names.Add("UnityEngine.GameObject");
-
-                int select = names.IndexOf(node.type);
-                int newselect = EditorGUI.Popup(rect, "Type", select, names.ToArray());
-
-                if (newselect == -1)
-                {
-                    newselect = 0;
-                }
-
-                if (newselect != select)
-                {
-                    node.type = names[newselect];
-                    EditorUtility.SetDirty(_target);
-                }
-            }
-            else
-            {
-                EditorGUI.LabelField(rect, "从Prefab内部拖入一个UI节点");
-            }
+            UINodeInfoEditorDrawer.DrawElement(rect, _target.nodes[index], _target, _target);
         };
         nodeList.drawHeaderCallback = (Rect rect) =>
         {
@@ -128,10 +50,13 @@ public class UINodePanelEditor : Editor
             scrollView = GUILayout.BeginScrollView(scrollView);
             string name = "";
             string path = PathFinderEditor.GetPrefabAssetPath(Selection.activeGameObject, out name);
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("更新脚本"))
             {
                 ScriptCreater.CreatePanelClassName(path, name, Selection.activeGameObject.GetComponent<UINodePanel>());
             }
+
+            EditorGUILayout.EndHorizontal();
             if (GUILayout.Button("打开UIPanel窗口"))
             {
                 var window = UnityEditor.EditorWindow.GetWindow(typeof(UIBaseNodeWindow), true);
@@ -160,12 +85,26 @@ public class UINodePanelEditor : Editor
 
             serializedObject.Update();
             nodeList.DoLayoutList();
-            EditorGUILayout.PropertyField(basePanelProperty);
-            EditorGUILayout.PropertyField(basePanelVOProperty);
+            DrawScriptAssetField(basePanelProperty, "Base Panel");
+            DrawScriptAssetField(basePanelVOProperty, "Base Panel VO");
             serializedObject.ApplyModifiedProperties();
             GUILayout.EndScrollView();
         }
         
+    }
+
+    private void DrawScriptAssetField(SerializedProperty property, string label)
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.PropertyField(property, new GUIContent(label));
+        bool enabled = property.objectReferenceValue != null;
+        EditorGUI.BeginDisabledGroup(!enabled);
+        if (GUILayout.Button("打开", GUILayout.Width(48f)))
+        {
+            AssetDatabase.OpenAsset(property.objectReferenceValue);
+        }
+        EditorGUI.EndDisabledGroup();
+        EditorGUILayout.EndHorizontal();
     }
 
     public string strIpt = "";
