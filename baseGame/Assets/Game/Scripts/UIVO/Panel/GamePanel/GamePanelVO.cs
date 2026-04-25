@@ -6,7 +6,7 @@ public partial class GamePanel : BasePanel
    private DelBtnNode delBtn;
    private DelcBtnNode delcBtn;
    private ExitBtnNode exitBtn;
-   private SaveBtnNode saveBtn;
+   private UndoBtnNode undoBtn;
 
    public override void AutoInit()
    {
@@ -17,7 +17,7 @@ public partial class GamePanel : BasePanel
     this.delBtn = new DelBtnNode(panel.transform.Find("bottom/delBtn"));
     this.delcBtn = new DelcBtnNode(panel.transform.Find("bottom/delcBtn"));
     this.exitBtn = new ExitBtnNode(panel.transform.Find("bottom/exitBtn"));
-    this.saveBtn = new SaveBtnNode(panel.transform.Find("saveBtn"));
+    this.undoBtn = new UndoBtnNode(panel.transform.Find("bottom/undoBtn"));
    }
 
    private class UINode
@@ -41,13 +41,11 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public BtnTreeNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
@@ -55,13 +53,11 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public BtnHouseNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
@@ -69,13 +65,11 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public BtnHouse1Node(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
@@ -83,13 +77,11 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public DelBtnNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
@@ -97,13 +89,11 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public DelcBtnNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
@@ -111,27 +101,21 @@ public partial class GamePanel : BasePanel
    {
        public UnityEngine.UI.Button zbtn;
        public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
        public ExitBtnNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
            zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 
-   private class SaveBtnNode : UINode
+   private class UndoBtnNode : UINode
    {
        public UnityEngine.UI.Button zbtn;
-       public UnityEngine.UI.Image zimg;
-       public UnityEngine.RectTransform zrect;
 
-       public SaveBtnNode(UnityEngine.Transform root) : base(root)
+       public UndoBtnNode(UnityEngine.Transform root) : base(root)
        {
            zbtn = root.GetComponent<UnityEngine.UI.Button>();
-           zimg = root.GetComponent<UnityEngine.UI.Image>();
-           zrect = root.GetComponent<UnityEngine.RectTransform>();
        }
    }
 }

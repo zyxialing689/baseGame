@@ -60,11 +60,10 @@ public partial class GamePanel : BasePanel
             BuildSystem.Instance.StopBuild();
             BuildSystem.Instance.StopDelete();
         });
-        saveBtn.zbtn.onClick.AddListener(() =>
+        undoBtn.zbtn.onClick.AddListener(() =>
         {
-            setNormal();
-            BuildSystem.Instance.SaveSystem.Save();
-            Debug.Log("手动保存");
+            BuildSystem.Instance.UndoLastBuild();
+            Debug.Log("撤销建造操作");
         });
     }
 

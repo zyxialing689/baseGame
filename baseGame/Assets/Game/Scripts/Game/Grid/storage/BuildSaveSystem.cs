@@ -37,6 +37,31 @@ public class BuildSaveSystem
         return data;
     }
 
+    public BuildingData AddBuilding(BuildingData source)
+    {
+        int prefabIntId = GetPrefabId(source.prefabId);
+
+        BuildingData data = new BuildingData()
+        {
+            instanceId = source.instanceId,
+            prefabId = source.prefabId,
+            prefabIntId = prefabIntId,
+            x = source.x,
+            y = source.y,
+            width = source.width,
+            height = source.height
+        };
+
+        datas.Add(data);
+
+        if (data.instanceId >= idCounter)
+        {
+            idCounter = data.instanceId + 1;
+        }
+
+        return data;
+    }
+
     int GetPrefabId(string prefab)
     {
         if (!prefabToId.TryGetValue(prefab, out int id))

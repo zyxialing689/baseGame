@@ -18,7 +18,7 @@ public class BuildSystem : MonoBehaviour
     public GrassIndirectRenderer grass;
     private Camera cam;
 
-    // ⭐ 所有系统
+    // Core build systems
     private GridSystem grid;
     private GridMeshVisualizer visualizer;
     private BuildAreaVisualizer areaVisualizer;
@@ -30,11 +30,27 @@ public class BuildSystem : MonoBehaviour
     public BuildSaveSystem SaveSystem => saveSystem;
     private Dictionary<int, GameObject> buildingMap = new Dictionary<int, GameObject>();
     private int lastDeleteId = -1;
+    private enum UndoActionType
+    {
+        Place,
+        Delete
+    }
+
+    private class UndoRecord
+    {
+        public UndoActionType actionType;
+        public int instanceId;
+        public BuildingData data;
+    }
+
+    private Stack<List<UndoRecord>> buildHistory = new Stack<List<UndoRecord>>();
+    private List<UndoRecord> currentBuildBatch = new List<UndoRecord>();
+    private bool buildBatchOpen = false;
     void Awake()
     {
         Instance = this;
         cam = UIManager.Instance.camera_scene;
-        // ⭐ 初始化所有系统
+        // Init core systems
         grid = new GridSystem();
         grid.Init(200, 200, 1f);
 
@@ -59,30 +75,45 @@ public class BuildSystem : MonoBehaviour
 
     void Update()
     {
+        bool pointerOverUI = EventSystem.current.IsPointerOverGameObject();
+
+        if ((isBuildMode || isDeleteMode) && !pointerOverUI && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.Z))
+        {
+            UndoLastBuild();
+            return;
+        }
 
         if (isBuildMode)
         {
             visualizer.Tick();
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (pointerOverUI)
             {
-                return; // 点在UI上，不处理相机
+                if (isContinuous && Input.GetMouseButtonUp(0))
+                {
+                    CommitBuildBatch();
+                }
+                return;
             }
             areaVisualizer.Tick();
         }
         else if (isDeleteMode)
         {
             visualizer.Tick();
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (pointerOverUI)
             {
-                return; // 点在UI上，不处理相机
+                if (deleteContinuous && Input.GetMouseButtonUp(0))
+                {
+                    CommitBuildBatch();
+                    lastDeleteId = -1;
+                }
+                return;
             }
 
             HandleDelete();
         }
 
     }
-
-    // ================= 对外接口 =================
+    // ================= Public API =================
 
     public void StartBuild(GameObject prefab)
     {
@@ -90,11 +121,16 @@ public class BuildSystem : MonoBehaviour
         var config = prefab.GetComponent<BuildingConfig>();
         if (config == null)
         {
-            Debug.LogError("Prefab没有BuildingConfig！");
+            Debug.LogError("Prefab missing BuildingConfig.");
             return;
         }
+        CommitBuildBatch();
         isContinuous = config.isContinuous;
         isBuildMode = true;
+        isDeleteMode = false;
+        lastDeleteId = -1;
+        currentBuildBatch.Clear();
+        buildBatchOpen = false;
         visualizer.SetActive(true);
         areaVisualizer.SetActive(true);
         areaVisualizer.SetBuilding(prefab,config.width, config.height);
@@ -105,31 +141,47 @@ public class BuildSystem : MonoBehaviour
 
     public void StopBuild()
     {
+        bool wasEditing = isBuildMode;
+        CommitBuildBatch();
         isBuildMode = false;
         visualizer.SetActive(false);
         areaVisualizer.SetActive(false);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = true;
+        if (wasEditing)
+        {
+            FinishBuildSession();
+        }
     }
 
     public void StartDelete(bool continuous)
     {
+        CommitBuildBatch();
+        isBuildMode = false;
         isDeleteMode = true;
         deleteContinuous = continuous;
-        StopBuild(); // ⭐ 进入删除时退出建造
+        currentBuildBatch.Clear();
+        buildBatchOpen = false;
+        areaVisualizer.SetActive(false);
         visualizer.SetActive(true);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = false;
     }
 
     public void StopDelete()
     {
+        bool wasEditing = isDeleteMode;
         isDeleteMode = false;
+        CommitBuildBatch();
         visualizer.SetActive(false);
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = true;
+        if (wasEditing)
+        {
+            FinishBuildSession();
+        }
     }
 
     IEnumerator EnableCameraNextFrame()
     {
-        yield return null; // 等一帧（关键）
+        yield return null;
 
         UIManager.Instance.camera_scene
             .GetComponent<CameraController2D>()
@@ -137,14 +189,133 @@ public class BuildSystem : MonoBehaviour
     }
     public void OnPlaceSuccess()
     {
-        if (!isContinuous)
-        {
-            StopBuild();
-        }
     }
     public bool IsContinuous()
     {
         return isContinuous;
+    }
+
+    public bool IsBuildBatchOpen()
+    {
+        return buildBatchOpen;
+    }
+
+    public void BeginBuildBatch()
+    {
+        currentBuildBatch.Clear();
+        buildBatchOpen = true;
+    }
+
+    public void RegisterPlacedBuilding(int instanceId)
+    {
+        if (instanceId <= 0)
+        {
+            return;
+        }
+
+        UndoRecord record = new UndoRecord()
+        {
+            actionType = UndoActionType.Place,
+            instanceId = instanceId
+        };
+
+        if (buildBatchOpen)
+        {
+            currentBuildBatch.Add(record);
+            return;
+        }
+
+        buildHistory.Push(new List<UndoRecord> { record });
+    }
+
+    public void RegisterDeletedBuilding(BuildingData data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
+        UndoRecord record = new UndoRecord()
+        {
+            actionType = UndoActionType.Delete,
+            instanceId = data.instanceId,
+            data = CloneBuildingData(data)
+        };
+
+        if (buildBatchOpen)
+        {
+            currentBuildBatch.Add(record);
+            return;
+        }
+
+        buildHistory.Push(new List<UndoRecord> { record });
+    }
+
+    public void CommitBuildBatch()
+    {
+        if (!buildBatchOpen)
+        {
+            return;
+        }
+
+        if (currentBuildBatch.Count > 0)
+        {
+            buildHistory.Push(new List<UndoRecord>(currentBuildBatch));
+        }
+
+        currentBuildBatch.Clear();
+        buildBatchOpen = false;
+    }
+
+    public void CancelBuildBatch()
+    {
+        currentBuildBatch.Clear();
+        buildBatchOpen = false;
+    }
+
+    public void UndoLastBuild()
+    {
+        if (!isBuildMode && !isDeleteMode)
+        {
+            return;
+        }
+
+        if (buildBatchOpen)
+        {
+            return;
+        }
+
+        if (buildHistory.Count == 0)
+        {
+            return;
+        }
+
+        List<UndoRecord> batch = buildHistory.Pop();
+        for (int i = batch.Count - 1; i >= 0; i--)
+        {
+            UndoRecord record = batch[i];
+            if (record.actionType == UndoActionType.Place)
+            {
+                RemoveBuildingInternal(record.instanceId);
+            }
+            else if (record.actionType == UndoActionType.Delete)
+            {
+                RestoreBuilding(record.data);
+            }
+        }
+    }
+
+    private void FinishBuildSession()
+    {
+        CommitBuildBatch();
+        bool hasChanges = buildHistory.Count > 0;
+        buildHistory.Clear();
+        currentBuildBatch.Clear();
+        buildBatchOpen = false;
+        if (hasChanges)
+        {
+            saveSystem.Save();
+        }
     }
 
     void LoadAll()
@@ -153,21 +324,21 @@ public class BuildSystem : MonoBehaviour
 
         foreach (var data in list)
         {
-            // ⭐ 加载Prefab
+            // Load prefab
             GameObject prefab = Resources.Load<GameObject>(data.prefabId);
 
             if (prefab == null)
             {
-                Debug.LogError("找不到Prefab：" + data.prefabId);
+                Debug.LogError("Can not find prefab: " + data.prefabId);
                 continue;
             }
 
-            // ⭐ 计算位置
+            // Calculate world position
             Vector3 world = grid.GridToWorld(data.x, data.y);
             world.x += (data.width - 1) * grid.cellSize * 0.5f;
             world.y += (data.height - 1) * grid.cellSize * 0.5f;
 
-            // ⭐ 压草（核心）
+            // Block grass
             if (grass != null)
             {
                 Vector2 center = new Vector2(world.x, world.y);
@@ -180,11 +351,11 @@ public class BuildSystem : MonoBehaviour
                 grass.AddBlock(center, size);
             }
 
-            // ⭐ 创建
+            // Create building object
             GameObject go = Instantiate(prefab);
             go.transform.position = world;
             RegisterBuilding(data.instanceId, go);
-            // ⭐ 占用Grid
+            // Occupy grid cells
             grid.SetOccupied(
                 new Vector2Int(data.x, data.y),
                 data.width,
@@ -192,7 +363,7 @@ public class BuildSystem : MonoBehaviour
                 true,
                 data.instanceId
             );
-            // ⭐ 更新A*
+            // Update A*
             Bounds bounds = new Bounds(
                 world,
                 new Vector3(data.width * grid.cellSize, data.height * grid.cellSize, 1)
@@ -209,7 +380,7 @@ public class BuildSystem : MonoBehaviour
     {
         if (buildingMap.ContainsKey(instanceId))
         {
-            Debug.LogWarning("重复注册 building：" + instanceId);
+            Debug.LogWarning("Duplicate building registration: " + instanceId);
             buildingMap[instanceId] = go;
         }
         else
@@ -221,13 +392,18 @@ public class BuildSystem : MonoBehaviour
 
     void HandleDelete()
     {
-        // ⭐ 单次删除
+        if (deleteContinuous && Input.GetMouseButtonDown(0))
+        {
+            BeginBuildBatch();
+        }
+
+        // Single delete
         if (!deleteContinuous && Input.GetMouseButtonDown(0))
         {
             TryDeleteOne();
         }
 
-        // ⭐ 连续删除
+        // Continuous delete
         if (deleteContinuous && Input.GetMouseButton(0))
         {
             TryDeleteContinuous();
@@ -235,6 +411,10 @@ public class BuildSystem : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (deleteContinuous)
+            {
+                CommitBuildBatch();
+            }
             lastDeleteId = -1;
         }
     }
@@ -242,7 +422,7 @@ public class BuildSystem : MonoBehaviour
     {
         int id = GetBuildingAtMouse();
 
-        if (id != -1)
+        if (id != 0)
         {
             RemoveBuilding(id);
         }
@@ -251,8 +431,13 @@ public class BuildSystem : MonoBehaviour
     {
         int id = GetBuildingAtMouse();
 
-        if (id != -1 && id != lastDeleteId)
+        if (id != 0 && id != lastDeleteId)
         {
+            if (!buildBatchOpen)
+            {
+                BeginBuildBatch();
+            }
+
             RemoveBuilding(id);
             lastDeleteId = id;
         }
@@ -266,25 +451,38 @@ public class BuildSystem : MonoBehaviour
 
         int id = grid.GetBuildingId(gridPos.x, gridPos.y);
 
-        return id; // 没有就是0
+        return id;
     }
     public void RemoveBuilding(int instanceId)
     {
-        // ⭐ 1. 找到物体
+        // 1. Find building object
         if (!buildingMap.TryGetValue(instanceId, out var go))
             return;
 
-        // ⭐ 2. 找存档数据
+        // 2. Find saved data
         var data = saveSystem.GetAll().Find(d => d.instanceId == instanceId);
         if (data == null) return;
 
-        // ================= 删除流程 =================
+        RegisterDeletedBuilding(data);
 
-        // ⭐ 3. 删除场景物体
+        RemoveBuildingInternal(instanceId);
+    }
+
+    private void RemoveBuildingInternal(int instanceId)
+    {
+        if (!buildingMap.TryGetValue(instanceId, out var go))
+            return;
+
+        var data = saveSystem.GetAll().Find(d => d.instanceId == instanceId);
+        if (data == null) return;
+
+        // ================= Delete Flow =================
+
+        // 3. Remove scene object
         Destroy(go);
         buildingMap.Remove(instanceId);
 
-        // ⭐ 4. 清除Grid占用
+        // 4. Clear grid occupancy
         grid.SetOccupied(
             new Vector2Int(data.x, data.y),
             data.width,
@@ -293,7 +491,7 @@ public class BuildSystem : MonoBehaviour
             0
         );
 
-        // ⭐ 5. 恢复A*（关键）
+        // 5. Restore A*
         Vector3 world = grid.GridToWorld(data.x, data.y);
         world.x += (data.width - 1) * grid.cellSize * 0.5f;
         world.y += (data.height - 1) * grid.cellSize * 0.5f;
@@ -305,18 +503,88 @@ public class BuildSystem : MonoBehaviour
 
         var guo = new Pathfinding.GraphUpdateObject(bounds);
         guo.modifyWalkability = true;
-        guo.setWalkability = true; // ⭐ 恢复可走
+        guo.setWalkability = true;
 
         AstarPath.active.UpdateGraphs(guo);
 
-        // ⭐ 6. 删除存档
+        // 6. Remove saved data
         saveSystem.RemoveBuilding(instanceId);
 
-        // ⭐ 7. 可选：立即保存（测试阶段建议开）
+        // 7. Optional immediate save
         // saveSystem.Save();
 
-        Debug.Log($"删除建筑成功：{instanceId}");
+        Debug.Log($"Remove building success: {instanceId}");
+    }
+
+    private void RestoreBuilding(BuildingData source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        GameObject prefab = Resources.Load<GameObject>(source.prefabId);
+
+        if (prefab == null)
+        {
+            Debug.LogError("Can not find prefab: " + source.prefabId);
+            return;
+        }
+
+        BuildingData data = saveSystem.AddBuilding(source);
+
+        Vector3 world = grid.GridToWorld(data.x, data.y);
+        world.x += (data.width - 1) * grid.cellSize * 0.5f;
+        world.y += (data.height - 1) * grid.cellSize * 0.5f;
+
+        GameObject go = Instantiate(prefab);
+        go.transform.position = world;
+        RegisterBuilding(data.instanceId, go);
+
+        grid.SetOccupied(
+            new Vector2Int(data.x, data.y),
+            data.width,
+            data.height,
+            true,
+            data.instanceId
+        );
+
+        if (grass != null)
+        {
+            Vector2 center = new Vector2(world.x, world.y);
+            Vector2 size = new Vector2(
+                data.width * grid.cellSize,
+                data.height * grid.cellSize
+            );
+            grass.AddBlock(center, size);
+        }
+
+        Bounds bounds = new Bounds(
+            world,
+            new Vector3(data.width * grid.cellSize, data.height * grid.cellSize, 1)
+        );
+
+        var guo = new Pathfinding.GraphUpdateObject(bounds);
+        guo.modifyWalkability = true;
+        guo.setWalkability = false;
+
+        AstarPath.active.UpdateGraphs(guo);
+    }
+
+    private BuildingData CloneBuildingData(BuildingData source)
+    {
+        return new BuildingData()
+        {
+            instanceId = source.instanceId,
+            prefabId = source.prefabId,
+            prefabIntId = source.prefabIntId,
+            x = source.x,
+            y = source.y,
+            width = source.width,
+            height = source.height
+        };
     }
 
     
 }
+

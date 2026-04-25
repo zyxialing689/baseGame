@@ -55,6 +55,10 @@ public static class UINodeInfoEditorDrawer
         float height = GetElementHeight(node, owner) - 10f;
         Rect boxRect = new Rect(rect.x + Padding, rect.y + Padding, rect.width - Padding, height);
         GUI.Box(boxRect, "", EditorStyles.helpBox);
+        if (HasMissingTransform(node))
+        {
+            DrawWarningBackground(boxRect);
+        }
 
         Rect line = new Rect(boxRect.x + Padding, boxRect.y + Padding, boxRect.width - Padding * 2f, LineHeight);
         DrawSummary(line, node, dirtyTarget);
@@ -85,7 +89,7 @@ public static class UINodeInfoEditorDrawer
         line.y += LineStep;
         if (node.transform == null)
         {
-            EditorGUI.LabelField(line, "Drag a UI node from prefab.");
+            EditorGUI.HelpBox(line, "Missing Transform. Drag the UI node again.", MessageType.Error);
             return;
         }
 
@@ -152,12 +156,40 @@ public static class UINodeInfoEditorDrawer
         Rect summaryRect = new Rect(line.x, line.y + LineStep, line.width, LineHeight);
         string summary = GetSelectedSummary(node);
         List<string> messages = GetValidationMessages(node, dirtyTarget as UIBaseNode);
-        if (messages.Count > 0)
+        GUIStyle summaryStyle = EditorStyles.miniLabel;
+        if (HasMissingTransform(node))
+        {
+            summary = "[节点丢失] " + summary;
+            summaryStyle = GetRedMiniLabelStyle();
+        }
+        else if (messages.Count > 0)
         {
             summary = "[命名冲突] " + summary;
+            summaryStyle = GetRedMiniLabelStyle();
         }
 
-        EditorGUI.LabelField(summaryRect, summary, EditorStyles.miniLabel);
+        EditorGUI.LabelField(summaryRect, summary, summaryStyle);
+    }
+
+    private static bool HasMissingTransform(UINodeInfo node)
+    {
+        return node == null || node.transform == null;
+    }
+
+    private static void DrawWarningBackground(Rect rect)
+    {
+        Color oldColor = GUI.color;
+        GUI.color = new Color(1f, 0.25f, 0.25f, 0.16f);
+        GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+        GUI.color = oldColor;
+    }
+
+    private static GUIStyle GetRedMiniLabelStyle()
+    {
+        GUIStyle style = new GUIStyle(EditorStyles.miniLabel);
+        style.normal.textColor = new Color(1f, 0.35f, 0.35f);
+        style.fontStyle = FontStyle.Bold;
+        return style;
     }
 
     private static void DrawToolbar(Rect line, UINodeInfo node, UnityEngine.Object dirtyTarget)

@@ -13,7 +13,8 @@ public class BuildAreaVisualizer
     private GameObject buildingPrefab;
     private int buildingWidth;
     private int buildingHeight;
-    // 当前建筑参数
+    private Vector2Int lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
+    // Current building parameters
 
     public void Init(GridSystem grid, Camera cam)
     {
@@ -33,6 +34,11 @@ public class BuildAreaVisualizer
     public void SetActive(bool value)
     {
         canPlace = false;
+        lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
+        if (!value && BuildSystem.Instance != null)
+        {
+            BuildSystem.Instance.CancelBuildBatch();
+        }
         isActive = value;
         meshFilter.gameObject.SetActive(value);
     }
@@ -54,18 +60,37 @@ public class BuildAreaVisualizer
     Vector2Int origin = Vector2Int.zero;
     void Draw()
     {
-        if (!Input.GetMouseButton(0))
+        bool mouseHeld = Input.GetMouseButton(0);
+        bool mousePressed = Input.GetMouseButtonDown(0);
+        bool mouseReleased = Input.GetMouseButtonUp(0);
+        bool continuous = BuildSystem.Instance != null && BuildSystem.Instance.IsContinuous();
+
+        if (continuous && mousePressed && BuildSystem.Instance != null)
         {
-            if (Input.GetMouseButtonUp(0) && canPlace)
+            BuildSystem.Instance.BeginBuildBatch();
+        }
+
+        if (!mouseHeld)
+        {
+            if (mouseReleased)
             {
-                Place(origin);
-                var gpInfo = EventGP_palceInfo.AutoCreate();
-                gpInfo.origin = origin;
-                gpInfo.width = buildingWidth;
-                gpInfo.height = buildingHeight;
-                EventManager.Instance.Dispatch(gpInfo);
-                Debug.Log("可以放置该位置");
+                if (!continuous && canPlace)
+                {
+                    Place(origin);
+                    var gpInfo = EventGP_palceInfo.AutoCreate();
+                    gpInfo.origin = origin;
+                    gpInfo.width = buildingWidth;
+                    gpInfo.height = buildingHeight;
+                    EventManager.Instance.Dispatch(gpInfo);
+                    Debug.Log("Can place current position.");
+                }
+
+                if (continuous && BuildSystem.Instance != null)
+                {
+                    BuildSystem.Instance.CommitBuildBatch();
+                }
             }
+            lastPlacedOrigin = new Vector2Int(int.MinValue, int.MinValue);
             mesh.Clear();
             return;
         }
@@ -79,6 +104,24 @@ public class BuildAreaVisualizer
         origin = grid.WorldToGrid(hit);
 
         canPlace = grid.CanPlace(origin, buildingWidth, buildingHeight);
+
+        if (continuous && canPlace && origin != lastPlacedOrigin && (mousePressed || mouseHeld))
+        {
+            if (BuildSystem.Instance != null && !BuildSystem.Instance.IsBuildBatchOpen())
+            {
+                BuildSystem.Instance.BeginBuildBatch();
+            }
+
+            Place(origin);
+            lastPlacedOrigin = origin;
+
+            var gpInfo = EventGP_palceInfo.AutoCreate();
+            gpInfo.origin = origin;
+            gpInfo.width = buildingWidth;
+            gpInfo.height = buildingHeight;
+            EventManager.Instance.Dispatch(gpInfo);
+            Debug.Log("Can place current position.");
+        }
 
         int count = buildingWidth * buildingHeight;
 
@@ -162,8 +205,8 @@ public class BuildAreaVisualizer
         go.transform.position = world;
         BuildSystem.Instance.RegisterBuilding(id, go);
 
-        // ⭐ 压草（核心）
-        var grass = BuildSystem.Instance.grass; // 推荐你在BuildSystem里挂引用
+        // Block grass
+        var grass = BuildSystem.Instance.grass;
 
         if (grass != null)
         {
@@ -177,7 +220,7 @@ public class BuildAreaVisualizer
             grass.AddBlock(center, size);
         }
 
-        // ⭐ 更新A*
+        // Update A*
         Bounds bounds = new Bounds(
             world,
             new Vector3(buildingWidth * grid.cellSize, buildingHeight * grid.cellSize, 1)
@@ -188,5 +231,11 @@ public class BuildAreaVisualizer
         guo.setWalkability = false;
 
         AstarPath.active.UpdateGraphs(guo);
+
+        if (BuildSystem.Instance != null)
+        {
+            BuildSystem.Instance.RegisterPlacedBuilding(id);
+            BuildSystem.Instance.OnPlaceSuccess();
+        }
     }
 }
