@@ -65,6 +65,36 @@ public class ResHanderManager : Singleton<ResHanderManager>
             return _dicRes[path].hander.Result as AudioClip;
         }
     }
+
+    public void GetAudioAsync(string path, Action<AudioClip> callBack)
+    {
+        if (_dicRes.ContainsKey(path))
+        {
+            var res = _dicRes[path];
+            res.count++;
+
+            if (res.hander.IsDone)
+            {
+                callBack?.Invoke(res.hander.Result as AudioClip);
+            }
+            else
+            {
+                res.hander.Completed += obj =>
+                {
+                    callBack?.Invoke(obj.Result as AudioClip);
+                };
+            }
+
+            return;
+        }
+
+        AsyncOperationHandle hander = ResLoader.Instance.GetAudioClip(path, null);
+        _dicRes.Add(path, new ResHander(hander));
+        hander.Completed += obj =>
+        {
+            callBack?.Invoke(obj.Result as AudioClip);
+        };
+    }
     //public ExternalBehavior GetAI(string path)
     //{
     //    if (_dicRes.ContainsKey(path))

@@ -6,7 +6,7 @@ public class GrassTemplateEditor : EditorWindow
 {
     List<Texture2D> textures = new List<Texture2D>();
     DefaultAsset folder;
-    [MenuItem("ZFramework/Window/图片转为数据")]
+    [MenuItem("ZFramework/Window/地面图片处理/1.图片转为数据",false,1)]
     static void Open()
     {
         GetWindow<GrassTemplateEditor>("Grass Template");

@@ -20,6 +20,8 @@ public class AudioManager : MonoBehaviour
      static Dictionary<string, Queue<SoundData>> copyPlayingSounds;
      public static AudioManager _instance;
      private AudioSource bgmAudioSource;
+     private Coroutine bgmFadeCoroutine;
+     private string currentBgmName;
      public int maxNum = 10;
      public int maxSamePlayNum = 1;
      public static AudioManager GetInstance()
@@ -181,15 +183,33 @@ public class AudioManager : MonoBehaviour
         return obj;
     }
 
-    public void PlayBgmSound(string soundName)
+    public void PlayBgmSound(string soundName, float fadeTime = 1f)
     {
-
-        PlayBgmFade(soundName, 1);
+        PlayBgmFade(soundName, fadeTime);
     }
 
     public void PlayBgmFade(string soundName, float fadeTime = 1f)
     {
-        StartCoroutine(PlayBgmFadeRoutine(soundName, fadeTime));
+        if (string.IsNullOrEmpty(soundName))
+        {
+            return;
+        }
+
+        if (currentBgmName == soundName && _instance.bgmAudioSource.clip != null)
+        {
+            if (!_instance.bgmAudioSource.isPlaying)
+            {
+                _instance.bgmAudioSource.Play();
+            }
+            return;
+        }
+
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+        }
+
+        bgmFadeCoroutine = StartCoroutine(PlayBgmFadeRoutine(soundName, fadeTime));
     }
 
     private IEnumerator PlayBgmFadeRoutine(string soundName, float fadeTime)
@@ -203,14 +223,33 @@ public class AudioManager : MonoBehaviour
             }
         }
 
-        // 切换音轨
-        _instance.bgmAudioSource.clip = AudioUtils.GetAudio(soundName);
+        AudioClip clip = null;
+        bool loaded = false;
+        AudioUtils.GetAudioAsync(soundName, audioClip =>
+        {
+            clip = audioClip;
+            loaded = true;
+        });
+
+        while (!loaded)
+        {
+            yield return null;
+        }
+
+        if (clip == null)
+        {
+            Debug.LogWarning("Can not load bgm: " + soundName);
+            yield break;
+        }
+
+        currentBgmName = soundName;
+        _instance.bgmAudioSource.clip = clip;
         _instance.bgmAudioSource.Play();
         _instance.bgmAudioSource.volume = 0;
         // 淡入
         yield return StartCoroutine(FadeAudio(_instance.bgmAudioSource, 0f, originalVolume, fadeTime));
+        bgmFadeCoroutine = null;
     }
-
 
     public void ResumeBgmSound()
     {
@@ -224,6 +263,12 @@ public class AudioManager : MonoBehaviour
 
     IEnumerator FadeAudio(AudioSource source, float from, float to, float duration)
     {
+        if (duration <= 0f)
+        {
+            source.volume = to;
+            yield break;
+        }
+
         float time = 0f;
         while (time < duration)
         {

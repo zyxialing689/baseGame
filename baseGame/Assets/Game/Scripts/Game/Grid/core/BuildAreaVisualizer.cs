@@ -1,4 +1,5 @@
 using Pathfinding;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BuildAreaVisualizer
@@ -202,7 +203,9 @@ public class BuildAreaVisualizer
         world.y += (buildingHeight - 1) * grid.cellSize * 0.5f;
 
         GameObject go = Object.Instantiate(buildingPrefab);
+        go.transform.SetParent(BuildSystem.Instance.transform);
         go.transform.position = world;
+        go.GetComponent<BuildingConfig>().SetOrder(world);
         BuildSystem.Instance.RegisterBuilding(id, go);
 
         // Block grass

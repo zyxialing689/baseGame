@@ -133,7 +133,7 @@ public class BuildSystem : MonoBehaviour
         buildBatchOpen = false;
         visualizer.SetActive(true);
         areaVisualizer.SetActive(true);
-        areaVisualizer.SetBuilding(prefab,config.width, config.height);
+        areaVisualizer.SetBuilding(prefab, config.width, config.height);
 
         // EventManager.Instance.Dispatch()
         UIManager.Instance.camera_scene.GetComponent<CameraController2D>().enabled = false;
@@ -353,7 +353,9 @@ public class BuildSystem : MonoBehaviour
 
             // Create building object
             GameObject go = Instantiate(prefab);
+            go.transform.SetParent(transform);
             go.transform.position = world;
+            go.GetComponent<BuildingConfig>().SetOrder(world);
             RegisterBuilding(data.instanceId, go);
             // Occupy grid cells
             grid.SetOccupied(
@@ -538,7 +540,9 @@ public class BuildSystem : MonoBehaviour
         world.y += (data.height - 1) * grid.cellSize * 0.5f;
 
         GameObject go = Instantiate(prefab);
+        go.transform.SetParent(transform);
         go.transform.position = world;
+        go.GetComponent<BuildingConfig>().SetOrder(world);
         RegisterBuilding(data.instanceId, go);
 
         grid.SetOccupied(
@@ -585,6 +589,6 @@ public class BuildSystem : MonoBehaviour
         };
     }
 
-    
+
 }
 

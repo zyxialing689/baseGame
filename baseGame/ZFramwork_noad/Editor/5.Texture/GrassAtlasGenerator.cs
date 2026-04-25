@@ -8,7 +8,7 @@ public class GrassAtlasGenerator : EditorWindow
 {
     public TextAsset dataFile;
 
-    [MenuItem("ZFramework/Window/数据转图片合集")]
+    [MenuItem("ZFramework/Window/地面图片处理/2.数据转图片合集",false,2)]
     static void Open()
     {
         GetWindow<GrassAtlasGenerator>();

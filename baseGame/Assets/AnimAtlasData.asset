@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35b8c6c6ce31fb40a723146b545007f, type: 3}
+  m_Name: AnimAtlasData
+  m_EditorClassIdentifier: 
+  atlas: {fileID: 2800000, guid: 38e1b9749badb484a994dee7cefd95f4, type: 3}
+  clips:
+  - name: attack
+    frames:
+    - uv:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0.15320665
+        height: 0.4140625
+      offset: {x: 83, y: 19}
+      size: {x: 129, y: 212}
+    - uv:
+        serializedVersion: 2
+        x: 0.44418052
+        y: 0.6230469
+        width: 0.13539192
+        height: 0.29101562
+      offset: {x: 82, y: 27}
+      size: {x: 114, y: 149}
+    - uv:
+        serializedVersion: 2
+        x: 0.5950119
+        y: 0
+        width: 0.13776723
+        height: 0.27539062
+      offset: {x: 74, y: 34}
+      size: {x: 116, y: 141}
+    - uv:
+        serializedVersion: 2
+        x: 0.7351544
+        y: 0.27148438
+        width: 0.13657957
+        height: 0.26953125
+      offset: {x: 74, y: 42}
+      size: {x: 115, y: 138}
+    - uv:
+        serializedVersion: 2
+        x: 0.8788599
+        y: 0
+        width: 0.121140145
+        height: 0.25585938
+      offset: {x: 80, y: 48}
+      size: {x: 102, y: 131}
+    - uv:
+        serializedVersion: 2
+        x: 0.15558195
+        y: 0.73828125
+        width: 0.11876485
+        height: 0.26171875
+      offset: {x: 94, y: 44}
+      size: {x: 100, y: 134}
+    - uv:
+        serializedVersion: 2
+        x: 0.2969121
+        y: 0.6933594
+        width: 0.14014252
+        height: 0.28515625
+      offset: {x: 93, y: 30}
+      size: {x: 118, y: 146}
+    - uv:
+        serializedVersion: 2
+        x: 0.44418052
+        y: 0
+        width: 0.14845605
+        height: 0.29492188
+      offset: {x: 91, y: 21}
+      size: {x: 125, y: 151}
+    - uv:
+        serializedVersion: 2
+        x: 0.2969121
+        y: 0
+        width: 0.14489311
+        height: 0.38085938
+      offset: {x: 89, y: 28}
+      size: {x: 122, y: 195}
+  - name: idle
+    frames:
+    - uv:
+        serializedVersion: 2
+        x: 0
+        y: 0.41796875
+        width: 0.15201901
+        height: 0.40429688
+      offset: {x: 83, y: 21}
+      size: {x: 128, y: 207}
+    - uv:
+        serializedVersion: 2
+        x: 0.5950119
+        y: 0.5839844
+        width: 0.13420427
+        height: 0.27539062
+      offset: {x: 82, y: 32}
+      size: {x: 113, y: 141}
+    - uv:
+        serializedVersion: 2
+        x: 0.7351544
+        y: 0
+        width: 0.14133017
+        height: 0.26757812
+      offset: {x: 67, y: 40}
+      size: {x: 119, y: 137}
+    - uv:
+        serializedVersion: 2
+        x: 0.44418052
+        y: 0.29882812
+        width: 0.12945369
+        height: 0.3203125
+      offset: {x: 72, y: 17}
+      size: {x: 109, y: 164}
+    - uv:
+        serializedVersion: 2
+        x: 0.7351544
+        y: 0.5449219
+        width: 0.104513064
+        height: 0.2890625
+      offset: {x: 86, y: 35}
+      size: {x: 88, y: 148}
+    - uv:
+        serializedVersion: 2
+        x: 0.5950119
+        y: 0.27929688
+        width: 0.12351544
+        height: 0.30078125
+      offset: {x: 86, y: 28}
+      size: {x: 104, y: 154}
+    - uv:
+        serializedVersion: 2
+        x: 0.15558195
+        y: 0.4296875
+        width: 0.13895486
+        height: 0.3046875
+      offset: {x: 86, y: 23}
+      size: {x: 117, y: 156}
+    - uv:
+        serializedVersion: 2
+        x: 0.2969121
+        y: 0.38476562
+        width: 0.14370546
+        height: 0.3046875
+      offset: {x: 86, y: 19}
+      size: {x: 121, y: 156}
+    - uv:
+        serializedVersion: 2
+        x: 0.15558195
+        y: 0
+        width: 0.13895486
+        height: 0.42578125
+      offset: {x: 85, y: 16}
+      size: {x: 117, y: 218}

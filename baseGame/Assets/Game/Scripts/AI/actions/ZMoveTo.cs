@@ -10,11 +10,16 @@ public class ZMoveTo : Action
 
     private int pathIndex;
     private List<Vector3> curPath;
+    private GPUAgent gpuAgent;
     private TaskStatus status = TaskStatus.Running;
     public override void OnStart()
     {
+
         curPath = path.Value;
-        moveSpeed = RandomMgr.Range(1,10);
+        gpuAgent = gameObject.GetComponent<GPUAgent>();
+        moveSpeed = RandomMgr.Range(1f, 5f);
+        gpuAgent.SetAnimTime(Random.value);
+        gpuAgent.SetSpeed(1+moveSpeed*0.2f);
         if (curPath == null || curPath.Count == 0)
         {
             status = TaskStatus.Failure;
@@ -44,6 +49,9 @@ public class ZMoveTo : Action
         float step = moveSpeed * Time.fixedDeltaTime;
 
         Vector3 target = curPath[pathIndex];
+        // ⭐ 计算方向并翻转
+        float dirX = target.x - transform.position.x;
+        gpuAgent.SetFlipX(dirX > 0);
         float sqrDist = (transform.position - target).sqrMagnitude;
 
         if (sqrDist <= step * step)

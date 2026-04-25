@@ -14,6 +14,11 @@ public class AudioUtils
         return ResHanderManager.Instance.GetAudio(path);
     }
 
+    public static void GetAudioAsync(string path, Action<AudioClip> callBack)
+    {
+        ResHanderManager.Instance.GetAudioAsync(path, callBack);
+    }
+
     public static void Release(string path)
     {
         ResHanderManager.Instance.ReleaseRes(path);

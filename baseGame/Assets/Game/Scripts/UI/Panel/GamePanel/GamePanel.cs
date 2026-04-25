@@ -38,7 +38,7 @@ public partial class GamePanel : BasePanel
             setNormal();
             btnHouse1.zimg.color = Color.green;
             Debug.Log("进入建筑模式");
-            BuildSystem.Instance.StartBuild(BuildTestInput.instance.house);
+            BuildSystem.Instance.StartBuild(BuildTestInput.instance.house2);
         });
         delBtn.zbtn.onClick.AddListener(() =>
         {
@@ -74,7 +74,6 @@ public partial class GamePanel : BasePanel
         x = x + info.width / 2f;
         y = y + info.height;
         Vector3 targetPos = new Vector3(x, y,0);
-        Debug.Log(targetPos);
         var pos = GetUIPos(targetPos);
         Debug.Log(pos);
     }

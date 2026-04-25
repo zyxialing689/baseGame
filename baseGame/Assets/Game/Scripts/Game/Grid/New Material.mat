@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: New Material
-  m_Shader: {fileID: 4800000, guid: e260cfa7296ee7642b167f1eb5be5023, type: 3}
+  m_Shader: {fileID: 4800000, guid: bd380992c5e058b4bbb9adb99aad59f2, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _SURFACE_TYPE_TRANSPARENT
@@ -80,4 +80,5 @@ Material:
     - _ReplaceColor: {r: 1, g: 1, b: 1, a: 1}
     - _Specular: {r: 0, g: 0, b: 0, a: 0}
     - _TargetColor: {r: 1, g: 1, b: 1, a: 1}
+    - _UV: {r: 0, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
