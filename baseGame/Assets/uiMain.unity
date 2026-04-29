@@ -167,7 +167,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14192dd15f85cfb4885af23d5eb3155d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charater: {fileID: 294933517273338542, guid: 377e9bac2fec59040bcbbd7b8d8534c4, type: 3}
+  charaterS:
+  - {fileID: 294933517273338542, guid: 377e9bac2fec59040bcbbd7b8d8534c4, type: 3}
+  - {fileID: 294933517273338542, guid: 652e0739f06b3dc4d8c08f219abcb11a, type: 3}
+  - {fileID: 294933517273338542, guid: 5de98fff52562f8408f7ca42fab4edb8, type: 3}
+  - {fileID: 294933517273338542, guid: 71b4e80bb7cfce441a38286760f02dd0, type: 3}
+  - {fileID: 294933517273338542, guid: e96969246608e8844b175a676b38e927, type: 3}
+  - {fileID: 294933517273338542, guid: 32d361c6eefa2b74186d0826b67b6c84, type: 3}
   count: 1000
 --- !u!114 &177056361
 MonoBehaviour:
@@ -220,7 +226,8 @@ MonoBehaviour:
   mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: f7ab7e7b3ea140049aa6f4209a97d88f, type: 2}
   shadowMaterial: {fileID: 2100000, guid: 9f1a4c90d7f4c594e9b6c8ea47e14a20, type: 2}
-  data: {fileID: 11400000, guid: bf4bc9560ee1de84bb8e8136ca72b308, type: 2}
+  data: {fileID: 11400000, guid: 4c1a178f097ac0441bf3d78eb7f48745, type: 2}
+  renderCamera: {fileID: 0}
   initialCapacity: 128
   fps: 10
   defaultScale: 1
@@ -229,8 +236,6 @@ MonoBehaviour:
   depthOffset: 0
   drawShadow: 1
   shadowColor: {r: 0, g: 0, b: 0, a: 0.14117648}
-  shadowSize: {x: 44, y: 14}
-  shadowOffset: {x: 0, y: 0}
   cullByCamera: 1
   cullPadding: 2
 --- !u!4 &265247936

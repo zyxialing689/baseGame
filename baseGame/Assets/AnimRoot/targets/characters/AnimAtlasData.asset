@@ -1,0 +1,237 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f35b8c6c6ce31fb40a723146b545007f, type: 3}
+  m_Name: AnimAtlasData
+  m_EditorClassIdentifier: 
+  atlas: {fileID: 2800000, guid: 878aa87a98b3f224e85d19ecd2fc84f9, type: 3}
+  centerOffset: {x: 0, y: 0}
+  shadowOffset: {x: 0, y: 0}
+  shadowSize: {x: 44, y: 14}
+  clips:
+  - name: obj0/walk
+    startFrame: 0
+    frameCount: 16
+    fps: 10
+    loop: 1
+  characters:
+  - name: obj0
+    baseScale: 1
+    centerOffset: {x: 0, y: 0}
+    shadowOffset: {x: 0, y: 0}
+    shadowSize: {x: 44, y: 14}
+    clips:
+    - name: walk
+      startFrame: 0
+      frameCount: 16
+      fps: 10
+      loop: 1
+  frames:
+  - uv:
+      serializedVersion: 2
+      x: 0.4913295
+      y: 0.87770563
+      width: 0.48554912
+      height: 0.11904762
+    offset: {x: 102, y: 217}
+    size: {x: 336, y: 110}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.87770563
+      width: 0.48554912
+      height: 0.12012987
+    offset: {x: 101, y: 216}
+    size: {x: 336, y: 111}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.6298701
+      width: 0.48554912
+      height: 0.122294374
+    offset: {x: 102, y: 216}
+    size: {x: 336, y: 113}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.5
+      y: 0.50541127
+      width: 0.4898844
+      height: 0.122294374
+    offset: {x: 102, y: 217}
+    size: {x: 339, y: 113}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.254329
+      width: 0.4913295
+      height: 0.12337662
+    offset: {x: 102, y: 217}
+    size: {x: 340, y: 114}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.5014451
+      y: 0.12878788
+      width: 0.49421966
+      height: 0.12337662
+    offset: {x: 101, y: 217}
+    size: {x: 342, y: 114}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.49566475
+      y: 0.37987012
+      width: 0.49566475
+      height: 0.122294374
+    offset: {x: 101, y: 217}
+    size: {x: 343, y: 113}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.37987012
+      width: 0.4898844
+      height: 0.12337662
+    offset: {x: 102, y: 216}
+    size: {x: 339, y: 114}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.754329
+      width: 0.4884393
+      height: 0.121212125
+    offset: {x: 102, y: 217}
+    size: {x: 338, y: 112}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.49421966
+      y: 0.754329
+      width: 0.49277458
+      height: 0.12012987
+    offset: {x: 100, y: 217}
+    size: {x: 341, y: 111}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.49710983
+      y: 0.254329
+      width: 0.4913295
+      height: 0.12337662
+    offset: {x: 102, y: 215}
+    size: {x: 340, y: 114}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.12878788
+      width: 0.49566475
+      height: 0.12337662
+    offset: {x: 102, y: 217}
+    size: {x: 343, y: 114}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.0021645022
+      width: 0.49566475
+      height: 0.12445887
+    offset: {x: 102, y: 217}
+    size: {x: 343, y: 115}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.5014451
+      y: 0.0021645022
+      width: 0.49566475
+      height: 0.12445887
+    offset: {x: 102, y: 217}
+    size: {x: 343, y: 115}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.0028901733
+      y: 0.50541127
+      width: 0.49421966
+      height: 0.122294374
+    offset: {x: 102, y: 217}
+    size: {x: 342, y: 113}
+    baseSize: {x: 512, y: 512}
+  - uv:
+      serializedVersion: 2
+      x: 0.4913295
+      y: 0.6298701
+      width: 0.4913295
+      height: 0.121212125
+    offset: {x: 102, y: 217}
+    size: {x: 340, y: 112}
+    baseSize: {x: 512, y: 512}
+  frameUVs:
+  - {x: 0.4913295, y: 0.87770563, z: 0.48554912, w: 0.11904762}
+  - {x: 0.0028901733, y: 0.87770563, z: 0.48554912, w: 0.12012987}
+  - {x: 0.0028901733, y: 0.6298701, z: 0.48554912, w: 0.122294374}
+  - {x: 0.5, y: 0.50541127, z: 0.4898844, w: 0.122294374}
+  - {x: 0.0028901733, y: 0.254329, z: 0.4913295, w: 0.12337662}
+  - {x: 0.5014451, y: 0.12878788, z: 0.49421966, w: 0.12337662}
+  - {x: 0.49566475, y: 0.37987012, z: 0.49566475, w: 0.122294374}
+  - {x: 0.0028901733, y: 0.37987012, z: 0.4898844, w: 0.12337662}
+  - {x: 0.0028901733, y: 0.754329, z: 0.4884393, w: 0.121212125}
+  - {x: 0.49421966, y: 0.754329, z: 0.49277458, w: 0.12012987}
+  - {x: 0.49710983, y: 0.254329, z: 0.4913295, w: 0.12337662}
+  - {x: 0.0028901733, y: 0.12878788, z: 0.49566475, w: 0.12337662}
+  - {x: 0.0028901733, y: 0.0021645022, z: 0.49566475, w: 0.12445887}
+  - {x: 0.5014451, y: 0.0021645022, z: 0.49566475, w: 0.12445887}
+  - {x: 0.0028901733, y: 0.50541127, z: 0.49421966, w: 0.122294374}
+  - {x: 0.4913295, y: 0.6298701, z: 0.4913295, w: 0.121212125}
+  frameOffsetFrames:
+  - {x: 102, y: 217, z: 336, w: 110}
+  - {x: 101, y: 216, z: 336, w: 111}
+  - {x: 102, y: 216, z: 336, w: 113}
+  - {x: 102, y: 217, z: 339, w: 113}
+  - {x: 102, y: 217, z: 340, w: 114}
+  - {x: 101, y: 217, z: 342, w: 114}
+  - {x: 101, y: 217, z: 343, w: 113}
+  - {x: 102, y: 216, z: 339, w: 114}
+  - {x: 102, y: 217, z: 338, w: 112}
+  - {x: 100, y: 217, z: 341, w: 111}
+  - {x: 102, y: 215, z: 340, w: 114}
+  - {x: 102, y: 217, z: 343, w: 114}
+  - {x: 102, y: 217, z: 343, w: 115}
+  - {x: 102, y: 217, z: 343, w: 115}
+  - {x: 102, y: 217, z: 342, w: 113}
+  - {x: 102, y: 217, z: 340, w: 112}
+  frameBaseSizes:
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  - {x: 512, y: 512, z: 0, w: 0}
+  clipStartFrames: 00000000
+  clipFrameCounts: 10000000
+  clipFpsValues:
+  - 10
+  clipLoops: 01

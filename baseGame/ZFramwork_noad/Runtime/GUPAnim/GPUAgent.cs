@@ -10,18 +10,22 @@ public class GPUAgent : MonoBehaviour
 
     public bool syncTransformPosition = true;
     public Vector3 positionOffset;
+    public float baseMoveSpeed = 1f;
 
+    public string characterName;
     public string clipName;
     public float scale = 1f;
-    public float speed = 1f;
+    [HideInInspector]
+    public float animSpeed = 1f;
     public bool visible = true;
     public bool flipX;
 
     private int roleId = -1;
     private Vector3 lastPosition;
+    private string lastCharacterName;
     private string lastClipName;
     private float lastScale;
-    private float lastSpeed;
+    private float lastAnimSpeed;
     private bool lastVisible;
     private bool lastFlipX;
 
@@ -54,12 +58,10 @@ public class GPUAgent : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInitialized)
+        if (IsInitialized)
         {
-            return;
+            Sync();
         }
-
-        Sync();
     }
 
     private void OnDisable()
@@ -97,7 +99,7 @@ public class GPUAgent : MonoBehaviour
             return -1;
         }
 
-        roleId = manager.CreateRole(GetRenderPosition(), scale, clipName);
+        roleId = manager.CreateRole(characterName, GetRenderPosition(), scale, clipName);
         if (roleId < 0)
         {
             return roleId;
@@ -137,6 +139,22 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
+    public void SetCharacter(string newCharacterName, string newClipName = null, bool resetTime = true)
+    {
+        characterName = newCharacterName;
+        if (!string.IsNullOrEmpty(newClipName))
+        {
+            clipName = newClipName;
+        }
+
+        if (IsInitialized)
+        {
+            manager.SetCharacter(roleId, characterName, clipName, resetTime);
+            lastCharacterName = characterName;
+            lastClipName = clipName;
+        }
+    }
+
     public void SetScale(float newScale)
     {
         scale = newScale;
@@ -147,13 +165,30 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
-    public void SetSpeed(float newSpeed)
+    public void SetAnimSpeed(float newSpeed)
     {
-        speed = newSpeed;
+        animSpeed = newSpeed;
         if (IsInitialized)
         {
-            manager.SetSpeed(roleId, speed);
-            lastSpeed = speed;
+            manager.SetSpeed(roleId, animSpeed);
+            lastAnimSpeed = animSpeed;
+        }
+    }
+
+    public void SetMoveAnimSpeed(float speed)
+    {
+        if (speed < 1)
+        {
+            animSpeed = speed;
+        }
+        else
+        {
+            animSpeed = 0.8f + 0.2f * speed;
+        }
+        if (IsInitialized)
+        {
+            manager.SetSpeed(roleId, animSpeed);
+            lastAnimSpeed = animSpeed;
         }
     }
 
@@ -199,6 +234,12 @@ public class GPUAgent : MonoBehaviour
             lastPosition = renderPosition;
         }
 
+        if (force || characterName != lastCharacterName)
+        {
+            manager.SetCharacter(roleId, characterName, clipName);
+            lastCharacterName = characterName;
+        }
+
         if (force || clipName != lastClipName)
         {
             manager.SetClip(roleId, clipName);
@@ -211,10 +252,10 @@ public class GPUAgent : MonoBehaviour
             lastScale = scale;
         }
 
-        if (force || !Mathf.Approximately(speed, lastSpeed))
+        if (force || !Mathf.Approximately(animSpeed, lastAnimSpeed))
         {
-            manager.SetSpeed(roleId, speed);
-            lastSpeed = speed;
+            manager.SetSpeed(roleId, animSpeed);
+            lastAnimSpeed = animSpeed;
         }
 
         if (force || visible != lastVisible)

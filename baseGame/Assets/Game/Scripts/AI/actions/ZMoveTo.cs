@@ -6,8 +6,7 @@ using UnityEngine;
 public class ZMoveTo : Action
 {
     public SharedVector3List path; // ⭐ 直接拿共享路径
-    public float moveSpeed = 5f;
-
+    public float moveSpeed = 1f;
     private int pathIndex;
     private List<Vector3> curPath;
     private GPUAgent gpuAgent;
@@ -17,9 +16,9 @@ public class ZMoveTo : Action
 
         curPath = path.Value;
         gpuAgent = gameObject.GetComponent<GPUAgent>();
-        moveSpeed = RandomMgr.Range(1f, 5f);
+        moveSpeed = 1 + Random.value*gpuAgent.baseMoveSpeed;
         gpuAgent.SetAnimTime(Random.value);
-        gpuAgent.SetSpeed(1+moveSpeed*0.2f);
+        gpuAgent.SetMoveAnimSpeed(moveSpeed);
         if (curPath == null || curPath.Count == 0)
         {
             status = TaskStatus.Failure;
@@ -73,6 +72,7 @@ public class ZMoveTo : Action
             target,
             step
         );
+        gpuAgent.SetPosition(transform.position);
     }
 
     public override void OnEnd()
