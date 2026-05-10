@@ -6,6 +6,7 @@ public class AnimAtlasData : ScriptableObject
 {
     public Texture2D atlas;
     public Vector2 centerOffset;
+    public bool hasShadow = true;
     public Vector2 shadowOffset;
     public Vector2 shadowSize = new Vector2(44f, 14f);
     public List<AnimClip> clips;
@@ -266,6 +267,7 @@ public class AnimCharacter
     public string name;
     public float baseScale = 1f;
     public Vector2 centerOffset;
+    public bool hasShadow = true;
     public Vector2 shadowOffset;
     public Vector2 shadowSize = new Vector2(44f, 14f);
     public List<AnimClip> clips;

@@ -10,9 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80474761da2b4cc4cb24ae15487aa171, type: 3}
-  m_Name: 
+  m_Name: UnitRoot_Style
   m_EditorClassIdentifier: 
-  generatedAt: 2026-05-02 19:52:59
+  generatedAt: 2026-05-10 15:47:48
+  useShadow: 1
+  shadowOffset: {x: 0, y: 0}
+  shadowSize: {x: 0.63, y: 0.2}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.35}
   slotDefs:
   - slotId: 0
     slotKey: Root.BodySet.P_Body.P_Back.Back
@@ -645,51 +649,6 @@ MonoBehaviour:
     drawOrder: 13
     internalOrder: 1113
   - slotId: 14
-    slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Helmet.12_Helmet2
-    slotName: 12_Helmet2
-    objectName: '12_Helmet2 '
-    path: 'UnitRoot/Root/BodySet/P_Body/HeadSet/P_Head/P_Helmet/12_Helmet2 '
-    parentPath: UnitRoot/Root/BodySet/P_Body/HeadSet/P_Head/P_Helmet
-    depth: 7
-    activeSelf: 1
-    activeInHierarchy: 1
-    rendererEnabled: 1
-    defaultVisible: 1
-    sortingLayerId: 0
-    sortingLayerName: Default
-    sortingOrder: 12
-    color: {r: 1, g: 1, b: 1, a: 1}
-    spriteName: Helmet_3
-    spriteAssetPath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/4_Helmet/Helmet_3.png
-    spriteGuid: e18834699727342f7b28af1c655acc6f
-    spriteRectSize: {x: 20, y: 17}
-    spritePivotPixels: {x: 10.5, y: 9}
-    spritePivotNormalized: {x: 0.525, y: 0.5294118}
-    spriteBoundsSize: {x: 0.625, y: 0.53125}
-    pixelsPerUnit: 32
-    localPosition: {x: 0, y: 0, z: 0}
-    localEulerAngles: {x: -0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-    bindPose00: 0.9995874
-    bindPose01: -0.028724095
-    bindPose02: -0.000010982442
-    bindPose03: 0
-    bindPose10: 0.028724093
-    bindPose11: 0.9995869
-    bindPose12: 0.0009949728
-    bindPose13: 0
-    bindPose20: -0.00001759992
-    bindPose21: -0.0009948778
-    bindPose22: 0.9999995
-    bindPose23: 0
-    bindPose30: -0.004398205
-    bindPose31: 0.6721624
-    bindPose32: 0.00038883282
-    bindPose33: 1
-    maskInteraction: 0
-    drawOrder: 14
-    internalOrder: 1214
-  - slotId: 15
     slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm
     slotName: 20_L_Arm
     objectName: 20_L_Arm
@@ -732,9 +691,9 @@ MonoBehaviour:
     bindPose32: -0.00003288984
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 15
+    drawOrder: 14
     internalOrder: 2015
-  - slotId: 16
+  - slotId: 15
     slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm.P_LCArm.21_LCArm
     slotName: 21_LCArm
     objectName: 21_LCArm
@@ -777,9 +736,9 @@ MonoBehaviour:
     bindPose32: -0.0000016252783
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 16
+    drawOrder: 15
     internalOrder: 2116
-  - slotId: 17
+  - slotId: 16
     slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm.P_Shoulder.25_L_Shoulder
     slotName: 25_L_Shoulder
     objectName: 25_L_Shoulder
@@ -822,9 +781,9 @@ MonoBehaviour:
     bindPose32: 0.000060903636
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 17
+    drawOrder: 16
     internalOrder: 2517
-  - slotId: 18
+  - slotId: 17
     slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Weapon.L_Weapon
     slotName: L_Weapon
     objectName: L_Weapon
@@ -867,9 +826,9 @@ MonoBehaviour:
     bindPose32: -0.000033495264
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 18
+    drawOrder: 17
     internalOrder: 1918
-  - slotId: 19
+  - slotId: 18
     slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Shield.L_Shield
     slotName: L_Shield
     objectName: L_Shield
@@ -912,9 +871,9 @@ MonoBehaviour:
     bindPose32: -0.000033495264
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 19
+    drawOrder: 18
     internalOrder: 2519
-  - slotId: 20
+  - slotId: 19
     slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm
     slotName: -20_R_Arm
     objectName: -20_R_Arm
@@ -957,9 +916,9 @@ MonoBehaviour:
     bindPose32: 0.0000020590642
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 20
+    drawOrder: 19
     internalOrder: -1980
-  - slotId: 21
+  - slotId: 20
     slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm.P_RCArm.-19_RCArm
     slotName: -19_RCArm
     objectName: -19_RCArm
@@ -1002,9 +961,9 @@ MonoBehaviour:
     bindPose32: 0.000032980795
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 21
+    drawOrder: 20
     internalOrder: -1879
-  - slotId: 22
+  - slotId: 21
     slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm.P_Shoulder.-15_R_Shoulder
     slotName: -15_R_Shoulder
     objectName: -15_R_Shoulder
@@ -1047,9 +1006,9 @@ MonoBehaviour:
     bindPose32: 0.00009465148
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 22
+    drawOrder: 21
     internalOrder: -1478
-  - slotId: 23
+  - slotId: 22
     slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Weapon.R_Weapon
     slotName: R_Weapon
     objectName: R_Weapon
@@ -1092,9 +1051,9 @@ MonoBehaviour:
     bindPose32: -0.000028518976
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 23
+    drawOrder: 22
     internalOrder: -1477
-  - slotId: 24
+  - slotId: 23
     slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Shield.R_Shield
     slotName: R_Shield
     objectName: R_Shield
@@ -1137,9 +1096,9 @@ MonoBehaviour:
     bindPose32: -0.000028518976
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 24
+    drawOrder: 23
     internalOrder: -2076
-  - slotId: 25
+  - slotId: 24
     slotKey: Root.P_RFoot._12R_Foot
     slotName: _12R_Foot
     objectName: _12R_Foot
@@ -1182,9 +1141,9 @@ MonoBehaviour:
     bindPose32: 0
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 25
+    drawOrder: 24
     internalOrder: -1175
-  - slotId: 26
+  - slotId: 25
     slotKey: Root.P_RFoot.P_RCloth._11R_Cloth
     slotName: _11R_Cloth
     objectName: _11R_Cloth
@@ -1227,9 +1186,9 @@ MonoBehaviour:
     bindPose32: 0
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 26
+    drawOrder: 25
     internalOrder: -1074
-  - slotId: 27
+  - slotId: 26
     slotKey: Root.P_LFoot._3L_Foot
     slotName: _3L_Foot
     objectName: _3L_Foot
@@ -1272,9 +1231,9 @@ MonoBehaviour:
     bindPose32: 0
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 27
+    drawOrder: 26
     internalOrder: -273
-  - slotId: 28
+  - slotId: 27
     slotKey: Root.P_LFoot.P_LCloth._2L_Cloth
     slotName: _2L_Cloth
     objectName: _2L_Cloth
@@ -1317,53 +1276,8 @@ MonoBehaviour:
     bindPose32: 0
     bindPose33: 1
     maskInteraction: 0
-    drawOrder: 28
+    drawOrder: 27
     internalOrder: -172
-  - slotId: 29
-    slotKey: Shadow.Shadow
-    slotName: Shadow
-    objectName: Shadow
-    path: UnitRoot/Shadow/Shadow
-    parentPath: UnitRoot/Shadow
-    depth: 2
-    activeSelf: 1
-    activeInHierarchy: 1
-    rendererEnabled: 1
-    defaultVisible: 1
-    sortingLayerId: 0
-    sortingLayerName: Default
-    sortingOrder: -50
-    color: {r: 0, g: 0, b: 0, a: 0.56078434}
-    spriteName: Shadow
-    spriteAssetPath: Assets/SPUM/Core/Basic_Resources/Ect/Shadow.png
-    spriteGuid: acb3bfd86ae6c41b084245f578292734
-    spriteRectSize: {x: 128, y: 128}
-    spritePivotPixels: {x: 64, y: 64}
-    spritePivotNormalized: {x: 0.5, y: 0.5}
-    spriteBoundsSize: {x: 10.24, y: 10.24}
-    pixelsPerUnit: 12.5
-    localPosition: {x: 0, y: 0.018000001, z: 0.00015256465}
-    localEulerAngles: {x: -0, y: 0, z: 0}
-    localScale: {x: 0.05, y: 0.015, z: 1}
-    bindPose00: 0.05
-    bindPose01: 0
-    bindPose02: 2.4642847e-11
-    bindPose03: 0
-    bindPose10: 0
-    bindPose11: 0.015
-    bindPose12: 0
-    bindPose13: 0
-    bindPose20: 0
-    bindPose21: 0
-    bindPose22: 1
-    bindPose23: 0
-    bindPose30: 4.3467454e-14
-    bindPose31: 0.018000001
-    bindPose32: 0.00015256465
-    bindPose33: 1
-    maskInteraction: 0
-    drawOrder: 29
-    internalOrder: -4971
   slots:
   - slotKey: Root.BodySet.P_Body.P_Back.Back
     slotName: Back
@@ -1374,6 +1288,7 @@ MonoBehaviour:
     linkedGroupId: -1
     linkedSubSpriteName: Back
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.Body
     slotName: Body
     aliasName: 
@@ -1383,33 +1298,37 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Body
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.Body.P_ClothBody.ClothBody
     slotName: ClothBody
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -386983977432367671, guid: 9dc3a3dbad727427780451ecc1627898, type: 3}
+    sprite: {fileID: -401103313191006133, guid: 7a18280193ba94224b27d6dedc9fa979, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 2
     linkedSubSpriteName: Body
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.Body.P_ArmorBody.BodyArmor
     slotName: BodyArmor
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -6702876299118751804, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
+    sprite: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 3
     linkedSubSpriteName: Body
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Hair.7_Hair
     slotName: 7_Hair
     aliasName: hair
     spriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_Hair
-    sprite: {fileID: 21300000, guid: 2e66bc6c623514a2b954b63b58c44e2f, type: 3}
+    sprite: {fileID: 21300000, guid: 6fc5cbe113e51416e9daa8f0ba7ee5dd, type: 3}
     color: {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
     linkedGroupId: -1
     linkedSubSpriteName: 7_Hair
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Head.5_Head
     slotName: 5_Head
     aliasName: 
@@ -1419,6 +1338,7 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Head
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Mustache.6_FaceHair
     slotName: 6_FaceHair
     aliasName: faceHair
@@ -1428,60 +1348,67 @@ MonoBehaviour:
     linkedGroupId: -1
     linkedSubSpriteName: 6_FaceHair
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_REye.PivotBack.Back
     slotName: Back
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 3278689021492206295, guid: 317140fbba14844a3b93f39a688ff60a, type: 3}
+    sprite: {fileID: -1744928968703753017, guid: 7d90004bdccf046eeb0c869afa15c342, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 4
     linkedSubSpriteName: Back
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_REye.PivotFront.Front
     slotName: Front
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -1768198379662571117, guid: 317140fbba14844a3b93f39a688ff60a, type: 3}
+    sprite: {fileID: -4337469416846232385, guid: 7d90004bdccf046eeb0c869afa15c342, type: 3}
     color: {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
     linkedGroupId: 4
     linkedSubSpriteName: Front
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_LEye.PivotBack.Back
     slotName: Back
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 3278689021492206295, guid: 317140fbba14844a3b93f39a688ff60a, type: 3}
+    sprite: {fileID: -1744928968703753017, guid: 7d90004bdccf046eeb0c869afa15c342, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 4
     linkedSubSpriteName: Back
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_LEye.PivotFront.Front
     slotName: Front
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -1768198379662571117, guid: 317140fbba14844a3b93f39a688ff60a, type: 3}
+    sprite: {fileID: -4337469416846232385, guid: 7d90004bdccf046eeb0c869afa15c342, type: 3}
     color: {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
     linkedGroupId: 4
     linkedSubSpriteName: Front
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_RClose.PivotFront.Front
     slotName: Front
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 62125576, guid: 36f759892f0769b42aeec738b5a2fce9, type: 3}
+    sprite: {fileID: 0}
     color: {r: 0.2784314, g: 0.101960786, b: 0.101960786, a: 1}
     linkedGroupId: 5
     linkedSubSpriteName: Front
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Eye.P_LClose.PivotFront.Front
     slotName: Front
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 62125576, guid: 36f759892f0769b42aeec738b5a2fce9, type: 3}
+    sprite: {fileID: 0}
     color: {r: 0.2784314, g: 0.101960786, b: 0.101960786, a: 1}
     linkedGroupId: 5
     linkedSubSpriteName: Front
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Helmet.11_Helmet1
     slotName: 11_Helmet1
     aliasName: helmet1
@@ -1491,15 +1418,7 @@ MonoBehaviour:
     linkedGroupId: -1
     linkedSubSpriteName: 11_Helmet1
     exclusiveGroupId: -1
-  - slotKey: Root.BodySet.P_Body.HeadSet.P_Head.P_Helmet.12_Helmet2
-    slotName: 12_Helmet2
-    aliasName: helmet2
-    spriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/4_Helmet
-    sprite: {fileID: 21300000, guid: e18834699727342f7b28af1c655acc6f, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    linkedGroupId: -1
-    linkedSubSpriteName: 12_Helmet2
-    exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm
     slotName: 20_L_Arm
     aliasName: 
@@ -1509,42 +1428,47 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Arm_L
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm.P_LCArm.21_LCArm
     slotName: 21_LCArm
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -3501919001399007183, guid: 9dc3a3dbad727427780451ecc1627898, type: 3}
+    sprite: {fileID: 471798231154425545, guid: 7a18280193ba94224b27d6dedc9fa979, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 2
     linkedSubSpriteName: Left
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Arm.20_L_Arm.P_Shoulder.25_L_Shoulder
     slotName: 25_L_Shoulder
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 8032732682986528544, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
+    sprite: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 3
     linkedSubSpriteName: Left
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Weapon.L_Weapon
     slotName: L_Weapon
     aliasName: lweapon
     spriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/6_Weapons
-    sprite: {fileID: 21300000, guid: df96032537d4c482e9b20c674c73dc45, type: 3}
+    sprite: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: -1
     linkedSubSpriteName: L_Weapon
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmL.P_LArm.P_Shield.L_Shield
     slotName: L_Shield
     aliasName: lshield
     spriteFolder: Assets/SPUM/Resources/Addons/Ver300/0_Unit/0_Sprite/9_Shiled
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 5364a532c77cd43bc8549a556cb49758, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: -1
     linkedSubSpriteName: L_Shield
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm
     slotName: -20_R_Arm
     aliasName: 
@@ -1554,42 +1478,47 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Arm_R
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm.P_RCArm.-19_RCArm
     slotName: -19_RCArm
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: 6712671587012831569, guid: 9dc3a3dbad727427780451ecc1627898, type: 3}
+    sprite: {fileID: -3794662817809912853, guid: 7a18280193ba94224b27d6dedc9fa979, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 2
     linkedSubSpriteName: Right
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Arm.-20_R_Arm.P_Shoulder.-15_R_Shoulder
     slotName: -15_R_Shoulder
     aliasName: 
     spriteFolder: 
-    sprite: {fileID: -3380439360112706912, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
+    sprite: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: 3
     linkedSubSpriteName: Right
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Weapon.R_Weapon
     slotName: R_Weapon
     aliasName: rweapon
     spriteFolder: Assets/SPUM/Resources/Addons/Ver300/0_Unit/0_Sprite/8_Weapons
-    sprite: {fileID: 21300000, guid: 27428f826bad840f9bdbc88d5dcbfa6c, type: 3}
+    sprite: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: -1
     linkedSubSpriteName: R_Weapon
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.BodySet.P_Body.ArmSet.ArmR.P_RArm.P_Shield.R_Shield
     slotName: R_Shield
     aliasName: rshield
     spriteFolder: Assets/SPUM/Resources/Addons/Ver300/0_Unit/0_Sprite/9_Shiled
-    sprite: {fileID: 21300000, guid: e03eed09328f2413d8a7cf2a8e5d1b94, type: 3}
+    sprite: {fileID: 21300000, guid: 5364a532c77cd43bc8549a556cb49758, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     linkedGroupId: -1
     linkedSubSpriteName: R_Shield
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.P_RFoot._12R_Foot
     slotName: _12R_Foot
     aliasName: 
@@ -1599,6 +1528,7 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Foot_R
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.P_RFoot.P_RCloth._11R_Cloth
     slotName: _11R_Cloth
     aliasName: 
@@ -1608,6 +1538,7 @@ MonoBehaviour:
     linkedGroupId: 6
     linkedSubSpriteName: Right
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.P_LFoot._3L_Foot
     slotName: _3L_Foot
     aliasName: 
@@ -1617,6 +1548,7 @@ MonoBehaviour:
     linkedGroupId: 1
     linkedSubSpriteName: Foot_L
     exclusiveGroupId: -1
+    canBeEmpty: 1
   - slotKey: Root.P_LFoot.P_LCloth._2L_Cloth
     slotName: _2L_Cloth
     aliasName: 
@@ -1626,44 +1558,67 @@ MonoBehaviour:
     linkedGroupId: 6
     linkedSubSpriteName: Left
     exclusiveGroupId: -1
-  - slotKey: Shadow.Shadow
-    slotName: Shadow
-    aliasName: shadow
-    spriteFolder: 
-    sprite: {fileID: 21300000, guid: acb3bfd86ae6c41b084245f578292734, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0.56078434}
-    linkedGroupId: -1
-    linkedSubSpriteName: Shadow
-    exclusiveGroupId: -1
+    canBeEmpty: 1
   groups:
   - groupId: 1
     groupName: bodyall
     groupSprite: {fileID: -2679891834695985245, guid: 9319101edbfea48f58b3eb3a01e16f2a, type: 3}
     groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/1_Body/Elf_2.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/1_Body
+    canBeEmpty: 0
   - groupId: 2
     groupName: cloth
-    groupSprite: {fileID: -386983977432367671, guid: 9dc3a3dbad727427780451ecc1627898, type: 3}
-    groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/2_Cloth/Cloth_11.png
+    groupSprite: {fileID: -401103313191006133, guid: 7a18280193ba94224b27d6dedc9fa979, type: 3}
+    groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/2_Cloth/Cloth_5.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/2_Cloth
+    canBeEmpty: 0
   - groupId: 3
     groupName: armor
     groupSprite: {fileID: -6702876299118751804, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
     groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/5_Armor/Armor_4.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/5_Armor
+    canBeEmpty: 1
   - groupId: 4
     groupName: eye_open
-    groupSprite: {fileID: 3278689021492206295, guid: 317140fbba14844a3b93f39a688ff60a, type: 3}
-    groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_Eye/Eye1.png
+    groupSprite: {fileID: -1744928968703753017, guid: 7d90004bdccf046eeb0c869afa15c342, type: 3}
+    groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_Eye/Eye6.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_Eye
+    canBeEmpty: 0
   - groupId: 5
     groupName: eye_close
     groupSprite: {fileID: -659639939, guid: 36f759892f0769b42aeec738b5a2fce9, type: 3}
     groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_EyeClose/Eye_Close.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/0_EyeClose
+    canBeEmpty: 0
   - groupId: 6
     groupName: pant
     groupSprite: {fileID: 2710371681560268619, guid: c8a4db297c0ce4a38abd3c1d2da37e98, type: 3}
     groupSpritePath: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/3_Pant/Foot_3.png
     groupSpriteFolder: Assets/SPUM/Resources/Addons/Legacy/0_Unit/0_Sprite/3_Pant
-  exclusiveGroups: []
+    canBeEmpty: 1
+  exclusiveGroups:
+  - exclusiveGroupId: 1
+    groupName: cloth_armor
+    memberGroupIds: 0200000003000000
+    memberSlotIndices: 
+    canBeNone: 1
+  - exclusiveGroupId: 2
+    groupName: eye
+    memberGroupIds: 0400000005000000
+    memberSlotIndices: 
+    canBeNone: 0
+  - exclusiveGroupId: 3
+    groupName: lhand
+    memberGroupIds: 
+    memberSlotIndices: 1100000012000000
+    canBeNone: 1
+  - exclusiveGroupId: 4
+    groupName: rhand
+    memberGroupIds: 
+    memberSlotIndices: 1600000017000000
+    canBeNone: 1
+  - exclusiveGroupId: 5
+    groupName: hair_helmet
+    memberGroupIds: 
+    memberSlotIndices: 040000000d000000
+    canBeNone: 1

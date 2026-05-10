@@ -23,6 +23,10 @@ public class GpuRoleViewerCore : ScriptableObject
     public Vector3 RootPosition { get; set; }
     public Quaternion RootRotation { get; set; }
     public Vector3 RootScale { get; set; } = Vector3.one;
+    public bool UseShadow { get; set; } = true;
+    public Vector2 ShadowOffset { get; set; } = Vector2.zero;
+    public Vector2 ShadowSize { get; set; } = new Vector2(1.4f, 0.35f);
+    public Color ShadowColor { get; set; } = new Color(0f, 0f, 0f, 0.35f);
 
     // ===== 访问器（兼容旧代码） =====
     public GameObject SourcePrefab
@@ -103,6 +107,16 @@ public class GpuRoleViewerCore : ScriptableObject
     public List<int> GetSlotIndicesInGroup(int groupId) => SlotManager.GetSlotIndicesInGroup(groupId);
     public List<string> GetSlotNamesInGroup(int groupId) => SlotManager.GetSlotNamesInGroup(groupId);
     public Sprite PickRandomSpriteFromFolder(string folderPath) => SlotManager.PickRandomSpriteFromFolder(folderPath);
+
+    public bool RemoveSlotAt(int index)
+    {
+        EnsureManagers();
+        if (!SlotManager.RemoveSlotAt(index))
+            return false;
+
+        ExclusiveManager.RemoveSlotIndexAndShift(index);
+        return true;
+    }
 
     // ===== 设置组（兼容旧代码） =====
     public void SetGroups(List<GroupDataEntry> groups)

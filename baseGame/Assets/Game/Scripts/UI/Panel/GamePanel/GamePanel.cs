@@ -14,11 +14,23 @@ public partial class GamePanel : BasePanel
         adressPath = "Panel/GamePanel";
         AudioManager.GetInstance().PlayBgmSound(GameConst.const_bgm2);
         UIManager.Instance.AutoMatchWidthOrHeightByPortrait();
+
+        var gpuanim = GameObject.FindAnyObjectByType<GPUAnimManager>();
+        var gpurole = GameObject.FindAnyObjectByType<GpuRoleGpuManager>();
+        if (gpuanim != null)
+        {
+            gpuanim.clipBoundCamera = UIManager.Instance.camera_scene;
+        }
+        if (gpurole != null)
+        {
+            gpurole.clipBoundCamera = UIManager.Instance.camera_scene;
+        }
+
     }
     public override void OnShowing()
     {
         EventManager.Instance.AddObserver<EventGP_palceInfo>(PalceInfo);
-        
+
         btnTree.zbtn.onClick.AddListener(() =>
         {
             setNormal();
@@ -73,7 +85,7 @@ public partial class GamePanel : BasePanel
         float y = info.origin.y;
         x = x + info.width / 2f;
         y = y + info.height;
-        Vector3 targetPos = new Vector3(x, y,0);
+        Vector3 targetPos = new Vector3(x, y, 0);
         var pos = GetUIPos(targetPos);
         Debug.Log(pos);
     }
@@ -119,7 +131,7 @@ public partial class GamePanel : BasePanel
             out Vector2 localPos
         );
         // 设置UI位置
-       return localPos;
+        return localPos;
     }
 
 }

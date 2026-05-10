@@ -11,6 +11,12 @@ public class GpuRoleAgentEditor : Editor
     private SerializedProperty _playOnEnable;
     private SerializedProperty _color;
     private SerializedProperty _scale;
+    private SerializedProperty _visible;
+    private SerializedProperty _useShadow;
+    private SerializedProperty _overrideShadowSettings;
+    private SerializedProperty _shadowOffset;
+    private SerializedProperty _shadowSize;
+    private SerializedProperty _shadowColor;
     private SerializedProperty _initialGroupVariants;
     private SerializedProperty _initialIndependentSlotSpriteIds;
 
@@ -23,6 +29,7 @@ public class GpuRoleAgentEditor : Editor
     private bool[] _previewSlotVisible;
     private bool _previewFoldout;
     private bool _animationFoldout;
+    private bool _shadowFoldout;
     private bool _groupVariantsFoldout;
     private bool _independentSlotsFoldout;
 
@@ -34,6 +41,12 @@ public class GpuRoleAgentEditor : Editor
         _playOnEnable = serializedObject.FindProperty("playOnEnable");
         _color = serializedObject.FindProperty("color");
         _scale = serializedObject.FindProperty("scale");
+        _visible = serializedObject.FindProperty("visible");
+        _useShadow = serializedObject.FindProperty("useShadow");
+        _overrideShadowSettings = serializedObject.FindProperty("overrideShadowSettings");
+        _shadowOffset = serializedObject.FindProperty("shadowOffset");
+        _shadowSize = serializedObject.FindProperty("shadowSize");
+        _shadowColor = serializedObject.FindProperty("shadowColor");
         _initialGroupVariants = serializedObject.FindProperty("initialGroupVariants");
         _initialIndependentSlotSpriteIds = serializedObject.FindProperty("initialIndependentSlotSpriteIds");
 
@@ -82,8 +95,10 @@ public class GpuRoleAgentEditor : Editor
 
         NormalizeInitialArraysIfNeeded();
 
+        DrawRandomizeButton();
         DrawPreviewFoldout();
         DrawAnimationFoldout();
+        DrawShadowFoldout();
         DrawGroupVariantsSection();
         DrawIndependentSlotsSection();
         EditorGUILayout.Space();
@@ -91,6 +106,7 @@ public class GpuRoleAgentEditor : Editor
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(_color);
         EditorGUILayout.PropertyField(_scale);
+        EditorGUILayout.PropertyField(_visible);
         if (EditorGUI.EndChangeCheck())
         {
             serializedObject.ApplyModifiedProperties();
@@ -103,6 +119,219 @@ public class GpuRoleAgentEditor : Editor
 
         if (_previewFoldout && _preview != null && !_preview.IsValid)
             RebuildPreviewIfOpen();
+    }
+
+    private void DrawRandomizeButton()
+    {
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("🎲 随机换装预览", GUILayout.Height(28)))
+        {
+            RandomizePreview();
+        }
+        if (GUILayout.Button("同步到初始数据", GUILayout.Height(28)))
+        {
+            SyncPreviewToInitial();
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space();
+    }
+
+    private void RandomizePreview()
+    {
+        GpuRoleExportData data = _agent.exportData;
+        if (data == null) return;
+
+serializedObject.Update();
+
+        // 1. 随机 Group Variants（考虑互斥）
+        HashSet<int> processedGroups = new HashSet<int>();
+
+        if (data.exclusiveGroups != null && data.exclusiveGroups.Count > 0)
+        {
+            foreach (var eg in data.exclusiveGroups)
+            {
+                List<int> candidates = new List<int>();
+                candidates.AddRange(eg.memberGroupIds);
+                candidates.AddRange(eg.memberSlotIndices);
+                if (candidates.Count == 0) continue;
+
+                // 允许全隐藏时加入 -1 哨兵
+                if (eg.canBeNone)
+                    candidates.Add(-1);
+
+                int chosen = candidates[Random.Range(0, candidates.Count)];
+
+                if (chosen == -1) // "none" 全隐藏
+                {
+                    foreach (var gId in eg.memberGroupIds)
+                    {
+                        SetGroupVariantSerialized(gId, string.Empty);
+                        processedGroups.Add(gId);
+                    }
+                    foreach (var idx in eg.memberSlotIndices)
+                        SetIndependentSlotSpriteIdSerialized(idx, -1);
+                }
+                else if (eg.memberGroupIds.Contains(chosen))
+                {
+                    GroupExportData group = FindGroupById(data, chosen);
+                    if (group != null && group.variants != null && group.variants.Count > 0)
+                    {
+                        int vi = Random.Range(0, group.variants.Count);
+                        SetGroupVariantSerialized(chosen, group.variants[vi].variantName);
+                    }
+                    processedGroups.Add(chosen);
+
+                    // 隐藏其他 group 成员
+                    foreach (var gId in eg.memberGroupIds)
+                    {
+                        if (gId != chosen && !processedGroups.Contains(gId))
+                        {
+                            SetGroupVariantSerialized(gId, string.Empty);
+                            processedGroups.Add(gId);
+                        }
+                    }
+                    // 隐藏所有 slot 成员
+                    foreach (var idx in eg.memberSlotIndices)
+                        SetIndependentSlotSpriteIdSerialized(idx, -1);
+                }
+                else // 选中了独立 slot
+                {
+                    RandomizeSingleSlotSerialized(chosen);
+
+                    // 隐藏所有 group 成员
+                    foreach (var gId in eg.memberGroupIds)
+                    {
+                        SetGroupVariantSerialized(gId, string.Empty);
+                        processedGroups.Add(gId);
+                    }
+                    // 隐藏其他 slot 成员
+                    foreach (var idx in eg.memberSlotIndices)
+                    {
+                        if (idx != chosen)
+                            SetIndependentSlotSpriteIdSerialized(idx, -1);
+                    }
+                }
+            }
+        }
+
+        // 不在互斥组中的 Group
+        if (data.groups != null)
+        {
+            for (int g = 0; g < data.groups.Count; g++)
+            {
+                GroupExportData group = data.groups[g];
+                if (group == null || group.variants == null || group.variants.Count == 0)
+                    continue;
+                if (processedGroups.Contains(group.groupId))
+                    continue;
+
+                // 如果允许隐藏，有一定概率隐藏
+                if (group.canBeEmpty && Random.value < 0.1f)
+                {
+                    SetGroupVariantSerialized(group.groupId, string.Empty);
+                    continue;
+                }
+
+                int vi = Random.Range(0, group.variants.Count);
+                SetGroupVariantSerialized(group.groupId, group.variants[vi].variantName);
+            }
+        }
+
+        // 2. 随机独立 Slot
+        List<int> independent = GetIndependentSlotIndices(data);
+        HashSet<int> exclusiveSlotSet = new HashSet<int>();
+        if (data.exclusiveGroups != null)
+        {
+            foreach (var eg in data.exclusiveGroups)
+            {
+                foreach (var idx in eg.memberSlotIndices)
+                    exclusiveSlotSet.Add(idx);
+            }
+        }
+
+        for (int i = 0; i < independent.Count; i++)
+        {
+            int slotIdx = independent[i];
+            if (exclusiveSlotSet.Contains(slotIdx))
+                continue;
+
+            RandomizeSingleSlotSerialized(slotIdx);
+        }
+
+        serializedObject.ApplyModifiedProperties();
+        RebuildPreview();
+        Repaint();
+    }
+
+    private void SyncPreviewToInitial()
+    {
+        serializedObject.Update();
+        // 已经就是 initial 数据，直接刷新预览
+        RebuildPreview();
+        Repaint();
+    }
+
+    private void SetGroupVariantSerialized(int groupId, string variantName)
+    {
+        GpuRoleExportData data = _agent.exportData;
+        if (data == null || data.groups == null) return;
+
+        for (int g = 0; g < data.groups.Count; g++)
+        {
+            if (data.groups[g].groupId == groupId)
+            {
+                if (g < _initialGroupVariants.arraySize)
+                {
+                    _initialGroupVariants.GetArrayElementAtIndex(g).stringValue = variantName;
+                }
+                return;
+            }
+        }
+    }
+
+    private void SetIndependentSlotSpriteIdSerialized(int slotIndex, int spriteId)
+    {
+        List<int> independent = GetIndependentSlotIndices(_agent.exportData);
+        for (int i = 0; i < independent.Count; i++)
+        {
+            if (independent[i] == slotIndex && i < _initialIndependentSlotSpriteIds.arraySize)
+            {
+                _initialIndependentSlotSpriteIds.GetArrayElementAtIndex(i).intValue = spriteId;
+                return;
+            }
+        }
+    }
+
+    private void RandomizeSingleSlotSerialized(int slotIndex)
+    {
+        GpuRoleExportData data = _agent.exportData;
+        if (data == null || slotIndex < 0 || slotIndex >= data.slots.Count) return;
+
+        SlotExportData slot = data.slots[slotIndex];
+        if (slot == null) return;
+
+        if (slot.availableSpriteIds == null || slot.availableSpriteIds.Length == 0) return;
+
+        // 如果允许隐藏，有一定概率隐藏
+        if (slot.canBeEmpty && Random.value < 0.1f)
+        {
+            SetIndependentSlotSpriteIdSerialized(slotIndex, -1);
+            return;
+        }
+
+        int spriteId = slot.availableSpriteIds[Random.Range(0, slot.availableSpriteIds.Length)];
+        SetIndependentSlotSpriteIdSerialized(slotIndex, spriteId);
+    }
+
+    private static GroupExportData FindGroupById(GpuRoleExportData data, int groupId)
+    {
+        if (data == null || data.groups == null) return null;
+        for (int i = 0; i < data.groups.Count; i++)
+        {
+            if (data.groups[i].groupId == groupId)
+                return data.groups[i];
+        }
+        return null;
     }
 
     private void DrawPreviewFoldout()
@@ -191,6 +420,38 @@ public class GpuRoleAgentEditor : Editor
             return;
 
         DrawAnimationSection();
+    }
+
+    private void DrawShadowFoldout()
+    {
+        _shadowFoldout = EditorGUILayout.Foldout(_shadowFoldout, "Shadow", true);
+        if (!_shadowFoldout)
+            return;
+
+        EditorGUI.BeginChangeCheck();
+        EditorGUILayout.PropertyField(_useShadow);
+        using (new EditorGUI.DisabledScope(true))
+        {
+            EditorGUILayout.Toggle("Export Default", _agent.exportData != null && _agent.exportData.useShadow);
+            EditorGUILayout.Vector2Field("Export Offset", _agent.exportData != null ? _agent.exportData.shadowOffset : Vector2.zero);
+            EditorGUILayout.Vector2Field("Export Size", _agent.exportData != null ? _agent.exportData.shadowSize : Vector2.zero);
+            EditorGUILayout.ColorField("Export Color", _agent.exportData != null ? _agent.exportData.shadowColor : Color.clear);
+        }
+
+        EditorGUILayout.PropertyField(_overrideShadowSettings);
+        if (_overrideShadowSettings.boolValue)
+        {
+            EditorGUILayout.PropertyField(_shadowOffset);
+            EditorGUILayout.PropertyField(_shadowSize);
+            EditorGUILayout.PropertyField(_shadowColor);
+        }
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            serializedObject.ApplyModifiedProperties();
+            RebuildPreviewIfOpen();
+            NotifyRuntimeVisualDirty();
+        }
     }
 
     private void DrawGroupVariantsSection()
@@ -324,7 +585,17 @@ public class GpuRoleAgentEditor : Editor
         if (_preview != null)
             _preview.Cleanup();
         _preview = new GpuRoleAgentPreview();
-        _preview.Build(_agent.exportData, _previewSlotSpriteIds, _previewSlotVisible, _agent.color, _agent.scale);
+        _preview.Build(
+            _agent.exportData,
+            _previewSlotSpriteIds,
+            _previewSlotVisible,
+            _agent.color,
+            _agent.scale,
+            _agent.RuntimeShadowVisible,
+            _agent.GetShadowOffset(),
+            _agent.GetShadowSize(),
+            _agent.GetShadowColor()
+        );
         Repaint();
     }
 

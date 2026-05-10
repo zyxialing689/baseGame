@@ -322,6 +322,7 @@ public class AnimAtlasTool : EditorWindow
             EditorPrefs.GetFloat(GetCharacterPrefKey(characterName, "centerX"), 0f),
             EditorPrefs.GetFloat(GetCharacterPrefKey(characterName, "centerY"), 0f)
         );
+        character.hasShadow = EditorPrefs.GetBool(GetCharacterPrefKey(characterName, "hasShadow"), true);
         character.shadowOffset = new Vector2(
             EditorPrefs.GetFloat(GetCharacterPrefKey(characterName, "shadowX"), 0f),
             EditorPrefs.GetFloat(GetCharacterPrefKey(characterName, "shadowY"), 0f)
@@ -399,6 +400,7 @@ public class AnimAtlasTool : EditorWindow
             runtimeCharacter.name = sourceCharacter.name;
             runtimeCharacter.baseScale = sourceCharacter.baseScale;
             runtimeCharacter.centerOffset = sourceCharacter.centerOffset;
+            runtimeCharacter.hasShadow = sourceCharacter.hasShadow;
             runtimeCharacter.shadowOffset = sourceCharacter.shadowOffset;
             runtimeCharacter.shadowSize = sourceCharacter.shadowSize;
             runtimeCharacter.clips = new List<AnimClip>();
@@ -676,6 +678,7 @@ public class AnimAtlasTool : EditorWindow
         if (runtimeCharacters.Count > 0)
         {
             data.centerOffset = runtimeCharacters[0].centerOffset;
+            data.hasShadow = runtimeCharacters[0].hasShadow;
             data.shadowOffset = runtimeCharacters[0].shadowOffset;
             data.shadowSize = runtimeCharacters[0].shadowSize;
         }
@@ -955,8 +958,12 @@ public class AnimAtlasTool : EditorWindow
             EditorGUILayout.BeginVertical(GUILayout.MinWidth(360f));
             character.baseScale = Mathf.Max(0.01f, EditorGUILayout.FloatField("Base Scale", character.baseScale));
             character.centerOffset = EditorGUILayout.Vector2Field("Center Offset", character.centerOffset);
-            character.shadowOffset = EditorGUILayout.Vector2Field("Shadow Offset", character.shadowOffset);
-            character.shadowSize = EditorGUILayout.Vector2Field("Shadow Size", character.shadowSize);
+            character.hasShadow = EditorGUILayout.Toggle("Has Shadow", character.hasShadow);
+            if (character.hasShadow)
+            {
+                character.shadowOffset = EditorGUILayout.Vector2Field("Shadow Offset", character.shadowOffset);
+                character.shadowSize = EditorGUILayout.Vector2Field("Shadow Size", character.shadowSize);
+            }
             if (!validation.isValid)
             {
                 EditorGUILayout.HelpBox(validation.message, MessageType.Error);
@@ -1103,16 +1110,19 @@ public class AnimAtlasTool : EditorWindow
 
         Vector2 baseSize = new Vector2(frame.pixelRect.width, frame.pixelRect.height);
         Vector2 anchorPixel = new Vector2(baseSize.x * 0.5f + character.centerOffset.x, character.centerOffset.y);
-        Vector2 shadowPixel = anchorPixel + character.shadowOffset;
         Vector2 anchorGui = PixelToPreview(previewRect, anchorPixel, baseSize);
-        Vector2 shadowGui = PixelToPreview(previewRect, shadowPixel, baseSize);
-        float shadowRadiusX = Mathf.Max(1f, character.shadowSize.x) / Mathf.Max(1f, baseSize.x) * previewRect.width;
-        float shadowRadiusY = Mathf.Max(1f, character.shadowSize.y) / Mathf.Max(1f, baseSize.y) * previewRect.height;
 
         Handles.BeginGUI();
-        DrawPreviewEllipse(shadowGui, shadowRadiusX, shadowRadiusY, previewShadowColor);
         DrawCross(anchorGui, Color.green, 8f);
-        DrawCross(shadowGui, Color.yellow, 6f);
+        if (character.hasShadow)
+        {
+            Vector2 shadowPixel = anchorPixel + character.shadowOffset;
+            Vector2 shadowGui = PixelToPreview(previewRect, shadowPixel, baseSize);
+            float shadowRadiusX = Mathf.Max(1f, character.shadowSize.x) / Mathf.Max(1f, baseSize.x) * previewRect.width;
+            float shadowRadiusY = Mathf.Max(1f, character.shadowSize.y) / Mathf.Max(1f, baseSize.y) * previewRect.height;
+            DrawPreviewEllipse(shadowGui, shadowRadiusX, shadowRadiusY, previewShadowColor);
+            DrawCross(shadowGui, Color.yellow, 6f);
+        }
         Handles.EndGUI();
         int frameCount = CalculateClipFrameCount(character, pngs);
         EditorGUILayout.LabelField(validation.isValid ? $"Frames: {frameCount}" : "Frame size error", GUILayout.Width(220f));
@@ -1404,6 +1414,7 @@ public class AnimAtlasTool : EditorWindow
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "baseScale"), character.baseScale);
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "centerX"), character.centerOffset.x);
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "centerY"), character.centerOffset.y);
+        EditorPrefs.SetBool(GetCharacterPrefKey(character.name, "hasShadow"), character.hasShadow);
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "shadowX"), character.shadowOffset.x);
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "shadowY"), character.shadowOffset.y);
         EditorPrefs.SetFloat(GetCharacterPrefKey(character.name, "shadowSizeX"), character.shadowSize.x);
@@ -1492,6 +1503,7 @@ public class AnimAtlasTool : EditorWindow
         public bool foldout = true;
         public float baseScale = 1f;
         public Vector2 centerOffset;
+        public bool hasShadow = true;
         public Vector2 shadowOffset;
         public Vector2 shadowSize = new Vector2(44f, 14f);
         public Dictionary<string, List<string>> clips = new Dictionary<string, List<string>>();

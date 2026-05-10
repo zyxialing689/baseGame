@@ -61,9 +61,33 @@ public class GpuRoleGpuSpawner : MonoBehaviour
     public float moveAmplitude = 0.25f;
     public float moveSpeed = 2f;
 
+    [Header("Random Outfit Change (test)")]
+    public bool randomOutfitChange;
+    public Vector2 outfitChangeInterval = new Vector2(0f, 0f);
+    public int maxOutfitChangesPerFrame = 100000;
+    public bool logOutfitChangeStats = true;
+    public float outfitChangeStatsInterval = 1f;
+
+    [Header("Random Animation Switch (test)")]
+    public bool randomAnimationSwitch;
+    public Vector2 animationSwitchInterval = new Vector2(0.1f, 0.5f);
+    public int maxAnimationSwitchesPerFrame = 1000;
+    public bool avoidSameAnimationSwitch = true;
+    public bool logAnimationSwitchStats = true;
+    public float animationSwitchStatsInterval = 1f;
+
     private readonly List<Transform> _spawned = new List<Transform>();
+    private readonly List<GpuRoleAgent> _spawnedAgents = new List<GpuRoleAgent>();
     private Vector3[] _basePositions;
-    private HashSet<int> _groupSlotSet;
+    private float[] _nextOutfitChangeTimes;
+    private float[] _nextAnimationSwitchTimes;
+    private int _outfitChangeCursor;
+    private int _animationSwitchCursor;
+    private int _animationSwitchCount;
+    private float _nextAnimationSwitchStatsTime;
+    private float _nextOutfitChangeStatsTime;
+    private int _lastManagerRebuildCount;
+    private int _outfitChangeCount;
 
     private void Start()
     {
@@ -73,20 +97,27 @@ public class GpuRoleGpuSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!moveAgents || _basePositions == null)
-            return;
-
         float t = Time.time * moveSpeed;
         for (int i = 0; i < _spawned.Count; i++)
         {
             Transform tr = _spawned[i];
             if (tr == null) continue;
 
-            Vector3 pos = _basePositions[i];
-            pos.x += Mathf.Sin(t + i * 0.173f) * moveAmplitude;
-            pos.y += Mathf.Cos(t * 0.73f + i * 0.119f) * moveAmplitude;
-            tr.position = pos;
+            if (moveAgents)
+            {
+                Vector3 pos = _basePositions[i];
+                pos.x += Mathf.Sin(t + i * 0.173f) * moveAmplitude;
+                pos.y += Mathf.Cos(t * 0.73f + i * 0.119f) * moveAmplitude;
+                tr.position = pos;
+            }
         }
+
+        UpdateRandomOutfitChange();
+    }
+
+    private void LateUpdate()
+    {
+        UpdateRandomAnimationSwitch();
     }
 
     [ContextMenu("Respawn GPU Roles")]
@@ -105,8 +136,16 @@ public class GpuRoleGpuSpawner : MonoBehaviour
         columns = Mathf.Max(1, columns);
         spacing = Mathf.Max(0.01f, spacing);
 
-        _groupSlotSet = BuildGroupSlotSet();
         _basePositions = new Vector3[roleCount];
+        _nextOutfitChangeTimes = new float[roleCount];
+        _nextAnimationSwitchTimes = new float[roleCount];
+        _outfitChangeCursor = 0;
+        _animationSwitchCursor = 0;
+        _animationSwitchCount = 0;
+        _outfitChangeCount = 0;
+        _nextAnimationSwitchStatsTime = Time.time + Mathf.Max(0.1f, animationSwitchStatsInterval);
+        _nextOutfitChangeStatsTime = Time.time + Mathf.Max(0.1f, outfitChangeStatsInterval);
+        _lastManagerRebuildCount = manager != null ? manager.RebuildCount : 0;
 
         for (int i = 0; i < roleCount; i++)
         {
@@ -129,9 +168,12 @@ public class GpuRoleGpuSpawner : MonoBehaviour
             agent.color = GetRandomColor();
 
             _spawned.Add(go.transform);
+            _spawnedAgents.Add(agent);
             go.SetActive(true);
 
             ApplyRandomStyle(agent);
+            ScheduleNextOutfitChange(i);
+            ScheduleNextAnimationSwitch(i);
         }
 
         manager.MarkAgentStyleDirty(null);
@@ -153,7 +195,12 @@ public class GpuRoleGpuSpawner : MonoBehaviour
         }
 
         _spawned.Clear();
+        _spawnedAgents.Clear();
         _basePositions = null;
+        _nextOutfitChangeTimes = null;
+        _nextAnimationSwitchTimes = null;
+        _outfitChangeCount = 0;
+        _animationSwitchCount = 0;
     }
 
     private void OnDestroy()
@@ -201,64 +248,9 @@ public class GpuRoleGpuSpawner : MonoBehaviour
         if (agent == null || exportData == null)
             return;
 
-        if (randomGroupVariants)
-            ApplyRandomGroupVariants(agent);
-
-        if (randomIndependentSlots)
-            ApplyRandomIndependentSlots(agent);
-    }
-
-    private void ApplyRandomGroupVariants(GpuRoleAgent agent)
-    {
-        if (exportData.groups == null)
-            return;
-
-        for (int g = 0; g < exportData.groups.Count; g++)
-        {
-            GroupExportData group = exportData.groups[g];
-            if (group == null || group.variants == null || group.variants.Count == 0)
-                continue;
-
-            if (groupNoneChance > 0f && Random.value < groupNoneChance)
-            {
-                agent.SetGroupVariant(group.groupName, string.Empty);
-                continue;
-            }
-
-            int variantIndex = Random.Range(0, group.variants.Count);
-            agent.SetGroupVariant(group.groupId, variantIndex);
-        }
-    }
-
-    private void ApplyRandomIndependentSlots(GpuRoleAgent agent)
-    {
-        if (exportData.slots == null)
-            return;
-
-        if (_groupSlotSet == null)
-            _groupSlotSet = BuildGroupSlotSet();
-
-        for (int s = 0; s < exportData.slots.Count; s++)
-        {
-            if (_groupSlotSet.Contains(s))
-                continue;
-
-            SlotExportData slot = exportData.slots[s];
-            if (slot == null)
-                continue;
-
-            if (slot.canBeEmpty && independentSlotNoneChance > 0f && Random.value < independentSlotNoneChance)
-            {
-                agent.SetSlotVisible(slot.slotKey, false, true);
-                continue;
-            }
-
-            if (slot.availableSpriteIds == null || slot.availableSpriteIds.Length == 0)
-                continue;
-
-            int spriteId = slot.availableSpriteIds[Random.Range(0, slot.availableSpriteIds.Length)];
-            agent.SetSlotSprite(slot.slotKey, spriteId, true);
-        }
+        float gnChance = randomGroupVariants ? groupNoneChance : 1f;
+        float inChance = randomIndependentSlots ? independentSlotNoneChance : 1f;
+        agent.RandomizeStyle(gnChance, inChance);
     }
 
     private int GetRandomAnimIndex()
@@ -304,22 +296,126 @@ public class GpuRoleGpuSpawner : MonoBehaviour
         return c;
     }
 
-    private HashSet<int> BuildGroupSlotSet()
+    private void UpdateRandomOutfitChange()
     {
-        HashSet<int> set = new HashSet<int>();
-        if (exportData == null || exportData.groups == null)
-            return set;
+        if (!randomOutfitChange || _spawnedAgents.Count == 0)
+            return;
 
-        for (int g = 0; g < exportData.groups.Count; g++)
+        if (_nextOutfitChangeTimes == null || _nextOutfitChangeTimes.Length < _spawnedAgents.Count)
+            _nextOutfitChangeTimes = new float[_spawnedAgents.Count];
+
+        int maxChanges = Mathf.Clamp(maxOutfitChangesPerFrame, 1, _spawnedAgents.Count);
+        int checkedCount = 0;
+        int changedThisFrame = 0;
+        float now = Time.time;
+
+        while (checkedCount < _spawnedAgents.Count && changedThisFrame < maxChanges)
         {
-            GroupExportData group = exportData.groups[g];
-            if (group == null || group.slotIndices == null)
+            int index = _outfitChangeCursor;
+            _outfitChangeCursor = (_outfitChangeCursor + 1) % _spawnedAgents.Count;
+            checkedCount++;
+
+            if (now < _nextOutfitChangeTimes[index])
                 continue;
 
-            for (int i = 0; i < group.slotIndices.Length; i++)
-                set.Add(group.slotIndices[i]);
+            GpuRoleAgent agent = _spawnedAgents[index];
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                ApplyRandomStyle(agent);
+                changedThisFrame++;
+                _outfitChangeCount++;
+            }
+
+            ScheduleNextOutfitChange(index);
         }
 
-        return set;
+        if (logOutfitChangeStats && now >= _nextOutfitChangeStatsTime)
+        {
+            int rebuildCount = manager != null ? manager.RebuildCount : 0;
+            Debug.Log($"[GpuRoleGpuSpawner] Slot changes={_outfitChangeCount}, manager rebuild delta={rebuildCount - _lastManagerRebuildCount}, total rebuild={rebuildCount}");
+            _outfitChangeCount = 0;
+            _lastManagerRebuildCount = rebuildCount;
+            _nextOutfitChangeStatsTime = now + Mathf.Max(0.1f, outfitChangeStatsInterval);
+        }
+    }
+
+    private void UpdateRandomAnimationSwitch()
+    {
+        if (!randomAnimationSwitch || _spawnedAgents.Count == 0 || exportData == null || exportData.animations == null)
+            return;
+
+        int animCount = exportData.animations.Count;
+        if (animCount <= 1)
+            return;
+
+        if (_nextAnimationSwitchTimes == null || _nextAnimationSwitchTimes.Length < _spawnedAgents.Count)
+            _nextAnimationSwitchTimes = new float[_spawnedAgents.Count];
+
+        int maxSwitches = Mathf.Clamp(maxAnimationSwitchesPerFrame, 1, _spawnedAgents.Count);
+        int checkedCount = 0;
+        int switchedThisFrame = 0;
+        float now = Time.time;
+
+        while (checkedCount < _spawnedAgents.Count && switchedThisFrame < maxSwitches)
+        {
+            int index = _animationSwitchCursor;
+            _animationSwitchCursor = (_animationSwitchCursor + 1) % _spawnedAgents.Count;
+            checkedCount++;
+
+            if (now < _nextAnimationSwitchTimes[index])
+                continue;
+
+            GpuRoleAgent agent = _spawnedAgents[index];
+            if (agent == null || !agent.isActiveAndEnabled)
+            {
+                ScheduleNextAnimationSwitch(index);
+                continue;
+            }
+
+            int nextAnim = Random.Range(0, animCount);
+            if (avoidSameAnimationSwitch && animCount > 1)
+            {
+                int current = agent.CurrentAnimIndex;
+                nextAnim = Random.Range(0, animCount - 1);
+                if (nextAnim >= current)
+                    nextAnim++;
+            }
+
+            agent.TryPlay(nextAnim);
+            ScheduleNextAnimationSwitch(index);
+            switchedThisFrame++;
+            _animationSwitchCount++;
+        }
+
+        if (logAnimationSwitchStats && now >= _nextAnimationSwitchStatsTime)
+        {
+            int rebuildCount = manager != null ? manager.RebuildCount : 0;
+            Debug.Log($"[GpuRoleGpuSpawner] Random animation switches={_animationSwitchCount}, manager rebuild delta={rebuildCount - _lastManagerRebuildCount}, total rebuild={rebuildCount}");
+            _animationSwitchCount = 0;
+            _lastManagerRebuildCount = rebuildCount;
+            _nextAnimationSwitchStatsTime = now + Mathf.Max(0.1f, animationSwitchStatsInterval);
+        }
+    }
+
+    private void ScheduleNextAnimationSwitch(int index)
+    {
+        if (_nextAnimationSwitchTimes == null || index < 0 || index >= _nextAnimationSwitchTimes.Length)
+            return;
+
+        float min = Mathf.Min(animationSwitchInterval.x, animationSwitchInterval.y);
+        float max = Mathf.Max(animationSwitchInterval.x, animationSwitchInterval.y);
+        float delay = max <= 0f ? 0f : Random.Range(Mathf.Max(0f, min), max);
+        _nextAnimationSwitchTimes[index] = Time.time + delay;
+    }
+
+    private void ScheduleNextOutfitChange(int index)
+    {
+        if (_nextOutfitChangeTimes == null || index < 0 || index >= _nextOutfitChangeTimes.Length)
+            return;
+
+        float min = Mathf.Min(outfitChangeInterval.x, outfitChangeInterval.y);
+        float max = Mathf.Max(outfitChangeInterval.x, outfitChangeInterval.y);
+        float delay = max <= 0f ? 0f : Random.Range(Mathf.Max(0f, min), max);
+        _nextOutfitChangeTimes[index] = Time.time + delay;
     }
 }

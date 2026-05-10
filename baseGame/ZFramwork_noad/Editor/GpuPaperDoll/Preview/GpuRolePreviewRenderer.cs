@@ -30,6 +30,14 @@ public class GpuRolePreviewRenderer
         _main.Build(slotDefs, styleSlots, rootPos, rootRot, rootScale);
     }
 
+    public void BuildMainPreview(List<GpuRoleSlot> slotDefs, List<GpuRoleStyleSlot> styleSlots,
+        Vector3 rootPos, Quaternion rootRot, Vector3 rootScale, bool showShadow, Vector2 shadowOffset, Vector2 shadowSize, Color shadowColor)
+    {
+        if (rootScale == default) rootScale = Vector3.one;
+        if (rootRot == default) rootRot = Quaternion.identity;
+        _main.Build(slotDefs, styleSlots, rootPos, rootRot, rootScale, showShadow, shadowOffset, shadowSize, shadowColor);
+    }
+
     /// <summary>
     /// 更新主预览样式
     /// </summary>
@@ -75,7 +83,7 @@ public class GpuRolePreviewRenderer
             groupMain = new GpuRolePreviewRenderer_Main();
             if (rootScale == default) rootScale = Vector3.one;
             if (rootRot == default) rootRot = Quaternion.identity;
-            groupMain.Build(slotDefs, styleSlots, rootPos, rootRot, rootScale);
+            groupMain.Build(slotDefs, styleSlots, rootPos, rootRot, rootScale, false, Vector2.zero, Vector2.zero, Color.clear);
             _groupPreviews[groupId] = groupMain;
         }
 

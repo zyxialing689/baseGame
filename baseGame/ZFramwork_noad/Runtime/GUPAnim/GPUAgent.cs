@@ -8,7 +8,7 @@ public class GPUAgent : MonoBehaviour
     public bool removeOnDisable;
     public bool removeOnDestroy = true;
 
-    public bool syncTransformPosition = true;
+    public bool syncTransformPosition = false;
     public Vector3 positionOffset;
     public float baseMoveSpeed = 1f;
 
@@ -31,6 +31,7 @@ public class GPUAgent : MonoBehaviour
 
     public int RoleId => roleId;
     public bool IsInitialized => manager != null && manager.IsValidRole(roleId);
+    public Vector3 RenderPosition => transform.position + positionOffset;
 
     private void Awake()
     {
@@ -42,6 +43,14 @@ public class GPUAgent : MonoBehaviour
 
     private void OnEnable()
     {
+        if (IsInitialized)
+        {
+            Sync(true);
+            manager.SetVisible(roleId, visible);
+            manager.SetTransformSync(roleId, this, syncTransformPosition);
+            return;
+        }
+
         if (autoInitialize && initializeOnEnable)
         {
             Initialize();
@@ -50,22 +59,27 @@ public class GPUAgent : MonoBehaviour
 
     private void Start()
     {
+        if (IsInitialized)
+        {
+            Sync(true);
+            manager.SetTransformSync(roleId, this, syncTransformPosition && isActiveAndEnabled);
+            return;
+        }
+
         if (autoInitialize && !initializeOnEnable)
         {
             Initialize();
         }
     }
 
-    private void Update()
+    private void OnDisable()
     {
         if (IsInitialized)
         {
-            Sync();
+            manager.SetTransformSync(roleId, this, false);
+            manager.SetVisible(roleId, false);
         }
-    }
 
-    private void OnDisable()
-    {
         if (removeOnDisable)
         {
             Remove();
@@ -85,6 +99,7 @@ public class GPUAgent : MonoBehaviour
         if (IsInitialized)
         {
             Sync(true);
+            manager.SetTransformSync(roleId, this, syncTransformPosition && isActiveAndEnabled);
             return roleId;
         }
 
@@ -106,6 +121,7 @@ public class GPUAgent : MonoBehaviour
         }
 
         Sync(true);
+        manager.SetTransformSync(roleId, this, syncTransformPosition && isActiveAndEnabled);
         return roleId;
     }
 
@@ -126,6 +142,7 @@ public class GPUAgent : MonoBehaviour
         {
             manager.SetPosition(roleId, GetRenderPosition());
             lastPosition = GetRenderPosition();
+            transform.hasChanged = false;
         }
     }
 
@@ -212,6 +229,17 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
+    public void SetSyncTransform(bool sync)
+    {
+        syncTransformPosition = sync;
+        if (IsInitialized)
+        {
+            manager.SetTransformSync(roleId, this, sync && isActiveAndEnabled);
+            if (sync)
+                transform.hasChanged = true;
+        }
+    }
+
     public void SetAnimTime(float time)
     {
         if (IsInitialized)
@@ -228,10 +256,12 @@ public class GPUAgent : MonoBehaviour
     private void Sync(bool force)
     {
         Vector3 renderPosition = GetRenderPosition();
-        if (syncTransformPosition && (force || renderPosition != lastPosition))
+        if (force || (syncTransformPosition && renderPosition != lastPosition))
         {
             manager.SetPosition(roleId, renderPosition);
             lastPosition = renderPosition;
+            if (force)
+                transform.hasChanged = false;
         }
 
         if (force || characterName != lastCharacterName)

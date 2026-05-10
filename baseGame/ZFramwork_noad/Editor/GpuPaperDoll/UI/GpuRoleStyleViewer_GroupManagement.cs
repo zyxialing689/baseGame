@@ -85,6 +85,14 @@ public partial class GpuRoleStyleViewer
             }
             EditorGUILayout.EndHorizontal();
 
+            // canBeNone 开关
+            bool newCanBeNone = EditorGUILayout.ToggleLeft("允许全隐藏 (canBeNone)", eg.canBeNone);
+            if (newCanBeNone != eg.canBeNone)
+            {
+                eg.canBeNone = newCanBeNone;
+                AutoSave();
+            }
+
             // 成员列表
             var memberNames = _core.GetExclusiveGroupMemberNames(eg.exclusiveGroupId);
             if (memberNames.Count > 0)

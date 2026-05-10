@@ -45,7 +45,8 @@ public class GpuRolePersistence
             exclusiveGroupId = eg.exclusiveGroupId,
             groupName = eg.groupName,
             memberGroupIds = eg.memberGroupIds,
-            memberSlotIndices = eg.memberSlotIndices
+            memberSlotIndices = eg.memberSlotIndices,
+            canBeNone = eg.canBeNone
         }).ToList();
         EditorPrefs.SetString(PrefsKey_ExclusiveGroupsJson,
             JsonUtility.ToJson(new ExclusiveGroupListWrapper { items = exclGroupsForSave }));
@@ -71,14 +72,22 @@ public class GpuRolePersistence
                 localScaleX = s.localScale.x,
                 localScaleY = s.localScale.y,
                 localScaleZ = s.localScale.z,
-                bindPose00 = s.bindPoseToRoot.m00, bindPose01 = s.bindPoseToRoot.m10,
-                bindPose02 = s.bindPoseToRoot.m20, bindPose03 = s.bindPoseToRoot.m30,
-                bindPose10 = s.bindPoseToRoot.m01, bindPose11 = s.bindPoseToRoot.m11,
-                bindPose12 = s.bindPoseToRoot.m21, bindPose13 = s.bindPoseToRoot.m31,
-                bindPose20 = s.bindPoseToRoot.m02, bindPose21 = s.bindPoseToRoot.m12,
-                bindPose22 = s.bindPoseToRoot.m22, bindPose23 = s.bindPoseToRoot.m32,
-                bindPose30 = s.bindPoseToRoot.m03, bindPose31 = s.bindPoseToRoot.m13,
-                bindPose32 = s.bindPoseToRoot.m23, bindPose33 = s.bindPoseToRoot.m33,
+                bindPose00 = s.bindPoseToRoot.m00,
+                bindPose01 = s.bindPoseToRoot.m10,
+                bindPose02 = s.bindPoseToRoot.m20,
+                bindPose03 = s.bindPoseToRoot.m30,
+                bindPose10 = s.bindPoseToRoot.m01,
+                bindPose11 = s.bindPoseToRoot.m11,
+                bindPose12 = s.bindPoseToRoot.m21,
+                bindPose13 = s.bindPoseToRoot.m31,
+                bindPose20 = s.bindPoseToRoot.m02,
+                bindPose21 = s.bindPoseToRoot.m12,
+                bindPose22 = s.bindPoseToRoot.m22,
+                bindPose23 = s.bindPoseToRoot.m32,
+                bindPose30 = s.bindPoseToRoot.m03,
+                bindPose31 = s.bindPoseToRoot.m13,
+                bindPose32 = s.bindPoseToRoot.m23,
+                bindPose33 = s.bindPoseToRoot.m33,
             }).ToList();
             EditorPrefs.SetString(PrefsKey_SlotDefsJson,
                 JsonUtility.ToJson(new SlotDefListWrapper { items = defsForSave }));
@@ -91,12 +100,13 @@ public class GpuRolePersistence
             groupName = g.groupName,
             groupSpritePath = g.groupSpritePath,
             groupSpriteFolder = g.groupSpriteFolder,
-            exclusiveGroupId = g.exclusiveGroupId
+            exclusiveGroupId = g.exclusiveGroupId,
+            canBeEmpty = g.canBeEmpty
         }).ToList();
         EditorPrefs.SetString(PrefsKey_GroupsJson,
             JsonUtility.ToJson(new GroupListWrapper { items = groupsForSave }));
 
-                // 样式槽位
+        // 样式槽位
         var slotsForSave = styleSlots.Select(s => new SlotDataForSave
         {
             slotKey = s.slotKey,
@@ -105,10 +115,14 @@ public class GpuRolePersistence
             spriteFolder = s.spriteFolder,
             spritePath = s.sprite != null ? AssetDatabase.GetAssetPath(s.sprite) : "",
             spriteName = s.sprite != null ? s.sprite.name : "",
-            colorR = s.color.r, colorG = s.color.g, colorB = s.color.b, colorA = s.color.a,
+            colorR = s.color.r,
+            colorG = s.color.g,
+            colorB = s.color.b,
+            colorA = s.color.a,
             linkedGroupId = s.linkedGroupId,
             linkedSubSpriteName = s.linkedSubSpriteName,
-            exclusiveGroupId = s.exclusiveGroupId
+            exclusiveGroupId = s.exclusiveGroupId,
+            canBeEmpty = s.canBeEmpty
         }).ToList();
         EditorPrefs.SetString(PrefsKey_SlotsJson,
             JsonUtility.ToJson(new SlotListWrapper { items = slotsForSave }));
@@ -155,6 +169,7 @@ public class GpuRolePersistence
                     {
                         exclusiveGroupId = eg.exclusiveGroupId,
                         groupName = eg.groupName,
+                        canBeNone = eg.canBeNone,
                         memberGroupIds = eg.memberGroupIds ?? new List<int>(),
                         memberSlotIndices = eg.memberSlotIndices ?? new List<int>()
                     };
@@ -210,7 +225,8 @@ public class GpuRolePersistence
                     groupName = g.groupName,
                     groupSpritePath = g.groupSpritePath,
                     groupSpriteFolder = g.groupSpriteFolder,
-                    exclusiveGroupId = g.exclusiveGroupId
+                    exclusiveGroupId = g.exclusiveGroupId,
+                    canBeEmpty = g.canBeEmpty
                 });
             }
         }
@@ -223,7 +239,7 @@ public class GpuRolePersistence
             foreach (var sd in slotWrapper.items)
             {
                 Sprite sprite = LoadSpriteByPathAndName(sd.spritePath, sd.spriteName);
-                                result.loadedStyleSlots.Add(new GpuRoleStyleSlot
+                result.loadedStyleSlots.Add(new GpuRoleStyleSlot
                 {
                     slotKey = sd.slotKey,
                     slotName = sd.slotName,
@@ -233,7 +249,8 @@ public class GpuRolePersistence
                     color = new Color(sd.colorR, sd.colorG, sd.colorB, sd.colorA),
                     linkedGroupId = sd.linkedGroupId,
                     linkedSubSpriteName = sd.linkedSubSpriteName,
-                    exclusiveGroupId = sd.exclusiveGroupId
+                    exclusiveGroupId = sd.exclusiveGroupId,
+                    canBeEmpty = sd.canBeEmpty
                 });
             }
         }
@@ -267,7 +284,7 @@ public class GpuRolePersistence
         EditorPrefs.DeleteKey(PrefsKey_SlotDefsJson);
     }
 
-        private Sprite LoadSpriteByPathAndName(string path, string spriteName)
+    private Sprite LoadSpriteByPathAndName(string path, string spriteName)
     {
         return GpuRoleUtility.LoadSpriteByPathAndName(path, spriteName);
     }
@@ -304,15 +321,15 @@ public class GpuRolePersistence
     [Serializable]
     private class SlotDefListWrapper { public List<SlotDefForSave> items; }
     [Serializable]
-    private class GroupDataForSave { public int groupId; public string groupName, groupSpritePath, groupSpriteFolder; public int exclusiveGroupId = -1; }
+    private class GroupDataForSave { public int groupId; public string groupName, groupSpritePath, groupSpriteFolder; public int exclusiveGroupId = -1; public bool canBeEmpty = true; }
     [Serializable]
     private class GroupListWrapper { public List<GroupDataForSave> items; }
     [Serializable]
-    private class SlotDataForSave { public string slotKey, slotName, aliasName, spriteFolder, spritePath, spriteName; public float colorR, colorG, colorB, colorA; public int linkedGroupId; public string linkedSubSpriteName; public int exclusiveGroupId = -1; }
+    private class SlotDataForSave { public string slotKey, slotName, aliasName, spriteFolder, spritePath, spriteName; public float colorR, colorG, colorB, colorA; public int linkedGroupId; public string linkedSubSpriteName; public int exclusiveGroupId = -1; public bool canBeEmpty = true; }
     [Serializable]
     private class SlotListWrapper { public List<SlotDataForSave> items; }
     [Serializable]
-    private class ExclusiveGroupDataForSave { public int exclusiveGroupId; public string groupName; public List<int> memberGroupIds; public List<int> memberSlotIndices; }
+    private class ExclusiveGroupDataForSave { public int exclusiveGroupId; public string groupName; public List<int> memberGroupIds; public List<int> memberSlotIndices; public bool canBeNone = true; }
     [Serializable]
     private class ExclusiveGroupListWrapper { public List<ExclusiveGroupDataForSave> items; }
 }

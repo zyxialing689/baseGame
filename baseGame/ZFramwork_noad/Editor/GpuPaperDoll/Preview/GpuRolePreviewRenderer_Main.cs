@@ -12,6 +12,8 @@ public class GpuRolePreviewRenderer_Main
     private PreviewRenderUtility _previewUtil;
     private GameObject _rootObject;
     private List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
+    private List<Material> _materials = new List<Material>();
+    private MeshRenderer _shadowRenderer;
     // slotKey → SpriteRenderer 映射，用于 slotKey 安全匹配
     private Dictionary<string, SpriteRenderer> _rendererBySlotKey = new Dictionary<string, SpriteRenderer>();
 
@@ -27,6 +29,12 @@ public class GpuRolePreviewRenderer_Main
     public void Build(List<GpuRoleSlot> slotDefs, List<GpuRoleStyleSlot> styleSlots,
         Vector3 rootPos = default, Quaternion rootRot = default, Vector3 rootScale = default)
     {
+        Build(slotDefs, styleSlots, rootPos, rootRot, rootScale, true, Vector2.zero, new Vector2(1.4f, 0.35f), new Color(0f, 0f, 0f, 0.35f));
+    }
+
+    public void Build(List<GpuRoleSlot> slotDefs, List<GpuRoleStyleSlot> styleSlots,
+        Vector3 rootPos, Quaternion rootRot, Vector3 rootScale, bool showShadow, Vector2 shadowOffset, Vector2 shadowSize, Color shadowColor)
+    {
         Cleanup();
         if (slotDefs == null || styleSlots == null || slotDefs.Count == 0) return;
 
@@ -41,6 +49,8 @@ public class GpuRolePreviewRenderer_Main
         _rootObject.transform.localPosition = Vector3.zero;
         _rootObject.transform.localRotation = Quaternion.identity;
         _rootObject.transform.localScale = Vector3.one;
+
+        CreateShadow(showShadow, shadowOffset, shadowSize, shadowColor);
 
         // 为每个 slot 创建 SpriteRenderer
         int count = Mathf.Min(slotDefs.Count, styleSlots.Count);
@@ -232,6 +242,13 @@ public class GpuRolePreviewRenderer_Main
     public void Cleanup()
     {
         _renderers.Clear();
+        foreach (var mat in _materials)
+        {
+            if (mat != null)
+                UnityEngine.Object.DestroyImmediate(mat);
+        }
+        _materials.Clear();
+        _shadowRenderer = null;
         _rendererBySlotKey.Clear();
         _hasInitialBounds = false;
         if (_rootObject != null)
@@ -263,7 +280,60 @@ public class GpuRolePreviewRenderer_Main
             else bounds.Encapsulate(r.bounds);
         }
 
+        if (_shadowRenderer != null && _shadowRenderer.enabled)
+        {
+            if (!hasBounds) { bounds = _shadowRenderer.bounds; hasBounds = true; }
+            else bounds.Encapsulate(_shadowRenderer.bounds);
+        }
+
         return hasBounds ? bounds : new Bounds(Vector3.zero, Vector3.one * 2f);
+    }
+
+    private void CreateShadow(bool showShadow, Vector2 offset, Vector2 size, Color color)
+    {
+        if (!showShadow || color.a <= 0f || size.x <= 0f || size.y <= 0f)
+            return;
+
+        GameObject go = new GameObject("Preview_Shadow");
+        go.hideFlags = HideFlags.HideAndDontSave;
+        go.transform.SetParent(_rootObject.transform, false);
+        go.transform.localPosition = new Vector3(offset.x, offset.y, 0.5f);
+
+        MeshFilter mf = go.AddComponent<MeshFilter>();
+        _shadowRenderer = go.AddComponent<MeshRenderer>();
+        mf.sharedMesh = CreateEllipseMesh(size);
+
+        Material mat = new Material(Shader.Find("Sprites/Default"));
+        mat.mainTexture = Texture2D.whiteTexture;
+        mat.color = color;
+        mat.hideFlags = HideFlags.HideAndDontSave;
+        _shadowRenderer.sharedMaterial = mat;
+        _materials.Add(mat);
+    }
+
+    private Mesh CreateEllipseMesh(Vector2 size)
+    {
+        const int segments = 48;
+        Mesh mesh = new Mesh();
+        Vector3[] vertices = new Vector3[segments + 1];
+        int[] triangles = new int[segments * 3];
+        vertices[0] = Vector3.zero;
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = i / (float)segments * Mathf.PI * 2f;
+            vertices[i + 1] = new Vector3(Mathf.Cos(angle) * size.x * 0.5f, Mathf.Sin(angle) * size.y * 0.5f, 0f);
+        }
+        for (int i = 0; i < segments; i++)
+        {
+            int tri = i * 3;
+            triangles[tri] = 0;
+            triangles[tri + 1] = i + 1;
+            triangles[tri + 2] = i == segments - 1 ? 1 : i + 2;
+        }
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateBounds();
+        return mesh;
     }
 
     private void SetupCamera(PreviewRenderUtility util)

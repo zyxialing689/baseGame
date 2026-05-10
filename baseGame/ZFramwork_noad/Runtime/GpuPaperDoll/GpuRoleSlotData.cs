@@ -47,6 +47,6 @@ public class GpuRoleSlot
     public Matrix4x4 bindPoseToRoot;
     public SpriteMaskInteraction maskInteraction;
 
-    public int drawOrder; // 原 prefab 中 SpriteRenderer 的稳定绘制顺序，用于同 sortingOrder 内部打破平级
-    public int internalOrder; // 预先计算的最终内部排序值：sortingOrder * InternalOrderStep + drawOrder
+    public int drawOrder;
+    public int internalOrder;
 }

@@ -129,6 +129,31 @@ public class GpuRoleExclusiveManager
         if (eg != null) eg.memberSlotIndices.Remove(slotIndex);
     }
 
+    public void RemoveSlotIndexAndShift(int removedSlotIndex)
+    {
+        if (removedSlotIndex < 0)
+            return;
+
+        foreach (var eg in _exclusiveGroups)
+        {
+            if (eg.memberSlotIndices == null)
+                continue;
+
+            for (int i = eg.memberSlotIndices.Count - 1; i >= 0; i--)
+            {
+                int index = eg.memberSlotIndices[i];
+                if (index == removedSlotIndex)
+                {
+                    eg.memberSlotIndices.RemoveAt(i);
+                }
+                else if (index > removedSlotIndex)
+                {
+                    eg.memberSlotIndices[i] = index - 1;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// 解散互斥组
     /// </summary>

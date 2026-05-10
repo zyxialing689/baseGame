@@ -15,7 +15,12 @@ public partial class GpuRoleStyleViewer
         if (string.IsNullOrEmpty(path)) return;
 
         var data = ScriptableObject.CreateInstance<GpuRoleStyleData>();
+        data.name = System.IO.Path.GetFileNameWithoutExtension(path);
         data.generatedAt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        data.useShadow = _core.UseShadow;
+        data.shadowOffset = _core.ShadowOffset;
+        data.shadowSize = _core.ShadowSize;
+        data.shadowColor = _core.ShadowColor;
 
         // 保存槽位定义（骨骼数据）
         data.slotDefs = new List<GpuRoleSlotDefData>();
@@ -65,13 +70,13 @@ public partial class GpuRoleStyleViewer
                 bindPose31 = s.bindPoseToRoot.m13,
                 bindPose32 = s.bindPoseToRoot.m23,
                 bindPose33 = s.bindPoseToRoot.m33,
-                                maskInteraction = s.maskInteraction,
+                maskInteraction = s.maskInteraction,
                 drawOrder = s.drawOrder,
                 internalOrder = s.internalOrder
             });
         }
 
-                // 保存样式槽位
+        // 保存样式槽位
         data.slots = new List<GpuRoleStyleSlot>();
         foreach (var s in _core.StyleSlots)
             data.slots.Add(new GpuRoleStyleSlot
@@ -84,7 +89,8 @@ public partial class GpuRoleStyleViewer
                 color = s.color,
                 linkedGroupId = s.linkedGroupId,
                 linkedSubSpriteName = s.linkedSubSpriteName,
-                exclusiveGroupId = s.exclusiveGroupId
+                exclusiveGroupId = s.exclusiveGroupId,
+                canBeEmpty = s.canBeEmpty
             });
 
         // 保存组数据
@@ -98,7 +104,8 @@ public partial class GpuRoleStyleViewer
                 groupName = g.groupName,
                 groupSprite = groupSprite,
                 groupSpritePath = g.groupSpritePath,
-                groupSpriteFolder = g.groupSpriteFolder
+                groupSpriteFolder = g.groupSpriteFolder,
+                canBeEmpty = g.canBeEmpty
             });
         }
 
@@ -111,7 +118,8 @@ public partial class GpuRoleStyleViewer
                 exclusiveGroupId = eg.exclusiveGroupId,
                 groupName = eg.groupName,
                 memberGroupIds = new List<int>(eg.memberGroupIds),
-                memberSlotIndices = new List<int>(eg.memberSlotIndices)
+                memberSlotIndices = new List<int>(eg.memberSlotIndices),
+                canBeNone = eg.canBeNone
             });
         }
 
@@ -153,6 +161,11 @@ public partial class GpuRoleStyleViewer
     private void LoadFromStyleAsset(GpuRoleStyleData data)
     {
         if (data == null) { _messages.Add("Style asset is null."); return; }
+
+        _core.UseShadow = data.useShadow;
+        _core.ShadowOffset = data.shadowOffset;
+        _core.ShadowSize = data.shadowSize == Vector2.zero ? new Vector2(1.4f, 0.35f) : data.shadowSize;
+        _core.ShadowColor = data.shadowColor.a <= 0f ? new Color(0f, 0f, 0f, 0.35f) : data.shadowColor;
 
         // 从 asset 中恢复槽位定义（骨骼数据），完全自包含，不依赖 Prefab
         if (data.slotDefs == null || data.slotDefs.Count == 0)
@@ -199,7 +212,7 @@ public partial class GpuRoleStyleViewer
                     new Vector4(sd.bindPose20, sd.bindPose21, sd.bindPose22, sd.bindPose23),
                     new Vector4(sd.bindPose30, sd.bindPose31, sd.bindPose32, sd.bindPose33)
                 ),
-                                maskInteraction = sd.maskInteraction,
+                maskInteraction = sd.maskInteraction,
                 drawOrder = sd.drawOrder,
                 internalOrder = sd.internalOrder
             });
@@ -213,7 +226,7 @@ public partial class GpuRoleStyleViewer
         foreach (var sd in slotDefs)
         {
             var saved = data.slots?.FirstOrDefault(s => s.slotKey == sd.slotKey);
-                        styleSlots.Add(new GpuRoleStyleSlot
+            styleSlots.Add(new GpuRoleStyleSlot
             {
                 slotKey = sd.slotKey,
                 slotName = sd.slotName,
@@ -223,7 +236,8 @@ public partial class GpuRoleStyleViewer
                 color = saved?.color ?? Color.white,
                 linkedGroupId = saved?.linkedGroupId ?? -1,
                 linkedSubSpriteName = saved?.linkedSubSpriteName ?? sd.slotName,
-                exclusiveGroupId = saved?.exclusiveGroupId ?? -1
+                exclusiveGroupId = saved?.exclusiveGroupId ?? -1,
+                canBeEmpty = saved?.canBeEmpty ?? true
             });
         }
         _core.SlotManager.SetStyleSlotsDirect(styleSlots);
@@ -247,6 +261,10 @@ public partial class GpuRoleStyleViewer
                 }
                 if (!string.IsNullOrEmpty(g.groupSpriteFolder))
                     _core.SetGroupSpriteFolder(newId, g.groupSpriteFolder);
+                // 恢复 canBeEmpty
+                var newGroup = _core.Groups.FirstOrDefault(gr => gr.groupId == newId);
+                if (newGroup != null)
+                    newGroup.canBeEmpty = g.canBeEmpty;
             }
 
             // 重新映射 styleSlots 中的 linkedGroupId
@@ -270,6 +288,7 @@ public partial class GpuRoleStyleViewer
                 {
                     entry.exclusiveGroupId = eg.exclusiveGroupId;
                     entry.groupName = eg.groupName;
+                    entry.canBeNone = eg.canBeNone;
 
                     // 重新映射 memberGroupIds（使用 groupIdMap）
                     entry.memberGroupIds.Clear();
@@ -310,7 +329,7 @@ public partial class GpuRoleStyleViewer
         Repaint();
     }
 
-        private string GetRelativePath(string fullPath)
+    private string GetRelativePath(string fullPath)
     {
         return GpuRoleUtility.GetRelativePath(fullPath);
     }

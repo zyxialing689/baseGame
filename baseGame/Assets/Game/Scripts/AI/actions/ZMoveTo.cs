@@ -9,14 +9,14 @@ public class ZMoveTo : Action
     public float moveSpeed = 1f;
     private int pathIndex;
     private List<Vector3> curPath;
-    private GPUAgent gpuAgent;
+    private GpuRoleAgent gpuAgent;
     private TaskStatus status = TaskStatus.Running;
     public override void OnStart()
     {
 
         curPath = path.Value;
-        gpuAgent = gameObject.GetComponent<GPUAgent>();
-        moveSpeed = 1 + Random.value*gpuAgent.baseMoveSpeed;
+        gpuAgent = gameObject.GetComponent<GpuRoleAgent>();
+        moveSpeed = 1 + Random.value * gpuAgent.baseMoveSpeed;
         gpuAgent.SetAnimTime(Random.value);
         gpuAgent.SetMoveAnimSpeed(moveSpeed);
         if (curPath == null || curPath.Count == 0)
@@ -30,6 +30,7 @@ public class ZMoveTo : Action
             pathIndex = 0;
 
         status = TaskStatus.Running; // ⭐ 重置
+        gpuAgent.TryPlay("MOVE");
     }
 
     public override TaskStatus OnUpdate()
@@ -61,6 +62,7 @@ public class ZMoveTo : Action
             if (pathIndex >= curPath.Count)
             {
                 status = TaskStatus.Success; // ⭐ 改状态
+                gpuAgent.TryPlay("IDLE");
                 return;
             }
 

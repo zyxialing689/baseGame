@@ -11,6 +11,7 @@ public class ExclusiveGroupEntry
     public string groupName;
     public List<int> memberGroupIds = new List<int>();
     public List<int> memberSlotIndices = new List<int>();
+    public bool canBeNone = true;
 }
 
 /// <summary>
@@ -24,4 +25,5 @@ public class GroupDataEntry
     public string groupSpritePath;
     public string groupSpriteFolder;
     public int exclusiveGroupId = -1;
+    public bool canBeEmpty = true;
 }

@@ -58,6 +58,7 @@ Shader "GpuPaperDoll/GpuRuntime"
             StructuredBuffer<float4> _InstanceData;
             StructuredBuffer<float4> _InstanceUVRects;
             StructuredBuffer<float4x4> _InstanceSpriteMatrices;
+            StructuredBuffer<int> _AgentRemap;
 
             Varyings Vert(Attributes v, uint instanceID : SV_InstanceID)
             {
@@ -65,13 +66,16 @@ Shader "GpuPaperDoll/GpuRuntime"
 
                 float4 instData = _InstanceData[instanceID];
                 uint agentIndex = (uint)instData.x;
+                agentIndex = (uint)_AgentRemap[agentIndex];
                 float animSlotIndex = instData.y;
 
                 float4 animState = _AgentAnimData[agentIndex];
                 float4 animExtra = _AgentAnimExtraData[agentIndex];
                 float frameCount = max(animState.w, 1.0);
-                float frameIndex = floor(max(0.0, (_Time.y - animState.x) * animState.y) * animState.z);
-                frameIndex = fmod(frameIndex, frameCount);
+                float elapsed = max(0.0, _Time.y - animState.x);
+                float duration = frameCount / max(animState.y * animState.z, 0.001);
+                elapsed = elapsed - floor(elapsed / duration) * duration;
+                float frameIndex = min(floor(elapsed * animState.y * animState.z), frameCount - 1.0);
 
                 float texWidth = _AnimSlotCount * 3.0;
                 float y = (animExtra.x + frameIndex + 0.5) / _AnimTexHeight;
@@ -101,6 +105,12 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float3 worldPos = mul(_AgentMatrices[agentIndex], localPos).xyz;
 
                 o.positionCS = TransformWorldToHClip(worldPos);
+                float depthBias = animExtra.y;
+                #if UNITY_REVERSED_Z
+                    o.positionCS.z += depthBias * o.positionCS.w;
+                #else
+                    o.positionCS.z -= depthBias * o.positionCS.w;
+                #endif
 
                 float4 uvRect = _InstanceUVRects[instanceID];
                 o.uv = float2(lerp(uvRect.x, uvRect.z, v.uv.x), lerp(uvRect.y, uvRect.w, v.uv.y));
@@ -158,6 +168,7 @@ Shader "GpuPaperDoll/GpuRuntime"
             StructuredBuffer<float4> _InstanceData;
             StructuredBuffer<float4> _InstanceUVRects;
             StructuredBuffer<float4x4> _InstanceSpriteMatrices;
+            StructuredBuffer<int> _AgentRemap;
 
             Varyings Vert(Attributes v, uint instanceID : SV_InstanceID)
             {
@@ -165,13 +176,16 @@ Shader "GpuPaperDoll/GpuRuntime"
 
                 float4 instData = _InstanceData[instanceID];
                 uint agentIndex = (uint)instData.x;
+                agentIndex = (uint)_AgentRemap[agentIndex];
                 float animSlotIndex = instData.y;
 
                 float4 animState = _AgentAnimData[agentIndex];
                 float4 animExtra = _AgentAnimExtraData[agentIndex];
                 float frameCount = max(animState.w, 1.0);
-                float frameIndex = floor(max(0.0, (_Time.y - animState.x) * animState.y) * animState.z);
-                frameIndex = fmod(frameIndex, frameCount);
+                float elapsed = max(0.0, _Time.y - animState.x);
+                float duration = frameCount / max(animState.y * animState.z, 0.001);
+                elapsed = elapsed - floor(elapsed / duration) * duration;
+                float frameIndex = min(floor(elapsed * animState.y * animState.z), frameCount - 1.0);
 
                 float texWidth = _AnimSlotCount * 3.0;
                 float y = (animExtra.x + frameIndex + 0.5) / _AnimTexHeight;
@@ -201,6 +215,12 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float3 worldPos = mul(_AgentMatrices[agentIndex], localPos).xyz;
 
                 o.positionCS = TransformWorldToHClip(worldPos);
+                float depthBias = animExtra.y;
+                #if UNITY_REVERSED_Z
+                    o.positionCS.z += depthBias * o.positionCS.w;
+                #else
+                    o.positionCS.z -= depthBias * o.positionCS.w;
+                #endif
 
                 float4 uvRect = _InstanceUVRects[instanceID];
                 o.uv = float2(lerp(uvRect.x, uvRect.z, v.uv.x), lerp(uvRect.y, uvRect.w, v.uv.y));

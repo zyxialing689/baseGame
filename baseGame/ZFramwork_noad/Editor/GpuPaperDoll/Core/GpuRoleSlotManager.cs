@@ -66,6 +66,19 @@ public class GpuRoleSlotManager
         return index >= 0 && index < _styleSlots.Count ? _styleSlots[index] : null;
     }
 
+    public bool RemoveSlotAt(int index)
+    {
+        if (index < 0 || index >= _styleSlots.Count)
+            return false;
+
+        if (index < _slotDefinitions.Count)
+            _slotDefinitions.RemoveAt(index);
+
+        _styleSlots.RemoveAt(index);
+        ReassignSlotIds();
+        return true;
+    }
+
     public List<int> GetSlotIndicesInGroup(int groupId)
     {
         List<int> indices = new List<int>();
@@ -182,5 +195,17 @@ public class GpuRoleSlotManager
             });
         }
         return slots;
+    }
+
+    private void ReassignSlotIds()
+    {
+        for (int i = 0; i < _slotDefinitions.Count; i++)
+        {
+            if (_slotDefinitions[i] != null)
+            {
+                _slotDefinitions[i].slotId = i;
+                _slotDefinitions[i].drawOrder = i;
+            }
+        }
     }
 }

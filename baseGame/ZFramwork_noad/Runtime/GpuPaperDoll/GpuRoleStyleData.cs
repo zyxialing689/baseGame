@@ -6,6 +6,10 @@ using UnityEngine;
 public class GpuRoleStyleData : ScriptableObject
 {
     public string generatedAt;
+    public bool useShadow = true;
+    public Vector2 shadowOffset = Vector2.zero;
+    public Vector2 shadowSize = new Vector2(1.4f, 0.35f);
+    public Color shadowColor = new Color(0f, 0f, 0f, 0.35f);
     public List<GpuRoleSlotDefData> slotDefs = new List<GpuRoleSlotDefData>();
     public List<GpuRoleStyleSlot> slots = new List<GpuRoleStyleSlot>();
     public List<GpuRoleLinkedGroup> groups = new List<GpuRoleLinkedGroup>();
@@ -58,6 +62,7 @@ public class GpuRoleExclusiveGroupData
     public string groupName;
     public List<int> memberGroupIds = new List<int>();
     public List<int> memberSlotIndices = new List<int>();
+    public bool canBeNone = true;
 }
 
 [Serializable]
@@ -72,6 +77,7 @@ public class GpuRoleStyleSlot
     public int linkedGroupId = -1; // -1 表示不联动，相同 id 的槽位属于一个联动组
     public string linkedSubSpriteName = ""; // 在联动组大图中对应的子 sprite 名
     public int exclusiveGroupId = -1; // -1 表示不互斥，相同 id 的槽位属于一个互斥组
+    public bool canBeEmpty = true; // 是否允许隐藏（不渲染）
 }
 
 [Serializable]
@@ -82,4 +88,5 @@ public class GpuRoleLinkedGroup
     public Sprite groupSprite; // 整张大图
     public string groupSpritePath; // 大图路径
     public string groupSpriteFolder; // 组目录
+    public bool canBeEmpty = true; // 是否允许隐藏（不渲染）
 }

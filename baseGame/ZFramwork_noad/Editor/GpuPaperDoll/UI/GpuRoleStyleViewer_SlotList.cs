@@ -79,6 +79,19 @@ public partial class GpuRoleStyleViewer
         string newName = EditorGUILayout.TextField(gName, GUILayout.Width(200));
         if (newName != gName) _core.SetGroupName(groupId, newName);
 
+        // 是否可以隐藏
+        var groupData = _core.Groups.FirstOrDefault(g => g.groupId == groupId);
+        if (groupData != null)
+        {
+            EditorGUI.BeginChangeCheck();
+            bool newCanBeEmpty = EditorGUILayout.ToggleLeft("Can Hide", groupData.canBeEmpty, GUILayout.Width(80));
+            if (EditorGUI.EndChangeCheck())
+            {
+                groupData.canBeEmpty = newCanBeEmpty;
+                changed = true;
+            }
+        }
+
         if (GUILayout.Button("Dissolve Group", GUILayout.Width(120)))
         {
             for (int i = 0; i < _core.StyleSlots.Count; i++)
@@ -448,11 +461,45 @@ public partial class GpuRoleStyleViewer
         bool changed = false;
         var slot = _core.StyleSlots[index];
 
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField(slot.slotName, EditorStyles.boldLabel);
+        GUI.backgroundColor = new Color(0.85f, 0.35f, 0.35f, 1f);
+        if (GUILayout.Button("Delete Slot", GUILayout.Width(100)))
+        {
+            GUI.backgroundColor = Color.white;
+            if (EditorUtility.DisplayDialog(
+                "Delete Slot",
+                $"Delete slot '{slot.slotName}'?\n\nKey: {slot.slotKey}\n\nThis removes it from the current style data. Re-export after deleting.",
+                "Delete",
+                "Cancel"))
+            {
+                string removedName = slot.slotName;
+                int removedGroupId = slot.linkedGroupId;
+                if (_core.RemoveSlotAt(index))
+                {
+                    if (removedGroupId >= 0)
+                        _renderer?.MarkGroupPreviewDirty(removedGroupId);
+
+                    _renderer?.CleanupAll();
+                    _renderer = new GpuRolePreviewRenderer();
+                    if (_core.HasData)
+                        RebuildPreview();
+
+                    AutoSave();
+                    _messages.Add($"Deleted slot: {removedName}.");
+                    _delayedPreviewRefresh = true;
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndVertical();
+                    return true;
+                }
+            }
+        }
+        GUI.backgroundColor = Color.white;
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.LabelField("Key: " + slot.slotKey);
 
-                // 别名（只有独立 Slot 才需要）
+        // 别名（只有独立 Slot 才需要）
         if (slot.linkedGroupId >= 0)
         {
             EditorGUILayout.LabelField("Alias", "--- (in group)");
@@ -468,6 +515,15 @@ public partial class GpuRoleStyleViewer
                 slot.aliasName = newAlias;
                 changed = true;
             }
+        }
+
+        // 是否可以隐藏
+        EditorGUI.BeginChangeCheck();
+        bool newCanBeEmpty = EditorGUILayout.ToggleLeft("Can Hide", slot.canBeEmpty);
+        if (EditorGUI.EndChangeCheck())
+        {
+            slot.canBeEmpty = newCanBeEmpty;
+            changed = true;
         }
 
         // 目录 - 支持拖拽文件夹

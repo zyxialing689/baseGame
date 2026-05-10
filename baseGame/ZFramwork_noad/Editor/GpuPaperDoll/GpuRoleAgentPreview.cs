@@ -14,6 +14,8 @@ public class GpuRoleAgentPreview
     private List<MeshRenderer> _renderers = new List<MeshRenderer>();
     private List<MeshFilter> _meshFilters = new List<MeshFilter>();
     private List<Material> _materials = new List<Material>();
+    private MeshRenderer _shadowRenderer;
+    private MeshFilter _shadowMeshFilter;
     private Dictionary<string, MeshRenderer> _rendererBySlotKey = new Dictionary<string, MeshRenderer>();
     private Bounds _initialBounds;
     private bool _hasInitialBounds;
@@ -29,6 +31,21 @@ public class GpuRoleAgentPreview
     /// </summary>
     public void Build(GpuRoleExportData exportData, int[] spriteIds, bool[] visible, Color color, float scale)
     {
+        Build(
+            exportData,
+            spriteIds,
+            visible,
+            color,
+            scale,
+            exportData != null && exportData.useShadow,
+            exportData != null ? exportData.shadowOffset : Vector2.zero,
+            exportData != null ? exportData.shadowSize : Vector2.zero,
+            exportData != null ? exportData.shadowColor : Color.clear
+        );
+    }
+
+    public void Build(GpuRoleExportData exportData, int[] spriteIds, bool[] visible, Color color, float scale, bool showShadow, Vector2 shadowOffset, Vector2 shadowSize, Color shadowColor)
+    {
         Cleanup();
         if (exportData == null || exportData.slots == null) return;
 
@@ -40,6 +57,7 @@ public class GpuRoleAgentPreview
         _rootObject.transform.localPosition = Vector3.zero;
         _rootObject.transform.localRotation = Quaternion.identity;
         _rootObject.transform.localScale = Vector3.one * scale;
+        CreateShadow(showShadow, shadowOffset, shadowSize, shadowColor);
 
         // 从动画第一帧读取 slot 颜色
         ReadFirstFrameColors(exportData);
@@ -51,7 +69,7 @@ public class GpuRoleAgentPreview
             GameObject go = new GameObject(slot.slotName);
             go.hideFlags = HideFlags.HideAndDontSave;
             go.transform.SetParent(_rootObject.transform, false);
-            go.transform.localPosition = slot.localPosition + new Vector3(0f, 0f, -slot.internalOrder * 0.001f);
+            go.transform.localPosition = slot.localPosition + new Vector3(0f, 0f, -i * 0.001f);
             go.transform.localRotation = Quaternion.Euler(slot.localEulerAngles);
             go.transform.localScale = slot.localScale;
 
@@ -195,6 +213,8 @@ public class GpuRoleAgentPreview
         _meshFilters.Clear();
         _renderers.Clear();
         _rendererBySlotKey.Clear();
+        _shadowRenderer = null;
+        _shadowMeshFilter = null;
         _hasInitialBounds = false;
 
         _frameColors = null;
@@ -296,6 +316,66 @@ public class GpuRoleAgentPreview
         return mesh;
     }
 
+    private void CreateShadow(bool showShadow, Vector2 offset, Vector2 size, Color color)
+    {
+        if (!showShadow || color.a <= 0f || size.x <= 0f || size.y <= 0f)
+            return;
+
+        GameObject go = new GameObject("Preview_Shadow");
+        go.hideFlags = HideFlags.HideAndDontSave;
+        go.transform.SetParent(_rootObject.transform, false);
+        go.transform.localPosition = new Vector3(offset.x, offset.y, 0.5f);
+        go.transform.localRotation = Quaternion.identity;
+
+        _shadowMeshFilter = go.AddComponent<MeshFilter>();
+        _shadowRenderer = go.AddComponent<MeshRenderer>();
+        _shadowMeshFilter.sharedMesh = CreateEllipseMesh(size);
+
+        Material mat = new Material(Shader.Find("Sprites/Default"));
+        mat.mainTexture = Texture2D.whiteTexture;
+        mat.color = color;
+        mat.hideFlags = HideFlags.HideAndDontSave;
+        _shadowRenderer.sharedMaterial = mat;
+        _shadowRenderer.enabled = true;
+        _materials.Add(mat);
+    }
+
+    private Mesh CreateEllipseMesh(Vector2 size)
+    {
+        const int segments = 48;
+        Mesh mesh = new Mesh();
+        mesh.name = "PreviewShadowEllipse";
+
+        Vector3[] vertices = new Vector3[segments + 1];
+        Vector2[] uvs = new Vector2[segments + 1];
+        int[] triangles = new int[segments * 3];
+
+        vertices[0] = Vector3.zero;
+        uvs[0] = new Vector2(0.5f, 0.5f);
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = i / (float)segments * Mathf.PI * 2f;
+            float x = Mathf.Cos(angle) * size.x * 0.5f;
+            float y = Mathf.Sin(angle) * size.y * 0.5f;
+            vertices[i + 1] = new Vector3(x, y, 0f);
+            uvs[i + 1] = new Vector2(Mathf.Cos(angle) * 0.5f + 0.5f, Mathf.Sin(angle) * 0.5f + 0.5f);
+        }
+
+        for (int i = 0; i < segments; i++)
+        {
+            int tri = i * 3;
+            triangles[tri] = 0;
+            triangles[tri + 1] = i + 1;
+            triangles[tri + 2] = i == segments - 1 ? 1 : i + 2;
+        }
+
+        mesh.vertices = vertices;
+        mesh.uv = uvs;
+        mesh.triangles = triangles;
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+
     private Bounds CalculateBounds()
     {
         bool hasBounds = false;
@@ -309,6 +389,12 @@ public class GpuRoleAgentPreview
 
             if (!hasBounds) { bounds = mr.bounds; hasBounds = true; }
             else bounds.Encapsulate(mr.bounds);
+        }
+
+        if (_shadowRenderer != null && _shadowRenderer.enabled)
+        {
+            if (!hasBounds) { bounds = _shadowRenderer.bounds; hasBounds = true; }
+            else bounds.Encapsulate(_shadowRenderer.bounds);
         }
 
         return hasBounds ? bounds : new Bounds(Vector3.zero, Vector3.one * 2f);

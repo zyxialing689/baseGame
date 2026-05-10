@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 294933517273338543}
   - component: {fileID: 294933517273338537}
-  - component: {fileID: 2616777245876948086}
+  - component: {fileID: 2737936814965705536}
   m_Layer: 0
   m_Name: ROLE0
   m_TagString: Untagged
@@ -73,7 +73,7 @@ MonoBehaviour:
       Version: 1.7.13
   gizmoViewMode: 2
   showBehaviorDesignerGizmo: 1
---- !u!114 &2616777245876948086
+--- !u!114 &2737936814965705536
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -82,21 +82,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 294933517273338542}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d7ceebfaac841645a3499973623f105, type: 3}
+  m_Script: {fileID: 11500000, guid: 4833c5a3a2d71f3468ff6ad3552a1aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   exportData: {fileID: 11400000, guid: 1882f674f397f354b87c45e820e80931, type: 2}
-  animIndex: 5
+  animIndex: 0
   playbackSpeed: 1
+  baseMoveSpeed: 1
   playOnEnable: 1
   initialGroupVariants:
-  - Elf_2
+  - Orc_1
   - 
   - Armor_7
-  - Eye3
+  - Eye
   - 
-  - 
-  initialIndependentSlotSpriteIds: 020000001a000000ffffffffffffffffffffffff47000000ffffffff3e000000ffffffff00000000
+  - Foot_3
+  initialIndependentSlotSpriteIds: 25000000ffffffff3e00000098000000ffffffff0000000031000000ffffffff
   color: {r: 1, g: 1, b: 1, a: 1}
   scale: 1
-  showDebugLog: 0
+  visible: 1
+  useShadow: 1
+  overrideShadowSettings: 0
+  shadowOffset: {x: 0, y: 0}
+  shadowSize: {x: 1.4, y: 0.35}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.35}

@@ -167,7 +167,12 @@ public class GpuRoleExportInspectorWindow : EditorWindow
 
         // 2. 导出数据文件
         var exportData = ScriptableObject.CreateInstance<GpuRoleExportData>();
+        exportData.name = fileName;
         exportData.prefabName = _core.SourcePrefab != null ? _core.SourcePrefab.name : "Unknown";
+        exportData.useShadow = _core.UseShadow;
+        exportData.shadowOffset = _core.ShadowOffset;
+        exportData.shadowSize = _core.ShadowSize;
+        exportData.shadowColor = _core.ShadowColor;
 
         // 图集数据 - 从磁盘重新加载纹理
         for (int i = 0; i < atlasResult.atlases.Count; i++)
@@ -183,7 +188,7 @@ public class GpuRoleExportInspectorWindow : EditorWindow
             });
         }
 
-                // Sprite UV 数据
+        // Sprite UV 数据
         foreach (var entry in atlasResult.spriteUVs)
         {
             exportData.spriteUVs.Add(new SpriteUVData
@@ -210,11 +215,19 @@ public class GpuRoleExportInspectorWindow : EditorWindow
             });
         }
 
-        // Slot 数据
-        for (int i = 0; i < _core.SlotDefinitions.Count; i++)
+        // Slot 数据（按 internalOrder 排序导出）
+        var sortedIndices = Enumerable.Range(0, _core.SlotDefinitions.Count)
+            .OrderBy(idx => _core.SlotDefinitions[idx].internalOrder)
+            .ToList();
+        var indexMap = new Dictionary<int, int>(); // oldIndex -> newIndex
+        for (int n = 0; n < sortedIndices.Count; n++)
+            indexMap[sortedIndices[n]] = n;
+
+        for (int si = 0; si < sortedIndices.Count; si++)
         {
-            var def = _core.SlotDefinitions[i];
-            var slot = i < _core.StyleSlots.Count ? _core.StyleSlots[i] : null;
+            int oldIdx = sortedIndices[si];
+            var def = _core.SlotDefinitions[oldIdx];
+            var slot = oldIdx < _core.StyleSlots.Count ? _core.StyleSlots[oldIdx] : null;
 
             // 收集这个 slot 所有可选的 Sprite ID
             List<int> availableIds = new List<int>();
@@ -246,20 +259,20 @@ public class GpuRoleExportInspectorWindow : EditorWindow
 
             exportData.slots.Add(new SlotExportData
             {
-                slotId = i,
+                slotId = si,
                 slotKey = def.slotKey,
                 slotName = def.slotName,
                 aliasName = aliasName,
                 defaultSpriteId = slot != null && slot.sprite != null ? atlasResult.GetSpriteId(slot.sprite) : -1,
                 availableSpriteIds = availableIds.ToArray(),
-                canBeEmpty = true,
+                canBeEmpty = slot != null ? slot.canBeEmpty : true,
                 localPosition = bindPos,
                 localEulerAngles = bindRot.eulerAngles,
                 localScale = bindScale,
                 sortingOrder = def.sortingOrder,
                 sortingLayerId = def.sortingLayerId,
                 sortingLayerName = def.sortingLayerName,
-                internalOrder = def.internalOrder
+                internalOrder = 0 // 所有槽位合并到同一个 batch
             });
         }
 
@@ -313,8 +326,22 @@ public class GpuRoleExportInspectorWindow : EditorWindow
             {
                 groupId = g.groupId,
                 groupName = g.groupName,
-                slotIndices = indices.ToArray(),
+                slotIndices = indices.Select(idx => indexMap.ContainsKey(idx) ? indexMap[idx] : idx).ToArray(),
+                canBeEmpty = g.canBeEmpty,
                 variants = variants
+            });
+        }
+
+        // 互斥组数据
+        foreach (var eg in _core.ExclusiveGroups)
+        {
+            exportData.exclusiveGroups.Add(new ExclusiveGroupExportData
+            {
+                exclusiveGroupId = eg.exclusiveGroupId,
+                groupName = eg.groupName,
+                memberGroupIds = new List<int>(eg.memberGroupIds),
+                memberSlotIndices = new List<int>(eg.memberSlotIndices.Select(idx => indexMap.ContainsKey(idx) ? indexMap[idx] : idx)),
+                canBeNone = eg.canBeNone
             });
         }
 
@@ -356,7 +383,7 @@ public class GpuRoleExportInspectorWindow : EditorWindow
             }
         }
 
-                // 保存数据文件（覆盖时先删除再创建）
+        // 保存数据文件（覆盖时先删除再创建）
         CombineAnimDataTextures(exportData);
 
         var existing = AssetDatabase.LoadAssetAtPath<GpuRoleExportData>(_exportAssetPath);
@@ -370,6 +397,7 @@ public class GpuRoleExportInspectorWindow : EditorWindow
                     DestroyImmediate(a, true);
             }
             EditorUtility.CopySerialized(exportData, existing);
+            existing.name = fileName;
             if (exportData.combinedAnimDataTex != null)
             {
                 exportData.combinedAnimDataTex.name = "CombinedAnimData";
@@ -431,8 +459,9 @@ public class GpuRoleExportInspectorWindow : EditorWindow
     private void DrawSlotList()
     {
         EditorGUILayout.LabelField("=== Slot List ===", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("导出时按 internalOrder 排序，序号即绘制顺序", EditorStyles.miniLabel);
 
-        // 先显示联动组的 slot
+        // ── Slot 详情（可展开） ──
         foreach (var g in _core.Groups)
         {
             if (!_groupFoldouts.ContainsKey(g.groupId))
@@ -446,15 +475,12 @@ public class GpuRoleExportInspectorWindow : EditorWindow
                 EditorGUILayout.LabelField($"Sprite Folder: {g.groupSpriteFolder}");
 
                 var indices = _core.GetSlotIndicesInGroup(g.groupId);
-                foreach (int i in indices)
-                {
-                    DrawSlotItem(i);
-                }
+                foreach (int idx in indices)
+                    DrawSlotItem(idx);
                 EditorGUI.indentLevel--;
             }
         }
 
-        // 再显示非联动组的 slot
         for (int i = 0; i < _core.StyleSlots.Count; i++)
         {
             if (_core.StyleSlots[i].linkedGroupId >= 0) continue;
@@ -512,7 +538,8 @@ public class GpuRoleExportInspectorWindow : EditorWindow
             EditorGUILayout.LabelField($"Bind Pos: {bindPos}");
             EditorGUILayout.LabelField($"Bind Rot: {bindRot.eulerAngles}");
             EditorGUILayout.LabelField($"Bind Scale: {bindScale}");
-            EditorGUILayout.LabelField($"Draw Order: {slotDef.drawOrder} / Internal Order: {slotDef.internalOrder}");
+            EditorGUILayout.LabelField($"Draw Order: {slotDef.drawOrder} / Internal Order (raw): {slotDef.internalOrder}");
+            EditorGUILayout.LabelField($"导出时按 Internal Order 排序，序号决定绘制顺序", EditorStyles.miniLabel);
         }
     }
 

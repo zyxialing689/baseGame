@@ -11,14 +11,19 @@ using UnityEngine;
 public class GpuRoleExportData : ScriptableObject
 {
     public string prefabName;
+    public bool useShadow = true;
+    public Vector2 shadowOffset = Vector2.zero;
+    public Vector2 shadowSize = new Vector2(1.4f, 0.35f);
+    public Color shadowColor = new Color(0f, 0f, 0f, 0.35f);
     public List<AtlasData> atlases = new List<AtlasData>();
     public List<SpriteUVData> spriteUVs = new List<SpriteUVData>();
     public List<SlotExportData> slots = new List<SlotExportData>();
-    public List<GroupExportData> groups = new List<GroupExportData>();
+        public List<GroupExportData> groups = new List<GroupExportData>();
     public List<AnimExportData> animations = new List<AnimExportData>();
     public Texture2D combinedAnimDataTex;
     public int combinedAnimDataTexWidth;
     public int combinedAnimDataTexHeight;
+    public List<ExclusiveGroupExportData> exclusiveGroups = new List<ExclusiveGroupExportData>();
 }
 
 [Serializable]
@@ -71,7 +76,7 @@ public class SlotExportData
     public string aliasName;           // 别名，用于生成代码变量名
     public int defaultSpriteId;        // 默认 Sprite 的 ID
     public int[] availableSpriteIds;   // 所有可选的 Sprite ID（按顺序，运行时按索引选）
-    public bool canBeEmpty;            // 是否可以不渲染
+    public bool canBeEmpty = true;     // 是否可以不渲染
     public Vector3 localPosition;
     public Vector3 localEulerAngles;
     public Vector3 localScale;
@@ -87,6 +92,7 @@ public class GroupExportData
     public int groupId;
     public string groupName;
     public int[] slotIndices;              // 组内包含的 slot 索引
+    public bool canBeEmpty = true;         // 是否允许隐藏（不渲染）
     public List<GroupVariant> variants = new List<GroupVariant>();  // 方案列表
 }
 
@@ -95,4 +101,18 @@ public class GroupVariant
 {
     public string variantName;   // 方案名，如 "body_1"
     public int[] spriteIds;      // 每个 slot 对应的 Sprite ID（与 slotIndices 顺序一致）
+}
+
+/// <summary>
+/// 互斥组导出数据
+/// 用于运行时随机换装时保证互斥关系
+/// </summary>
+[Serializable]
+public class ExclusiveGroupExportData
+{
+    public int exclusiveGroupId;
+    public string groupName;
+    public List<int> memberGroupIds = new List<int>();      // 互斥的联动组 ID
+    public List<int> memberSlotIndices = new List<int>();   // 互斥的独立槽位索引
+    public bool canBeNone = true;
 }

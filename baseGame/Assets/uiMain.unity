@@ -132,7 +132,6 @@ GameObject:
   m_Component:
   - component: {fileID: 177056359}
   - component: {fileID: 177056360}
-  - component: {fileID: 177056361}
   m_Layer: 0
   m_Name: Characters
   m_TagString: Untagged
@@ -169,31 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charaterS:
   - {fileID: 294933517273338542, guid: 377e9bac2fec59040bcbbd7b8d8534c4, type: 3}
-  - {fileID: 294933517273338542, guid: 652e0739f06b3dc4d8c08f219abcb11a, type: 3}
-  - {fileID: 294933517273338542, guid: 5de98fff52562f8408f7ca42fab4edb8, type: 3}
-  - {fileID: 294933517273338542, guid: 71b4e80bb7cfce441a38286760f02dd0, type: 3}
-  - {fileID: 294933517273338542, guid: e96969246608e8844b175a676b38e927, type: 3}
-  - {fileID: 294933517273338542, guid: 32d361c6eefa2b74186d0826b67b6c84, type: 3}
-  count: 1000
---- !u!114 &177056361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177056358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55df2c395d08c6949a9c94b14391f7ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  show: 1
-  fontSize: 28
-  textColor: {r: 1, g: 0, b: 0, a: 1}
-  backgroundColor: {r: 0, g: 0, b: 0, a: 0.45}
-  position: {x: 12, y: 12}
-  size: {x: 260, y: 92}
-  refreshInterval: 0.25
+  count: 300
 --- !u!1 &265247934
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &265247935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,18 +201,20 @@ MonoBehaviour:
   mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: f7ab7e7b3ea140049aa6f4209a97d88f, type: 2}
   shadowMaterial: {fileID: 2100000, guid: 9f1a4c90d7f4c594e9b6c8ea47e14a20, type: 2}
-  data: {fileID: 11400000, guid: 4c1a178f097ac0441bf3d78eb7f48745, type: 2}
-  renderCamera: {fileID: 0}
+  data: {fileID: 11400000, guid: e7806360a275a4e459e9fee306049cd8, type: 2}
+  clipBoundCamera: {fileID: 0}
   initialCapacity: 128
-  fps: 10
+  fps: 3
   defaultScale: 1
-  useYAsDepth: 1
-  yToDepthScale: 0.01
   depthOffset: 0
   drawShadow: 1
   shadowColor: {r: 0, g: 0, b: 0, a: 0.14117648}
   cullByCamera: 1
   cullPadding: 2
+  drawBoundsCenter: {x: 0, y: 0, z: 0}
+  drawBoundsSize: {x: 10000, y: 10000, z: 10000}
+  useYAsDepth: 1
+  yToDepthScale: 0.1
 --- !u!4 &265247936
 Transform:
   m_ObjectHideFlags: 0
@@ -499,26 +476,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: 6313281f8375fa245adeedc005159d70, type: 3}
-  targetCamera: {fileID: 0}
+  shadowShader: {fileID: 4800000, guid: 96342aabd345a49438615ec4e9288076, type: 3}
+  clipBoundCamera: {fileID: 0}
   maxCharacterCount: 2000
   pixelsPerUnit: 32
-  useInternalOrderSorting: 1
-  compressInternalOrder: 1
   alphaClipThreshold: 0.01
   drawBoundsCenter: {x: 0, y: 0, z: 0}
   drawBoundsSize: {x: 10000, y: 10000, z: 10000}
-  useYDepthSorting: 0
+  useYDepthSorting: 1
   lowerYIsCloser: 1
-  preserveAgentZ: 1
-  yToZScale: 0.01
+  preserveAgentZ: 0
+  yToZScale: 0.1
+  sameDepthTieZStep: 0.0000001
+  sortingOrderDepthStep: 0.000000001
+  laterAgentIsCloser: 1
   depthBaseZ: 0
-  writeDepth: 0
-  showRuntimeStats: 0
-  agentCount: 0
-  batchCount: 0
-  instanceCount: 0
-  rebuildCount: 0
---- !u!1 &1349370889
+  writeDepth: 1
+  drawShadow: 1
+  cullByCamera: 1
+  cullPadding: 2
+  autoRebuild: 0
+--- !u!1 &1323594242
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -526,30 +504,99 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1349370890}
+  - component: {fileID: 1323594243}
+  - component: {fileID: 1323594244}
+  - component: {fileID: 1323594245}
   m_Layer: 0
-  m_Name: GPURoleCharacters
+  m_Name: RoleCharacters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1349370890
+--- !u!4 &1323594243
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1349370889}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1323594242}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 100, y: 100, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2101222859}
+  m_Children: []
   m_Father: {fileID: 1951412482}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1323594244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323594242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e2bb880117902c46b37f787ada6adf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 857231973}
+  charaterS:
+  - {fileID: 294933517273338542, guid: 8fc87cb5f977c2d419b6e4866be5e73a, type: 3}
+  count: 1000
+--- !u!114 &1323594245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323594242}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68617e96c0ea2f146a84667b1094a962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 857231973}
+  exportData: {fileID: 11400000, guid: 1882f674f397f354b87c45e820e80931, type: 2}
+  spawnOnStart: 1
+  roleCount: 1000
+  columns: 50
+  spacing: 2.2
+  animIndex: 0
+  playbackSpeed: 1
+  scale: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
+  useRandomSeed: 1
+  randomSeed: 12345
+  randomAnim: 1
+  randomAnimMinIndex: 0
+  randomAnimMaxIndex: -1
+  randomPlaybackSpeed: 0
+  playbackSpeedRange: {x: 0.85, y: 1.15}
+  randomGroupVariants: 1
+  groupNoneChance: 0
+  randomIndependentSlots: 1
+  independentSlotNoneChance: 0.1
+  randomColor: 1
+  randomColorSaturation: 0.25
+  randomColorValue: 1
+  randomScale: 1
+  scaleRange: {x: 0.9, y: 1.1}
+  moveAgents: 1
+  moveAmplitude: 0.25
+  moveSpeed: 2
+  randomOutfitChange: 0
+  outfitChangeInterval: {x: 0, y: 1}
+  maxOutfitChangesPerFrame: 1000
+  logOutfitChangeStats: 1
+  outfitChangeStatsInterval: 1
+  randomAnimationSwitch: 1
+  animationSwitchInterval: {x: 1, y: 2}
+  maxAnimationSwitchesPerFrame: 1000
+  avoidSameAnimationSwitch: 1
+  logAnimationSwitchStats: 0
+  animationSwitchStatsInterval: 1
 --- !u!1 &1504474874
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,7 +716,7 @@ Transform:
   - {fileID: 265247936}
   - {fileID: 177056359}
   - {fileID: 857231972}
-  - {fileID: 1349370890}
+  - {fileID: 1323594243}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -717,62 +764,3 @@ Transform:
   m_Father: {fileID: 1951412482}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2101222858
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2101222859}
-  - component: {fileID: 2101222860}
-  m_Layer: 0
-  m_Name: Agent
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2101222859
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101222858}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 100, y: 100, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1349370890}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2101222860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101222858}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d7ceebfaac841645a3499973623f105, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  exportData: {fileID: 11400000, guid: 1882f674f397f354b87c45e820e80931, type: 2}
-  animIndex: 4
-  playbackSpeed: 1
-  playOnEnable: 1
-  initialGroupVariants:
-  - Human_3
-  - Cloth_5
-  - 
-  - Eye
-  - 
-  - F_SR_Pants
-  initialIndependentSlotSpriteIds: 26000000ffffffffffffffff07000000ffffffff47000000ffffffff3e000000ffffffff00000000
-  color: {r: 1, g: 1, b: 1, a: 1}
-  scale: 1
-  showDebugLog: 0
