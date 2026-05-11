@@ -14,6 +14,7 @@ public class GpuRoleGpuManager : MonoBehaviour
     [Range(0f, 1f)] public float alphaClipThreshold = 0.01f;
 
     [Header("Bounds")]
+    public bool showBounds = true;
     public Vector3 drawBoundsCenter = Vector3.zero;
     public Vector3 drawBoundsSize = new Vector3(10000f, 10000f, 10000f);
 
@@ -1136,6 +1137,13 @@ private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = 
         _shadowColorBuffer = null;
         _shadowRenderIndexBuffer = null;
         _shadowArgsBuffer = null;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!showBounds) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(drawBoundsCenter, drawBoundsSize);
     }
 
     private void OnDestroy()

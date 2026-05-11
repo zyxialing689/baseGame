@@ -85,6 +85,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c907d3cfe6496749a871f0411239a59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: 3
+  visible: 1
+  baseMoveSpeed: 4
   manager: {fileID: 0}
   autoInitialize: 1
   initializeOnEnable: 1
@@ -92,10 +95,7 @@ MonoBehaviour:
   removeOnDestroy: 1
   syncTransformPosition: 1
   positionOffset: {x: 0, y: 0, z: 0}
-  baseMoveSpeed: 4
   characterName: monster0
-  clipName: idle
-  scale: 3
+  clipName: IDLE
   animSpeed: 1
-  visible: 1
   flipX: 1

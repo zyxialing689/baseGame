@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GPUAgent : MonoBehaviour
+public class GPUAgent : GpuAgentBase
 {
     public GPUAnimManager manager;
     public bool autoInitialize = true;
@@ -10,14 +10,11 @@ public class GPUAgent : MonoBehaviour
 
     public bool syncTransformPosition = false;
     public Vector3 positionOffset;
-    public float baseMoveSpeed = 1f;
 
     public string characterName;
     public string clipName;
-    public float scale = 1f;
     [HideInInspector]
     public float animSpeed = 1f;
-    public bool visible = true;
     public bool flipX;
 
     private int roleId = -1;
@@ -135,7 +132,7 @@ public class GPUAgent : MonoBehaviour
         roleId = -1;
     }
 
-    public void SetPosition(Vector3 position)
+    public override void SetPosition(Vector3 position)
     {
         transform.position = position;
         if (IsInitialized)
@@ -144,6 +141,11 @@ public class GPUAgent : MonoBehaviour
             lastPosition = GetRenderPosition();
             transform.hasChanged = false;
         }
+    }
+
+    public override void Play(string name)
+    {
+        SetClip(name);
     }
 
     public void SetClip(string newClipName, bool resetTime = true)
@@ -172,7 +174,7 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
-    public void SetScale(float newScale)
+    public override void SetScale(float newScale)
     {
         scale = newScale;
         if (IsInitialized)
@@ -182,7 +184,7 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
-    public void SetAnimSpeed(float newSpeed)
+    public override void SetAnimSpeed(float newSpeed)
     {
         animSpeed = newSpeed;
         if (IsInitialized)
@@ -192,24 +194,7 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
-    public void SetMoveAnimSpeed(float speed)
-    {
-        if (speed < 1)
-        {
-            animSpeed = speed;
-        }
-        else
-        {
-            animSpeed = 0.8f + 0.2f * speed;
-        }
-        if (IsInitialized)
-        {
-            manager.SetSpeed(roleId, animSpeed);
-            lastAnimSpeed = animSpeed;
-        }
-    }
-
-    public void SetVisible(bool newVisible)
+    public override void SetVisible(bool newVisible)
     {
         visible = newVisible;
         if (IsInitialized)
@@ -219,7 +204,7 @@ public class GPUAgent : MonoBehaviour
         }
     }
 
-    public void SetFlipX(bool newFlipX)
+    public override void SetFlipX(bool newFlipX)
     {
         flipX = newFlipX;
         if (IsInitialized)

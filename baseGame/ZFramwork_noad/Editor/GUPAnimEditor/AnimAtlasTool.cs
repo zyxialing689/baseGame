@@ -692,8 +692,15 @@ public class AnimAtlasTool : EditorWindow
         }
 
         string assetPath = Path.Combine(basePath, "AnimAtlasData.asset");
-        AssetDatabase.DeleteAsset(assetPath);
-        AssetDatabase.CreateAsset(data, assetPath);
+        var existing = AssetDatabase.LoadAssetAtPath<AnimAtlasData>(assetPath);
+        if (existing != null)
+        {
+            EditorUtility.CopySerialized(data, existing);
+        }
+        else
+        {
+            AssetDatabase.CreateAsset(data, assetPath);
+        }
         AssetDatabase.SaveAssets();
     }
 

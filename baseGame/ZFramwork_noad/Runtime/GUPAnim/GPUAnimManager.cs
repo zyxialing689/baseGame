@@ -4,9 +4,9 @@ using UnityEngine.Rendering;
 
 public class GPUAnimManager : MonoBehaviour
 {
-    public Mesh mesh;
-    public Material material;
-    public Material shadowMaterial;
+    [HideInInspector] public Mesh mesh;
+    [HideInInspector] public Material material;
+    [HideInInspector] public Material shadowMaterial;
     public AnimAtlasData data;
     public Camera clipBoundCamera;
     public int initialCapacity = 1024;
@@ -19,6 +19,7 @@ public class GPUAnimManager : MonoBehaviour
     public float cullPadding = 2f;
 
     [Header("Bounds")]
+    public bool showBounds = true;
     public Vector3 drawBoundsCenter = Vector3.zero;
     public Vector3 drawBoundsSize = new Vector3(10000f, 10000f, 10000f);
 
@@ -1084,6 +1085,13 @@ public class GPUAnimManager : MonoBehaviour
         argsBuffer = null;
         shadowArgsBuffer = null;
         bufferCapacity = 0;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!showBounds) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(drawBoundsCenter, drawBoundsSize);
     }
 
     private void OnDestroy()

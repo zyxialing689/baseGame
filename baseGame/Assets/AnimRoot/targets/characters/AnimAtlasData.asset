@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f35b8c6c6ce31fb40a723146b545007f, type: 3}
-  m_Name: AnimAtlasData
+  m_Name: 
   m_EditorClassIdentifier: 
   atlas: {fileID: 2800000, guid: 878aa87a98b3f224e85d19ecd2fc84f9, type: 3}
   centerOffset: {x: 0, y: 32}
@@ -38,8 +38,18 @@ MonoBehaviour:
     frameCount: 3
     fps: 10
     loop: 1
-  - name: tree/bd_a_051
+  - name: monster0/IDLE
     startFrame: 12
+    frameCount: 9
+    fps: 30
+    loop: 1
+  - name: monster0/MOVE
+    startFrame: 21
+    frameCount: 9
+    fps: 30
+    loop: 1
+  - name: tree/bd_a_051
+    startFrame: 30
     frameCount: 1
     fps: 1
     loop: 0
@@ -71,6 +81,23 @@ MonoBehaviour:
       frameCount: 3
       fps: 10
       loop: 1
+  - name: monster0
+    baseScale: 1
+    centerOffset: {x: 0, y: 32}
+    hasShadow: 1
+    shadowOffset: {x: 0, y: 0}
+    shadowSize: {x: 44, y: 14}
+    clips:
+    - name: IDLE
+      startFrame: 12
+      frameCount: 9
+      fps: 30
+      loop: 1
+    - name: MOVE
+      startFrame: 21
+      frameCount: 9
+      fps: 30
+      loop: 1
   - name: tree
     baseScale: 1
     centerOffset: {x: 0, y: 14.72}
@@ -79,142 +106,322 @@ MonoBehaviour:
     shadowSize: {x: 0, y: 0}
     clips:
     - name: bd_a_051
-      startFrame: 12
+      startFrame: 30
       frameCount: 1
       fps: 1
       loop: 0
   frames:
   - uv:
       serializedVersion: 2
-      x: 0.25074184
-      y: 0.017391304
-      width: 0.08234421
-      height: 0.9391304
+      x: 0.22265625
+      y: 0.7179708
+      width: 0.21679688
+      height: 0.092863284
     offset: {x: 5, y: 4}
     size: {x: 111, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.33456972
-      y: 0.017391304
-      width: 0.08234421
-      height: 0.9391304
+      x: 0.6640625
+      y: 0.7179708
+      width: 0.21679688
+      height: 0.092863284
     offset: {x: 5, y: 4}
     size: {x: 111, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.41839764
-      y: 0.017391304
-      width: 0.08234421
-      height: 0.9391304
+      x: 0.44335938
+      y: 0.7179708
+      width: 0.21679688
+      height: 0.092863284
     offset: {x: 5, y: 4}
     size: {x: 111, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.5022255
-      y: 0.017391304
-      width: 0.07121662
-      height: 0.9391304
+      x: 0.38671875
+      y: 0.8151333
+      width: 0.1875
+      height: 0.092863284
     offset: {x: 14, y: 6}
     size: {x: 96, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.57492584
-      y: 0.017391304
-      width: 0.07121662
-      height: 0.9391304
+      x: 0.1953125
+      y: 0.8151333
+      width: 0.1875
+      height: 0.092863284
     offset: {x: 14, y: 6}
     size: {x: 96, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.6476261
-      y: 0.017391304
-      width: 0.07121662
-      height: 0.9391304
+      x: 0.00390625
+      y: 0.8151333
+      width: 0.1875
+      height: 0.092863284
     offset: {x: 14, y: 6}
     size: {x: 96, y: 108}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.7203264
-      y: 0.017391304
-      width: 0.078635015
-      height: 0.8956522
+      x: 0.7890625
+      y: 0.8151333
+      width: 0.20703125
+      height: 0.08856406
     offset: {x: 5, y: 9}
     size: {x: 106, y: 103}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.8004451
-      y: 0.017391304
-      width: 0.078635015
-      height: 0.8956522
+      x: 0.578125
+      y: 0.8151333
+      width: 0.20703125
+      height: 0.08856406
     offset: {x: 5, y: 9}
     size: {x: 106, y: 103}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.8805638
-      y: 0.017391304
-      width: 0.078635015
-      height: 0.8956522
+      x: 0.00390625
+      y: 0.90971625
+      width: 0.20703125
+      height: 0.08856406
     offset: {x: 5, y: 9}
     size: {x: 106, y: 103}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.0014836795
-      y: 0.017391304
-      width: 0.08160237
-      height: 0.9652174
+      x: 0.4765625
+      y: 0.59845227
+      width: 0.21484375
+      height: 0.09544282
     offset: {x: 6, y: 5}
     size: {x: 110, y: 111}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.08456973
-      y: 0.017391304
-      width: 0.08160237
-      height: 0.9652174
+      x: 0.00390625
+      y: 0.7179708
+      width: 0.21484375
+      height: 0.09544282
     offset: {x: 6, y: 5}
     size: {x: 110, y: 111}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.16765578
-      y: 0.017391304
-      width: 0.08160237
-      height: 0.9652174
+      x: 0.6953125
+      y: 0.59845227
+      width: 0.21484375
+      height: 0.09544282
     offset: {x: 6, y: 5}
     size: {x: 110, y: 111}
     baseSize: {x: 120, y: 130}
   - uv:
       serializedVersion: 2
-      x: 0.9606825
-      y: 0.017391304
-      width: 0.03783383
-      height: 0.6086956
+      x: 0.46875
+      y: 0.0017196905
+      width: 0.25
+      height: 0.17798796
+    offset: {x: 83, y: 21}
+    size: {x: 128, y: 207}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.5800781
+      y: 0.4694755
+      width: 0.22070312
+      height: 0.12123818
+    offset: {x: 82, y: 32}
+    size: {x: 113, y: 141}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.24023438
+      y: 0.59845227
+      width: 0.23242188
+      height: 0.1177988
+    offset: {x: 67, y: 40}
+    size: {x: 119, y: 137}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.22070312
+      y: 0.19088563
+      width: 0.21289062
+      height: 0.14101462
+    offset: {x: 72, y: 17}
+    size: {x: 109, y: 164}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.4694755
+      width: 0.171875
+      height: 0.1272571
+    offset: {x: 86, y: 35}
+    size: {x: 88, y: 148}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.67578125
+      y: 0.33361995
+      width: 0.203125
+      height: 0.13241616
+    offset: {x: 86, y: 28}
+    size: {x: 104, y: 154}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.23632812
+      y: 0.33361995
+      width: 0.22851562
+      height: 0.13413586
+    offset: {x: 86, y: 23}
+    size: {x: 117, y: 156}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.4375
+      y: 0.19088563
+      width: 0.23632812
+      height: 0.13413586
+    offset: {x: 86, y: 19}
+    size: {x: 121, y: 156}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.0017196905
+      width: 0.22851562
+      height: 0.18744627
+    offset: {x: 85, y: 16}
+    size: {x: 117, y: 218}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.72265625
+      y: 0.0017196905
+      width: 0.25
+      height: 0.17798796
+    offset: {x: 83, y: 21}
+    size: {x: 128, y: 207}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.35546875
+      y: 0.4694755
+      width: 0.22070312
+      height: 0.12123818
+    offset: {x: 82, y: 32}
+    size: {x: 113, y: 141}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.59845227
+      width: 0.23242188
+      height: 0.1177988
+    offset: {x: 67, y: 40}
+    size: {x: 119, y: 137}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.19088563
+      width: 0.21289062
+      height: 0.14101462
+    offset: {x: 72, y: 17}
+    size: {x: 109, y: 164}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.1796875
+      y: 0.4694755
+      width: 0.171875
+      height: 0.1272571
+    offset: {x: 86, y: 35}
+    size: {x: 88, y: 148}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.46875
+      y: 0.33361995
+      width: 0.203125
+      height: 0.13241616
+    offset: {x: 86, y: 28}
+    size: {x: 104, y: 154}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.33361995
+      width: 0.22851562
+      height: 0.13413586
+    offset: {x: 86, y: 23}
+    size: {x: 117, y: 156}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.6777344
+      y: 0.19088563
+      width: 0.23632812
+      height: 0.13413586
+    offset: {x: 86, y: 19}
+    size: {x: 121, y: 156}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.23632812
+      y: 0.0017196905
+      width: 0.22851562
+      height: 0.18744627
+    offset: {x: 85, y: 16}
+    size: {x: 117, y: 218}
+    baseSize: {x: 256, y: 256}
+  - uv:
+      serializedVersion: 2
+      x: 0.21484375
+      y: 0.90971625
+      width: 0.099609375
+      height: 0.060189165
     offset: {x: 5, y: 6}
     size: {x: 51, y: 70}
     baseSize: {x: 60, y: 90}
   frameUVs:
-  - {x: 0.25074184, y: 0.017391304, z: 0.08234421, w: 0.9391304}
-  - {x: 0.33456972, y: 0.017391304, z: 0.08234421, w: 0.9391304}
-  - {x: 0.41839764, y: 0.017391304, z: 0.08234421, w: 0.9391304}
-  - {x: 0.5022255, y: 0.017391304, z: 0.07121662, w: 0.9391304}
-  - {x: 0.57492584, y: 0.017391304, z: 0.07121662, w: 0.9391304}
-  - {x: 0.6476261, y: 0.017391304, z: 0.07121662, w: 0.9391304}
-  - {x: 0.7203264, y: 0.017391304, z: 0.078635015, w: 0.8956522}
-  - {x: 0.8004451, y: 0.017391304, z: 0.078635015, w: 0.8956522}
-  - {x: 0.8805638, y: 0.017391304, z: 0.078635015, w: 0.8956522}
-  - {x: 0.0014836795, y: 0.017391304, z: 0.08160237, w: 0.9652174}
-  - {x: 0.08456973, y: 0.017391304, z: 0.08160237, w: 0.9652174}
-  - {x: 0.16765578, y: 0.017391304, z: 0.08160237, w: 0.9652174}
-  - {x: 0.9606825, y: 0.017391304, z: 0.03783383, w: 0.6086956}
+  - {x: 0.22265625, y: 0.7179708, z: 0.21679688, w: 0.092863284}
+  - {x: 0.6640625, y: 0.7179708, z: 0.21679688, w: 0.092863284}
+  - {x: 0.44335938, y: 0.7179708, z: 0.21679688, w: 0.092863284}
+  - {x: 0.38671875, y: 0.8151333, z: 0.1875, w: 0.092863284}
+  - {x: 0.1953125, y: 0.8151333, z: 0.1875, w: 0.092863284}
+  - {x: 0.00390625, y: 0.8151333, z: 0.1875, w: 0.092863284}
+  - {x: 0.7890625, y: 0.8151333, z: 0.20703125, w: 0.08856406}
+  - {x: 0.578125, y: 0.8151333, z: 0.20703125, w: 0.08856406}
+  - {x: 0.00390625, y: 0.90971625, z: 0.20703125, w: 0.08856406}
+  - {x: 0.4765625, y: 0.59845227, z: 0.21484375, w: 0.09544282}
+  - {x: 0.00390625, y: 0.7179708, z: 0.21484375, w: 0.09544282}
+  - {x: 0.6953125, y: 0.59845227, z: 0.21484375, w: 0.09544282}
+  - {x: 0.46875, y: 0.0017196905, z: 0.25, w: 0.17798796}
+  - {x: 0.5800781, y: 0.4694755, z: 0.22070312, w: 0.12123818}
+  - {x: 0.24023438, y: 0.59845227, z: 0.23242188, w: 0.1177988}
+  - {x: 0.22070312, y: 0.19088563, z: 0.21289062, w: 0.14101462}
+  - {x: 0.00390625, y: 0.4694755, z: 0.171875, w: 0.1272571}
+  - {x: 0.67578125, y: 0.33361995, z: 0.203125, w: 0.13241616}
+  - {x: 0.23632812, y: 0.33361995, z: 0.22851562, w: 0.13413586}
+  - {x: 0.4375, y: 0.19088563, z: 0.23632812, w: 0.13413586}
+  - {x: 0.00390625, y: 0.0017196905, z: 0.22851562, w: 0.18744627}
+  - {x: 0.72265625, y: 0.0017196905, z: 0.25, w: 0.17798796}
+  - {x: 0.35546875, y: 0.4694755, z: 0.22070312, w: 0.12123818}
+  - {x: 0.00390625, y: 0.59845227, z: 0.23242188, w: 0.1177988}
+  - {x: 0.00390625, y: 0.19088563, z: 0.21289062, w: 0.14101462}
+  - {x: 0.1796875, y: 0.4694755, z: 0.171875, w: 0.1272571}
+  - {x: 0.46875, y: 0.33361995, z: 0.203125, w: 0.13241616}
+  - {x: 0.00390625, y: 0.33361995, z: 0.22851562, w: 0.13413586}
+  - {x: 0.6777344, y: 0.19088563, z: 0.23632812, w: 0.13413586}
+  - {x: 0.23632812, y: 0.0017196905, z: 0.22851562, w: 0.18744627}
+  - {x: 0.21484375, y: 0.90971625, z: 0.099609375, w: 0.060189165}
   frameOffsetFrames:
   - {x: 5, y: 4, z: 111, w: 108}
   - {x: 5, y: 4, z: 111, w: 108}
@@ -228,6 +435,24 @@ MonoBehaviour:
   - {x: 6, y: 5, z: 110, w: 111}
   - {x: 6, y: 5, z: 110, w: 111}
   - {x: 6, y: 5, z: 110, w: 111}
+  - {x: 83, y: 21, z: 128, w: 207}
+  - {x: 82, y: 32, z: 113, w: 141}
+  - {x: 67, y: 40, z: 119, w: 137}
+  - {x: 72, y: 17, z: 109, w: 164}
+  - {x: 86, y: 35, z: 88, w: 148}
+  - {x: 86, y: 28, z: 104, w: 154}
+  - {x: 86, y: 23, z: 117, w: 156}
+  - {x: 86, y: 19, z: 121, w: 156}
+  - {x: 85, y: 16, z: 117, w: 218}
+  - {x: 83, y: 21, z: 128, w: 207}
+  - {x: 82, y: 32, z: 113, w: 141}
+  - {x: 67, y: 40, z: 119, w: 137}
+  - {x: 72, y: 17, z: 109, w: 164}
+  - {x: 86, y: 35, z: 88, w: 148}
+  - {x: 86, y: 28, z: 104, w: 154}
+  - {x: 86, y: 23, z: 117, w: 156}
+  - {x: 86, y: 19, z: 121, w: 156}
+  - {x: 85, y: 16, z: 117, w: 218}
   - {x: 5, y: 6, z: 51, w: 70}
   frameBaseSizes:
   - {x: 120, y: 130, z: 0, w: 0}
@@ -242,13 +467,33 @@ MonoBehaviour:
   - {x: 120, y: 130, z: 0, w: 0}
   - {x: 120, y: 130, z: 0, w: 0}
   - {x: 120, y: 130, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
+  - {x: 256, y: 256, z: 0, w: 0}
   - {x: 60, y: 90, z: 0, w: 0}
-  clipStartFrames: 000000000300000006000000090000000c000000
-  clipFrameCounts: 0300000003000000030000000300000001000000
+  clipStartFrames: 000000000300000006000000090000000c000000150000001e000000
+  clipFrameCounts: 03000000030000000300000003000000090000000900000001000000
   clipFpsValues:
   - 10
   - 10
   - 10
   - 10
+  - 30
+  - 30
   - 1
-  clipLoops: 0101010100
+  clipLoops: 01010101010100

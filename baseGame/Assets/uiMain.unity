@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &177056359
 Transform:
   m_ObjectHideFlags: 0
@@ -211,8 +211,9 @@ MonoBehaviour:
   shadowColor: {r: 0, g: 0, b: 0, a: 0.14117648}
   cullByCamera: 1
   cullPadding: 2
-  drawBoundsCenter: {x: 0, y: 0, z: 0}
-  drawBoundsSize: {x: 10000, y: 10000, z: 10000}
+  showBounds: 0
+  drawBoundsCenter: {x: 100, y: 100, z: 0}
+  drawBoundsSize: {x: 200, y: 200, z: 0}
   useYAsDepth: 1
   yToDepthScale: 0.1
 --- !u!4 &265247936
@@ -481,8 +482,9 @@ MonoBehaviour:
   maxCharacterCount: 2000
   pixelsPerUnit: 32
   alphaClipThreshold: 0.01
-  drawBoundsCenter: {x: 0, y: 0, z: 0}
-  drawBoundsSize: {x: 10000, y: 10000, z: 10000}
+  showBounds: 0
+  drawBoundsCenter: {x: 100, y: 100, z: 0}
+  drawBoundsSize: {x: 200, y: 200, z: 0}
   useYDepthSorting: 1
   lowerYIsCloser: 1
   preserveAgentZ: 0

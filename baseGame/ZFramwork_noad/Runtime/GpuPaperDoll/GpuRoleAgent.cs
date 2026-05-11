@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GpuRoleAgent : MonoBehaviour
+public class GpuRoleAgent : GpuAgentBase
 {
     public GpuRoleExportData exportData;
 
     [Header("Animation")]
     public int animIndex = 0;
     public float playbackSpeed = 1f;
-    public float baseMoveSpeed = 1f;
     public bool playOnEnable = true;
 
     [Header("Initial Group Variants")]
@@ -18,9 +17,6 @@ public class GpuRoleAgent : MonoBehaviour
     public int[] initialIndependentSlotSpriteIds = new int[0];
 
     public Color color = Color.white;
-
-    public float scale = 1f;
-    public bool visible = true;
 
     [Header("Shadow")]
     public bool useShadow = true;
@@ -154,11 +150,6 @@ public class GpuRoleAgent : MonoBehaviour
         _animStartTime = Time.time;
     }
 
-    public void SetPosition(Vector3 position)
-    {
-        transform.position = position;
-    }
-
     public void SetPosition(float x, float y)
     {
         Vector3 position = transform.position;
@@ -197,7 +188,7 @@ public class GpuRoleAgent : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    public void SetFlipX(bool flipped)
+    public override void SetFlipX(bool flipped)
     {
         Vector3 localScale = transform.localScale;
         float x = Mathf.Abs(localScale.x);
@@ -275,25 +266,12 @@ public class GpuRoleAgent : MonoBehaviour
         playbackSpeed = speed;
     }
 
-    /// <summary>
-    /// 设置移动动画速度（与 GPUAgent.SetMoveAnimSpeed 逻辑一致）
-    /// speed < baseMoveSpeed 时直接用 speed/baseMoveSpeed，否则用 0.8 + 0.2 * (speed/baseMoveSpeed) 做平滑映射
-    /// </summary>
-    /// <param name="speed">移动速度值</param>
-    public void SetMoveAnimSpeed(float speed)
+    public override void SetAnimSpeed(float speed)
     {
-        float normalizedSpeed = speed / Mathf.Max(0.001f, baseMoveSpeed);
-        if (normalizedSpeed < 1)
-        {
-            playbackSpeed = normalizedSpeed;
-        }
-        else
-        {
-            playbackSpeed = 0.8f + 0.2f * normalizedSpeed;
-        }
+        playbackSpeed = speed;
     }
 
-    public void Play(string animName)
+    public override void Play(string animName)
     {
         TryPlay(animName);
     }
@@ -483,9 +461,9 @@ public class GpuRoleAgent : MonoBehaviour
         manager?.MarkAgentVisualDirty(this);
     }
 
-    public void SetScale(float s)
+    public override void SetScale(float s)
     {
-        scale = s;
+        base.SetScale(s);
         manager?.MarkAgentVisualDirty(this);
     }
 
@@ -495,12 +473,12 @@ public class GpuRoleAgent : MonoBehaviour
         manager?.MarkAgentVisualDirty(this);
     }
 
-    public void SetVisible(bool value)
+    public override void SetVisible(bool value)
     {
         if (visible == value)
             return;
 
-        visible = value;
+        base.SetVisible(value);
         manager?.MarkAgentVisualDirty(this);
     }
 
@@ -540,16 +518,6 @@ public class GpuRoleAgent : MonoBehaviour
     public bool IsShadowEnabled()
     {
         return useShadow && (overrideShadowSettings || exportData == null || exportData.useShadow);
-    }
-
-    public void Show()
-    {
-        SetVisible(true);
-    }
-
-    public void Hide()
-    {
-        SetVisible(false);
     }
 
     public int[] GetCurrentSlotSpriteIds()
