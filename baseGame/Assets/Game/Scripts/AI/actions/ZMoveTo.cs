@@ -102,6 +102,8 @@ public class ZMoveTo : Action
                 gpuAgent.SetJumpHeight(0f);
                 _jumpAnimTimer = -1f;
                 _jumpTimer = Random.Range(jumpIntervalRange.x, jumpIntervalRange.y);
+                // 落地，恢复走路动画
+                gpuAgent.Play("MOVE");
             }
             else
             {
@@ -117,6 +119,8 @@ public class ZMoveTo : Action
                 _jumpDuration = Random.Range(jumpDurationRange.x, jumpDurationRange.y);
                 _jumpPeak = Random.Range(jumpHeightRange.x, jumpHeightRange.y);
                 _jumpAnimTimer = 0f;
+                // 起跳，空中强制 IDLE
+                gpuAgent.Play("IDLE");
             }
         }
     }
