@@ -103,6 +103,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float4 localPos = mul(_InstanceSpriteMatrices[instanceID], float4(v.positionOS, 1));
                 localPos = mul(slotMatrix, localPos);
                 float3 worldPos = mul(_AgentMatrices[agentIndex], localPos).xyz;
+                worldPos.y += animExtra.z;
 
                 o.positionCS = TransformWorldToHClip(worldPos);
                 float depthBias = animExtra.y;
@@ -213,6 +214,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float4 localPos = mul(_InstanceSpriteMatrices[instanceID], float4(v.positionOS, 1));
                 localPos = mul(slotMatrix, localPos);
                 float3 worldPos = mul(_AgentMatrices[agentIndex], localPos).xyz;
+                worldPos.y += animExtra.z;
 
                 o.positionCS = TransformWorldToHClip(worldPos);
                 float depthBias = animExtra.y;

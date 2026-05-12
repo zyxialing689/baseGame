@@ -645,6 +645,7 @@ private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = 
                 _agentAnimData[idx] = agent.GetGpuAnimState();
                 Vector4 animExtra = agent.GetGpuAnimExtraState();
                 animExtra.y = depthSorting ? CalculateSortingDepthBias(agent, i) : 0f;
+                animExtra.z = agent.jumpHeight;
                 _agentAnimExtraData[idx] = animExtra;
 
                 Color c = agent.color;

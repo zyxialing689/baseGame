@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &177056359
 Transform:
   m_ObjectHideFlags: 0
@@ -546,7 +546,7 @@ MonoBehaviour:
   manager: {fileID: 857231973}
   charaterS:
   - {fileID: 294933517273338542, guid: 8fc87cb5f977c2d419b6e4866be5e73a, type: 3}
-  count: 1000
+  count: 500
 --- !u!114 &1323594245
 MonoBehaviour:
   m_ObjectHideFlags: 0

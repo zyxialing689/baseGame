@@ -11,8 +11,20 @@ public class ZMoveTo : Action
     private List<Vector3> curPath;
     private GpuAgentBase gpuAgent;
     private TaskStatus status = TaskStatus.Running;
+
+    // 跳跃
+    private float _jumpTimer;
+    private float _jumpAnimTimer;
+    private float _jumpDuration;
+    private float _jumpPeak;
+    public Vector2 jumpIntervalRange = new Vector2(2f, 5f);
+    public Vector2 jumpHeightRange = new Vector2(1f, 3f);
+    public Vector2 jumpDurationRange = new Vector2(0.4f, 0.8f);
+
     public override void OnStart()
     {
+        _jumpTimer = Random.Range(jumpIntervalRange.x, jumpIntervalRange.y);
+        _jumpAnimTimer = -1f;
 
         curPath = path.Value;
         gpuAgent = gameObject.GetComponent<GpuAgentBase>();
@@ -75,10 +87,43 @@ public class ZMoveTo : Action
             step
         );
         gpuAgent.SetPosition(transform.position);
+
+        // 跳跃
+        UpdateJump();
+    }
+
+    private void UpdateJump()
+    {
+        if (_jumpAnimTimer >= 0f)
+        {
+            _jumpAnimTimer += Time.fixedDeltaTime;
+            if (_jumpAnimTimer >= _jumpDuration)
+            {
+                gpuAgent.SetJumpHeight(0f);
+                _jumpAnimTimer = -1f;
+                _jumpTimer = Random.Range(jumpIntervalRange.x, jumpIntervalRange.y);
+            }
+            else
+            {
+                float t = _jumpAnimTimer / _jumpDuration;
+                gpuAgent.SetJumpHeight(Mathf.Sin(t * Mathf.PI) * _jumpPeak);
+            }
+        }
+        else
+        {
+            _jumpTimer -= Time.fixedDeltaTime;
+            if (_jumpTimer <= 0f)
+            {
+                _jumpDuration = Random.Range(jumpDurationRange.x, jumpDurationRange.y);
+                _jumpPeak = Random.Range(jumpHeightRange.x, jumpHeightRange.y);
+                _jumpAnimTimer = 0f;
+            }
+        }
     }
 
     public override void OnEnd()
     {
+        gpuAgent.SetJumpHeight(0f);
         status = TaskStatus.Running;
         curPath = null;
     }

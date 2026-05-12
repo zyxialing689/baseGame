@@ -60,6 +60,7 @@ Shader "Custom/GPUAnim_Instanced_URP"
                 float2 fullPixel = v.uv * baseSize;
                 float2 anchoredPosition = (fullPixel - anchorPixel) / max(baseSize.y, 1.0);
                 float3 worldPos = mul(_Matrices[roleId], float4(anchoredPosition.x, anchoredPosition.y, 0, 1)).xyz;
+                worldPos.y += _DepthBiasBuffer[roleId].y;
 
                 o.positionHCS = TransformWorldToHClip(worldPos);
                 float depthBias = _DepthBiasBuffer[roleId].x;

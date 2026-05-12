@@ -35,6 +35,7 @@ public class GPUAnimManager : MonoBehaviour
     private int[] characterIndices;
     private int[] clipIndices;
     private int[] sortingOrders;
+    private float[] jumpHeights;
     private int[] lastFrameIndices;
     private float[] animTimes;
     private float[] animSpeeds;
@@ -166,6 +167,7 @@ public class GPUAnimManager : MonoBehaviour
         characterIndices[id] = characterIndex;
         clipIndices[id] = Mathf.Clamp(clipIndex, 0, data.clips.Count - 1);
         sortingOrders[id] = Gpu2DDepthUtility.AcquireSortingOrder();
+        jumpHeights[id] = 0f;
         lastFrameIndices[id] = -1;
         animTimes[id] = 0f;
         animSpeeds[id] = 1f;
@@ -293,6 +295,15 @@ public class GPUAnimManager : MonoBehaviour
 
         animTimes[id] = Mathf.Max(0f, time);
         UpdateFrameData(id, false);
+    }
+
+    public void SetJumpHeight(int id, float height)
+    {
+        if (!IsValidRole(id))
+            return;
+
+        jumpHeights[id] = height;
+        UpdateMatrix(id);
     }
 
     public void ClearRoles()
@@ -626,7 +637,7 @@ public class GPUAnimManager : MonoBehaviour
         matrices[id] = Matrix4x4.TRS(renderPosition, Quaternion.identity, new Vector3(xScale, finalScale, finalScale));
         depthBiases[id] = new Vector4(
             useYAsDepth ? Gpu2DDepthUtility.CalculateSortingDepthBias(sortingOrders[id], id) : 0f,
-            0f,
+            jumpHeights[id],
             0f,
             0f
         );
@@ -741,6 +752,7 @@ public class GPUAnimManager : MonoBehaviour
         int[] newCharacterIndices = new int[newCapacity];
         int[] newClipIndices = new int[newCapacity];
         int[] newSortingOrders = new int[newCapacity];
+        float[] newJumpHeights = new float[newCapacity];
         int[] newLastFrameIndices = new int[newCapacity];
         float[] newAnimTimes = new float[newCapacity];
         float[] newAnimSpeeds = new float[newCapacity];
@@ -775,6 +787,7 @@ public class GPUAnimManager : MonoBehaviour
             System.Array.Copy(characterIndices, newCharacterIndices, activeCount);
             System.Array.Copy(clipIndices, newClipIndices, activeCount);
             System.Array.Copy(sortingOrders, newSortingOrders, activeCount);
+            System.Array.Copy(jumpHeights, newJumpHeights, activeCount);
             System.Array.Copy(lastFrameIndices, newLastFrameIndices, activeCount);
             System.Array.Copy(animTimes, newAnimTimes, activeCount);
             System.Array.Copy(animSpeeds, newAnimSpeeds, activeCount);
@@ -800,6 +813,7 @@ public class GPUAnimManager : MonoBehaviour
         characterIndices = newCharacterIndices;
         clipIndices = newClipIndices;
         sortingOrders = newSortingOrders;
+        jumpHeights = newJumpHeights;
         lastFrameIndices = newLastFrameIndices;
         animTimes = newAnimTimes;
         animSpeeds = newAnimSpeeds;

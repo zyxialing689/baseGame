@@ -5,6 +5,7 @@ public abstract class GpuAgentBase : MonoBehaviour
     public float scale = 1f;
     public bool visible = true;
     public float baseMoveSpeed = 1f;
+    public float jumpHeight = 0f;
 
     // === Position ===
     public virtual void SetPosition(Vector3 position)
@@ -35,6 +36,11 @@ public abstract class GpuAgentBase : MonoBehaviour
     // === Animation ===
     public abstract void Play(string name);
     public abstract void SetAnimSpeed(float speed);
+
+    public virtual void SetJumpHeight(float h)
+    {
+        jumpHeight = h;
+    }
 
     public void SetMoveAnimSpeed(float speed)
     {

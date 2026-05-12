@@ -25,6 +25,7 @@ public class GPUAgent : GpuAgentBase
     private float lastAnimSpeed;
     private bool lastVisible;
     private bool lastFlipX;
+    private float lastJumpHeight;
 
     public int RoleId => roleId;
     public bool IsInitialized => manager != null && manager.IsValidRole(roleId);
@@ -233,6 +234,15 @@ public class GPUAgent : GpuAgentBase
         }
     }
 
+    public override void SetJumpHeight(float height)
+    {
+        base.SetJumpHeight(height);
+        if (IsInitialized)
+        {
+            manager.SetJumpHeight(roleId, height);
+        }
+    }
+
     public void Sync()
     {
         Sync(false);
@@ -283,6 +293,12 @@ public class GPUAgent : GpuAgentBase
         {
             manager.SetFlipX(roleId, flipX);
             lastFlipX = flipX;
+        }
+
+        if (force || !Mathf.Approximately(jumpHeight, lastJumpHeight))
+        {
+            manager.SetJumpHeight(roleId, jumpHeight);
+            lastJumpHeight = jumpHeight;
         }
     }
 
