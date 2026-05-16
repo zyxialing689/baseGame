@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 294933517273338543}
   - component: {fileID: 294933517273338537}
   - component: {fileID: 294933517273338538}
+  - component: {fileID: 4175517200602456978}
   m_Layer: 0
   m_Name: monster0
   m_TagString: Untagged
@@ -88,7 +89,9 @@ MonoBehaviour:
   scale: 3
   visible: 1
   baseMoveSpeed: 4
+  jumpHeight: 0
   manager: {fileID: 0}
+  data: {fileID: 11400000, guid: e7806360a275a4e459e9fee306049cd8, type: 2}
   autoInitialize: 1
   initializeOnEnable: 1
   removeOnDisable: 0
@@ -99,3 +102,50 @@ MonoBehaviour:
   clipName: IDLE
   animSpeed: 1
   flipX: 1
+--- !u!114 &4175517200602456978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294933517273338542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48db734a9291ce347be3790babaee03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entityId: 1
+  teamId: 2
+  layer: 2
+  canBeHit: 1
+  canBeSelected: 0
+  canBeInteracted: 0
+  groundBox:
+    enabled: 0
+    offset: {x: 0, y: 0}
+    size: {x: 0.6, y: 0.25}
+  bodyBox:
+    enabled: 1
+    offset: {x: 0, y: 0.7}
+    size: {x: 0.8, y: 1.4}
+  skyBox:
+    enabled: 0
+    offset: {x: 0, y: 0}
+    size: {x: 0.8, y: 0.8}
+  selectBox:
+    enabled: 0
+    offset: {x: 0, y: 0}
+    size: {x: 0.8, y: 1.2}
+  interactBox:
+    enabled: 0
+    offset: {x: 0, y: 0}
+    size: {x: 1.2, y: 1.2}
+  attackBox:
+    enabled: 0
+    offset: {x: 0, y: 0}
+    size: {x: 1, y: 1}
+  drawMode: 1
+  drawOccupiedCells: 0
+  registered: 0
+  preset: 2
+  world: {fileID: 0}

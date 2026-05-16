@@ -25,8 +25,32 @@ Shader "GpuPaperDoll/GpuRuntime"
             #pragma target 4.5
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_0 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_1 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_2 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_3 __
+            #pragma multi_compile _ DEBUG_DISPLAY
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/LightingUtility.hlsl"
+
+            #if USE_SHAPE_LIGHT_TYPE_0
+            SHAPE_LIGHT(0)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_1
+            SHAPE_LIGHT(1)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_2
+            SHAPE_LIGHT(2)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_3
+            SHAPE_LIGHT(3)
+            #endif
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             struct Attributes
             {
@@ -39,6 +63,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 half4 color : COLOR;
+                float2 lightingUV : TEXCOORD1;
             };
 
             TEXTURE2D(_MainTex);
@@ -112,6 +137,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 #else
                     o.positionCS.z -= depthBias * o.positionCS.w;
                 #endif
+                o.lightingUV = ComputeScreenPos(o.positionCS).xy / o.positionCS.w;
 
                 float4 uvRect = _InstanceUVRects[instanceID];
                 o.uv = float2(lerp(uvRect.x, uvRect.z, v.uv.x), lerp(uvRect.y, uvRect.w, v.uv.y));
@@ -123,7 +149,13 @@ Shader "GpuPaperDoll/GpuRuntime"
             {
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * i.color;
                 clip(c.a - _AlphaClipThreshold);
-                return c;
+
+                SurfaceData2D surfaceData;
+                InputData2D inputData;
+                half4 mask = half4(1, 1, 1, 1);
+                InitializeSurfaceData(c.rgb, c.a, mask, surfaceData);
+                InitializeInputData(i.uv, i.lightingUV, inputData);
+                return CombinedShapeLightShared(surfaceData, inputData);
             }
             ENDHLSL
         }
@@ -136,8 +168,32 @@ Shader "GpuPaperDoll/GpuRuntime"
             #pragma target 4.5
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_0 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_1 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_2 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_3 __
+            #pragma multi_compile _ DEBUG_DISPLAY
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/LightingUtility.hlsl"
+
+            #if USE_SHAPE_LIGHT_TYPE_0
+            SHAPE_LIGHT(0)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_1
+            SHAPE_LIGHT(1)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_2
+            SHAPE_LIGHT(2)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_3
+            SHAPE_LIGHT(3)
+            #endif
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             struct Attributes
             {
@@ -150,6 +206,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 half4 color : COLOR;
+                float2 lightingUV : TEXCOORD1;
             };
 
             TEXTURE2D(_MainTex);
@@ -223,6 +280,7 @@ Shader "GpuPaperDoll/GpuRuntime"
                 #else
                     o.positionCS.z -= depthBias * o.positionCS.w;
                 #endif
+                o.lightingUV = ComputeScreenPos(o.positionCS).xy / o.positionCS.w;
 
                 float4 uvRect = _InstanceUVRects[instanceID];
                 o.uv = float2(lerp(uvRect.x, uvRect.z, v.uv.x), lerp(uvRect.y, uvRect.w, v.uv.y));
@@ -234,7 +292,13 @@ Shader "GpuPaperDoll/GpuRuntime"
             {
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * i.color;
                 clip(c.a - _AlphaClipThreshold);
-                return c;
+
+                SurfaceData2D surfaceData;
+                InputData2D inputData;
+                half4 mask = half4(1, 1, 1, 1);
+                InitializeSurfaceData(c.rgb, c.a, mask, surfaceData);
+                InitializeInputData(i.uv, i.lightingUV, inputData);
+                return CombinedShapeLightShared(surfaceData, inputData);
             }
             ENDHLSL
         }

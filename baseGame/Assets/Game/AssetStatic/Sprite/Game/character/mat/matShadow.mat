@@ -38,9 +38,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaCutoff: 0.1
+    - _AlphaCutoff: 0.01
     - _EnableExternalAlpha: 0
     - _ShadowEnabled: 1
+    - _ShadowLightFade: 0
     m_Colors:
     - _BaseSize: {r: 256, g: 256, b: 0, a: 0}
     - _CenterOffset: {r: 0, g: 0, b: 0, a: 0}

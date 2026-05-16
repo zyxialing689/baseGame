@@ -48,6 +48,8 @@ public class GpuRoleGpuManager : MonoBehaviour
     [HideInInspector]
     public bool drawShadow = true;
 
+    public float shadowLightFade = 1f;
+
     [Header("Culling")]
     public bool cullByCamera = true;
     public float cullPadding = 2f;
@@ -63,7 +65,7 @@ public class GpuRoleGpuManager : MonoBehaviour
     private readonly Dictionary<int, Matrix4x4> _spriteMatrixCache = new Dictionary<int, Matrix4x4>();
     private readonly HashSet<GpuRoleExportData> _cachedExportDataSet = new HashSet<GpuRoleExportData>();
     private readonly Dictionary<GpuRoleExportData, Dictionary<string, int>> _slotIndexCache = new Dictionary<GpuRoleExportData, Dictionary<string, int>>();
-private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = new Dictionary<AnimExportData, int[]>();
+    private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = new Dictionary<AnimExportData, int[]>();
     private readonly Dictionary<BatchKey, AtlasBatch> _batchMap = new Dictionary<BatchKey, AtlasBatch>();
     private readonly List<AtlasBatch> _batches = new List<AtlasBatch>();
     private readonly Dictionary<(int agentIndex, int exportSlotIndex), List<(AtlasBatch batch, int instanceIndex)>> _slotLocationMap = new Dictionary<(int, int), List<(AtlasBatch, int)>>();
@@ -174,8 +176,13 @@ private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = 
         }
 
         _material = new Material(shader);
+
         if (shadowShader != null)
+        {
             _shadowMaterial = new Material(shadowShader);
+            _shadowMaterial.SetFloat("_ShadowLightFade", 0f);
+            _shadowMaterial.SetFloat("_AlphaCutoff", alphaClipThreshold);
+        }
         _quadMesh = CreateQuadMesh();
         RefreshDrawBounds(true);
         EnsureAgentBuffers();
@@ -654,7 +661,7 @@ private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = 
                 _agentColors[idx] = new Vector4(c.r, c.g, c.b, c.a);
             }
 
-            ShadowData:
+        ShadowData:
             Vector2 shadowOffset = agent.GetShadowOffset();
             Vector2 shadowSize = agent.GetShadowSize();
             Color shadowColor = agent.GetShadowColor();
@@ -973,6 +980,8 @@ private readonly Dictionary<AnimExportData, int[]> _animSlotToExportSlotCache = 
         _shadowMpb.SetBuffer("_ShadowData", _shadowDataBuffer);
         _shadowMpb.SetBuffer("_ShadowColors", _shadowColorBuffer);
         _shadowMpb.SetBuffer("_ShadowRenderIndices", _shadowRenderIndexBuffer);
+
+        _shadowMaterial.SetFloat("_ShadowLightFade", shadowLightFade);
 
         Graphics.DrawMeshInstancedIndirect(
             _quadMesh,

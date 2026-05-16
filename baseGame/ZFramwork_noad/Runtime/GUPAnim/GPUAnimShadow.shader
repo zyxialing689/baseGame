@@ -3,8 +3,7 @@ Shader "Custom/GPUAnim_Shadow_URP"
     Properties
     {
         _AlphaCutoff ("Alpha Cutoff", Range(0, 1)) = 0.01
-        _ShadowEnabled ("Shadow Enabled", Float) = 1
-        _ShadowColor ("Shadow Color", Color) = (0,0,0,0.35)
+        _ShadowLightFade ("Shadow Light Fade", Float) = 1
     }
 
     SubShader
@@ -30,6 +29,16 @@ Shader "Custom/GPUAnim_Shadow_URP"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
+            TEXTURE2D(_ShapeLightTexture0);
+            SAMPLER(sampler_ShapeLightTexture0);
+            TEXTURE2D(_ShapeLightTexture1);
+            SAMPLER(sampler_ShapeLightTexture1);
+            TEXTURE2D(_ShapeLightTexture2);
+            SAMPLER(sampler_ShapeLightTexture2);
+            TEXTURE2D(_ShapeLightTexture3);
+            SAMPLER(sampler_ShapeLightTexture3);
+            half _HDREmulationScale;
+
             struct Attributes
             {
                 float3 positionOS : POSITION;
@@ -42,11 +51,13 @@ Shader "Custom/GPUAnim_Shadow_URP"
                 float2 fullPixel : TEXCOORD0;
                 float2 shadowCenter : TEXCOORD1;
                 float2 shadowSize : TEXCOORD2;
+                float2 lightingUV : TEXCOORD3;
             };
 
             float _AlphaCutoff;
             float _ShadowEnabled;
             half4 _ShadowColor;
+            float _ShadowLightFade;
 
             StructuredBuffer<float4x4> _Matrices;
             StructuredBuffer<float4> _FrameBaseCenterBuffer;
@@ -77,6 +88,7 @@ Shader "Custom/GPUAnim_Shadow_URP"
                 #else
                     o.positionHCS.z -= depthBias * o.positionHCS.w;
                 #endif
+                o.lightingUV = ComputeScreenPos(o.positionHCS).xy / o.positionHCS.w;
                 o.fullPixel = fullPixel;
                 o.shadowCenter = shadowCenter;
                 o.shadowSize = shadowSize;
@@ -87,8 +99,16 @@ Shader "Custom/GPUAnim_Shadow_URP"
             {
                 float2 shadowDelta = (i.fullPixel - i.shadowCenter) / i.shadowSize;
                 half shadowAlpha = smoothstep(1.0, 0.25, dot(shadowDelta, shadowDelta)) * _ShadowColor.a * _ShadowEnabled;
-
                 clip(shadowAlpha - _AlphaCutoff);
+
+                half4 light =
+                    SAMPLE_TEXTURE2D(_ShapeLightTexture0, sampler_ShapeLightTexture0, i.lightingUV) +
+                    SAMPLE_TEXTURE2D(_ShapeLightTexture1, sampler_ShapeLightTexture1, i.lightingUV) +
+                    SAMPLE_TEXTURE2D(_ShapeLightTexture2, sampler_ShapeLightTexture2, i.lightingUV) +
+                    SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, i.lightingUV);
+                float lightStrength = dot((light * _HDREmulationScale).rgb, half3(0.2126, 0.7152, 0.0722));
+                shadowAlpha *= lerp(1.0, 0.0, pow(saturate(lightStrength / max(_ShadowLightFade, 0.001)), 3.0));
+                shadowAlpha = max(shadowAlpha, 0.001);
                 return half4(_ShadowColor.rgb, shadowAlpha);
             }
             ENDHLSL

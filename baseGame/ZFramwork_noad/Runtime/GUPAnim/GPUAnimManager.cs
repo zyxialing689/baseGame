@@ -14,6 +14,7 @@ public class GPUAnimManager : MonoBehaviour
     public float defaultScale = 1f;
     public float depthOffset;
     public bool drawShadow = true;
+    public float shadowLightFade = 1f;
     public Color shadowColor = new Color(0f, 0f, 0f, 0.35f);
     public bool cullByCamera = true;
     public float cullPadding = 2f;
@@ -66,6 +67,7 @@ public class GPUAnimManager : MonoBehaviour
     private ComputeBuffer shadowArgsBuffer;
 
     private MaterialPropertyBlock mpb;
+    private MaterialPropertyBlock shadowMpb;
     private Bounds drawBounds;
     private Vector3 lastDrawBoundsCenter;
     private Vector3 lastDrawBoundsSize;
@@ -408,7 +410,7 @@ public class GPUAnimManager : MonoBehaviour
         if (renderCount <= 0)
             return;
         RefreshDrawBounds(false);
-        BindBuffers(material, true);
+        BindBuffers(mpb, true);
 
         Graphics.DrawMeshInstancedIndirect(
             mesh,
@@ -427,7 +429,7 @@ public class GPUAnimManager : MonoBehaviour
         if (!drawShadow || shadowMaterial == null || shadowRenderCount <= 0)
             return;
 
-        BindBuffers(shadowMaterial, false);
+        BindBuffers(shadowMpb, false);
         Graphics.DrawMeshInstancedIndirect(
             mesh,
             0,
@@ -435,7 +437,7 @@ public class GPUAnimManager : MonoBehaviour
             drawBounds,
             shadowArgsBuffer,
             0,
-            mpb,
+            shadowMpb,
             ShadowCastingMode.Off,
             false,
             gameObject.layer,
@@ -443,28 +445,29 @@ public class GPUAnimManager : MonoBehaviour
         );
     }
 
-    private void BindBuffers(Material targetMaterial, bool bodyPass)
+    private void BindBuffers(MaterialPropertyBlock targetMpb, bool bodyPass)
     {
-        if (targetMaterial == null)
+        if (targetMpb == null)
             return;
 
-        mpb.Clear();
-        mpb.SetBuffer("_Matrices", matrixBuffer);
-        mpb.SetBuffer("_RenderIndices", bodyPass ? renderIndexBuffer : shadowRenderIndexBuffer);
-        mpb.SetBuffer("_FrameBaseCenterBuffer", frameBaseCenterBuffer);
-        mpb.SetBuffer("_DepthBiasBuffer", depthBiasBuffer);
+        targetMpb.Clear();
+        targetMpb.SetBuffer("_Matrices", matrixBuffer);
+        targetMpb.SetBuffer("_RenderIndices", bodyPass ? renderIndexBuffer : shadowRenderIndexBuffer);
+        targetMpb.SetBuffer("_FrameBaseCenterBuffer", frameBaseCenterBuffer);
+        targetMpb.SetBuffer("_DepthBiasBuffer", depthBiasBuffer);
 
         if (bodyPass)
         {
-            mpb.SetTexture("_MainTex", data.atlas);
-            mpb.SetBuffer("_FrameUVBuffer", frameUVBuffer);
-            mpb.SetBuffer("_FrameOffsetBuffer", frameOffsetBuffer);
+            targetMpb.SetTexture("_MainTex", data.atlas);
+            targetMpb.SetBuffer("_FrameUVBuffer", frameUVBuffer);
+            targetMpb.SetBuffer("_FrameOffsetBuffer", frameOffsetBuffer);
         }
         else
         {
-            mpb.SetBuffer("_FrameShadowBuffer", frameShadowBuffer);
-            mpb.SetFloat("_ShadowEnabled", drawShadow ? 1f : 0f);
-            mpb.SetColor("_ShadowColor", shadowColor);
+            targetMpb.SetBuffer("_FrameShadowBuffer", frameShadowBuffer);
+            targetMpb.SetFloat("_ShadowEnabled", drawShadow ? 1f : 0f);
+            targetMpb.SetFloat("_ShadowLightFade", shadowLightFade);
+            targetMpb.SetColor("_ShadowColor", shadowColor);
         }
     }
 
@@ -693,6 +696,9 @@ public class GPUAnimManager : MonoBehaviour
         if (mpb == null)
             mpb = new MaterialPropertyBlock();
 
+        if (shadowMpb == null)
+            shadowMpb = new MaterialPropertyBlock();
+
         if (material == null)
         {
             Shader bodyShader = Shader.Find("Custom/GPUAnim_Instanced_URP");
@@ -710,7 +716,13 @@ public class GPUAnimManager : MonoBehaviour
             {
                 shadowMaterial = new Material(shadowShader);
                 shadowMaterial.hideFlags = HideFlags.DontSave;
+                Debug.Log("GPUAnim shadow shader = " + shadowMaterial.shader.name);
             }
+        }
+
+        if (shadowMaterial != null)
+        {
+            shadowMaterial.SetFloat("_AlphaCutoff", 0.01f);
         }
 
         EnsureCapacity(Mathf.Max(1, initialCapacity));

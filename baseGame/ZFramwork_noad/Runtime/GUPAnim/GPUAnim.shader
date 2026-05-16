@@ -12,6 +12,7 @@ Shader "Custom/GPUAnim_Instanced_URP"
 
         Pass
         {
+            Tags { "LightMode" = "Universal2D" }
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite On
             ZTest LEqual
@@ -21,8 +22,32 @@ Shader "Custom/GPUAnim_Instanced_URP"
             #pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_0 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_1 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_2 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_3 __
+            #pragma multi_compile _ DEBUG_DISPLAY
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/LightingUtility.hlsl"
+
+            #if USE_SHAPE_LIGHT_TYPE_0
+            SHAPE_LIGHT(0)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_1
+            SHAPE_LIGHT(1)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_2
+            SHAPE_LIGHT(2)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_3
+            SHAPE_LIGHT(3)
+            #endif
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             struct Attributes
             {
@@ -36,6 +61,7 @@ Shader "Custom/GPUAnim_Instanced_URP"
                 float2 fullPixel : TEXCOORD0;
                 float4 uvRect : TEXCOORD1;
                 float4 offsetFrame : TEXCOORD2;
+                float2 lightingUV : TEXCOORD3;
             };
 
             TEXTURE2D(_MainTex);
@@ -69,6 +95,7 @@ Shader "Custom/GPUAnim_Instanced_URP"
                 #else
                     o.positionHCS.z -= depthBias * o.positionHCS.w;
                 #endif
+                o.lightingUV = ComputeScreenPos(o.positionHCS).xy / o.positionHCS.w;
                 o.fullPixel = fullPixel;
                 o.uvRect = _FrameUVBuffer[roleId];
                 o.offsetFrame = _FrameOffsetBuffer[roleId];
@@ -86,9 +113,15 @@ Shader "Custom/GPUAnim_Instanced_URP"
 
                 float2 frameUV = framePixel / max(i.offsetFrame.zw, float2(1.0, 1.0));
                 float2 atlasUV = i.uvRect.xy + frameUV * i.uvRect.zw;
-                half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, atlasUV);
-                clip(color.a - _AlphaCutoff);
-                return color;
+                half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, atlasUV);
+                clip(c.a - _AlphaCutoff);
+
+                SurfaceData2D surfaceData;
+                InputData2D inputData;
+                half4 mask = half4(1, 1, 1, 1);
+                InitializeSurfaceData(c.rgb, c.a, mask, surfaceData);
+                InitializeInputData(atlasUV, i.lightingUV, inputData);
+                return CombinedShapeLightShared(surfaceData, inputData);
             }
             ENDHLSL
         }

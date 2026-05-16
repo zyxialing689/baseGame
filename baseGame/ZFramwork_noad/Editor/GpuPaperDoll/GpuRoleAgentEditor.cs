@@ -133,7 +133,123 @@ public class GpuRoleAgentEditor : Editor
             SyncPreviewToInitial();
         }
         EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("生成子物体参考", GUILayout.Height(24)))
+        {
+            SpawnReferenceChild();
+        }
+        if (GUILayout.Button("删除子物体参考", GUILayout.Height(24)))
+        {
+            DeleteReferenceChild();
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    private void SpawnReferenceChild()
+    {
+        if (_agent.exportData == null)
+        {
+            EditorUtility.DisplayDialog("提示", "请先指定 ExportData", "确定");
+            return;
+        }
+
+        serializedObject.Update();
+        BuildPreviewSlotState();
+        DeleteReferenceChild();
+
+        GameObject child = new GameObject($"{_agent.gameObject.name}_参考");
+        child.transform.SetParent(_agent.transform, false);
+        child.transform.localPosition = Vector3.zero;
+        Undo.RegisterCreatedObjectUndo(child, "Create Reference Child");
+
+        GpuRoleExportData data = _agent.exportData;
+        Transform root = child.transform;
+
+        for (int i = 0; i < data.slots.Count; i++)
+        {
+            if (!_previewSlotVisible[i])
+                continue;
+
+            int spriteId = _previewSlotSpriteIds[i];
+            if (spriteId < 0)
+                continue;
+
+            SpriteUVData uv = data.spriteUVs.Find(u => u.spriteId == spriteId);
+            if (uv == null)
+                continue;
+
+            AtlasData atlas = uv.atlasIndex >= 0 && uv.atlasIndex < data.atlases.Count
+                ? data.atlases[uv.atlasIndex]
+                : null;
+            if (atlas == null || atlas.texture == null)
+                continue;
+
+            SlotExportData slotData = data.slots[i];
+
+            // 和预览系统一样，用 MeshFilter + MeshRenderer 而非 SpriteRenderer
+            GameObject slotGO = new GameObject(uv.spriteName);
+            slotGO.transform.SetParent(root, false);
+            slotGO.transform.localPosition = slotData.localPosition;
+            slotGO.transform.localRotation = Quaternion.Euler(slotData.localEulerAngles);
+            slotGO.transform.localScale = slotData.localScale;
+
+            MeshFilter mf = slotGO.AddComponent<MeshFilter>();
+            MeshRenderer mr = slotGO.AddComponent<MeshRenderer>();
+
+            // 构建 quad mesh，和 GpuRoleAgentPreview.CreatePreviewMesh 一致
+            Mesh mesh = new Mesh();
+            mesh.name = $"RefMesh_{uv.spriteId}_{uv.spriteName}";
+
+            float worldW = uv.cropW / 32f;
+            float worldH = uv.cropH / 32f;
+            Vector3 pivotOffset = new Vector3(-worldW * uv.pivotX, -worldH * uv.pivotY, 0f);
+
+            mesh.vertices = new Vector3[]
+            {
+                pivotOffset,
+                pivotOffset + new Vector3(worldW, 0f, 0f),
+                pivotOffset + new Vector3(0f, worldH, 0f),
+                pivotOffset + new Vector3(worldW, worldH, 0f)
+            };
+            mesh.uv = new Vector2[]
+            {
+                new Vector2(uv.uMin, uv.vMin),
+                new Vector2(uv.uMax, uv.vMin),
+                new Vector2(uv.uMin, uv.vMax),
+                new Vector2(uv.uMax, uv.vMax)
+            };
+            mesh.triangles = new int[] { 0, 2, 1, 2, 3, 1 };
+            mesh.RecalculateBounds();
+
+            mf.sharedMesh = mesh;
+
+            Material mat = new Material(Shader.Find("Sprites/Default"));
+            mat.mainTexture = atlas.texture;
+            mat.color = _agent.color;
+            mr.sharedMaterial = mat;
+
+            // 用 slot 索引控制渲染顺序（Z 偏移），和预览系统一致
+            Vector3 pos = slotGO.transform.localPosition;
+            pos.z += -i * 0.001f;
+            slotGO.transform.localPosition = pos;
+        }
+
+        Selection.activeGameObject = child;
+        Debug.Log($"[GpuRoleAgentEditor] 已创建 Mesh 参考: {child.name}", child);
+    }
+
+    private void DeleteReferenceChild()
+    {
+        string suffix = "_参考";
+        for (int i = _agent.transform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = _agent.transform.GetChild(i);
+            if (child.name.EndsWith(suffix))
+            {
+                Undo.DestroyObjectImmediate(child.gameObject);
+            }
+        }
     }
 
     private void RandomizePreview()

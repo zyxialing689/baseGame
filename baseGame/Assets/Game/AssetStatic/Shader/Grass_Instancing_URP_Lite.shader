@@ -11,6 +11,7 @@ Shader "Universal Render Pipeline/Z/2D/Grass_Indirect_URP"
 
         Pass
         {
+            Tags { "LightMode" = "Universal2D" }
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
             Cull Off
@@ -19,11 +20,34 @@ Shader "Universal Render Pipeline/Z/2D/Grass_Indirect_URP"
 
             #pragma vertex vert
             #pragma fragment frag
-
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_0 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_1 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_2 __
+            #pragma multi_compile USE_SHAPE_LIGHT_TYPE_3 __
+            #pragma multi_compile _ DEBUG_DISPLAY
             // ⭐ 关键：开启 instancing
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/LightingUtility.hlsl"
+
+            #if USE_SHAPE_LIGHT_TYPE_0
+            SHAPE_LIGHT(0)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_1
+            SHAPE_LIGHT(1)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_2
+            SHAPE_LIGHT(2)
+            #endif
+
+            #if USE_SHAPE_LIGHT_TYPE_3
+            SHAPE_LIGHT(3)
+            #endif
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             struct GrassData
             {
@@ -51,6 +75,7 @@ Shader "Universal Render Pipeline/Z/2D/Grass_Indirect_URP"
             {
                 float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float2 lightingUV : TEXCOORD1;
             };
 
             Varyings vert (Attributes v)
@@ -79,6 +104,7 @@ Shader "Universal Render Pipeline/Z/2D/Grass_Indirect_URP"
                 float3 worldPos = float3(p, 0) + data.pos;
 
                 o.positionHCS = TransformWorldToHClip(worldPos);
+                o.lightingUV = ComputeScreenPos(o.positionHCS).xy / o.positionHCS.w;
 
                 o.uv = v.uv * uvData.zw + uvData.xy;
 
@@ -87,11 +113,15 @@ Shader "Universal Render Pipeline/Z/2D/Grass_Indirect_URP"
 
             half4 frag (Varyings i) : SV_Target
             {
-                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                clip(c.a - 0.1);
 
-                clip(col.a - 0.1);
-
-                return col;
+                SurfaceData2D surfaceData;
+                InputData2D inputData;
+                half4 mask = half4(1, 1, 1, 1);
+                InitializeSurfaceData(c.rgb, c.a, mask, surfaceData);
+                InitializeInputData(i.uv, i.lightingUV, inputData);
+                return CombinedShapeLightShared(surfaceData, inputData);
             }
 
             ENDHLSL

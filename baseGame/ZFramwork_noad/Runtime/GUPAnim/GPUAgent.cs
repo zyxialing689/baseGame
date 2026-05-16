@@ -3,6 +3,7 @@ using UnityEngine;
 public class GPUAgent : GpuAgentBase
 {
     public GPUAnimManager manager;
+    public AnimAtlasData data;
     public bool autoInitialize = true;
     public bool initializeOnEnable = true;
     public bool removeOnDisable;
